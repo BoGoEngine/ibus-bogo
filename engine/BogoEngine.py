@@ -23,19 +23,18 @@ import pango
 import ibus
 from ibus import keysyms
 from ibus import modifier
-import Xlib.display
-import Xlib.X
-import Xlib.XK
-import Xlib.protocol.event
-import Xlib.ext.xtest
+from ctypes import *
+
+Xtst = CDLL("libXtst.so.6")
+Xlib = CDLL("libX11.so.6")
+dpy = Xtst.XOpenDisplay(None)
+BG_BACKSPACE = 22
 
 class Engine(ibus.EngineBase):
 
     def __init__(self, bus, object_path):
         super(Engine, self).__init__(bus, object_path)
         self.__preedit_string = u""
-        self.display = Xlib.display.Display()
-        self.BspKeycode = self.getKeycode("BackSpace");
         self.nBackspace = 0
         self.isFakeBackspace = False;
         print "Finish Initialization"
@@ -68,9 +67,9 @@ class Engine(ibus.EngineBase):
 
             if keyval == keysyms.BackSpace:
                 if self.isFakeBackspace:
-                    print "A fake backspace" + str(self.nBackspace)
+                    print "Fake backspace no. " + str(self.nBackspace)
                     self.nBackspace -= 1
-                    if self.nBackspace == 1:
+                    if self.nBackspace == 0:
                         print "Last fake backspace. Commit..."
                         self.commitPreedit()
                         self.isFakeBackspace = False
@@ -104,12 +103,13 @@ class Engine(ibus.EngineBase):
         return self.display.keysym_to_keycode(keysym)
 
     def commitFakeBackspace(self):
+        global dpy, BG_BACKSPACE
         print "Commit "+ str(self.nBackspace) + " fake Backspaces"
         number = self.nBackspace #Silly Python
         for i in range(number):
-            Xlib.ext.xtest.fake_input(self.display, Xlib.X.KeyPress, self.BspKeycode)
-            Xlib.ext.xtest.fake_input(self.display, Xlib.X.KeyRelease, self.BspKeycode)
-
+            Xtst.XTestFakeKeyEvent(dpy, BG_BACKSPACE, True, 0)
+            Xtst.XTestFakeKeyEvent(dpy, BG_BACKSPACE, False, 0)
+            Xlib.XFlush(dpy)
 
     def isCharacter(self, keyval):
         if keyval in xrange(33,126):
