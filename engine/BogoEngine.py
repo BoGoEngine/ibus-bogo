@@ -1,8 +1,6 @@
-# vim:set et sts=4 sw=4:
+# IBus-Bogo - The Vietnamese IME for IBus
 #
-# ibus-tmpl - The Input Bus template project
-#
-# Copyright (c) 2007-2011 Peng Huang <shawn.p.huang@gmail.com>
+# Copyright (c) 2012 Dam Tien Long <longdt90@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,12 +21,14 @@ import pango
 import ibus
 from ibus import keysyms
 from ibus import modifier
+import time
 from ctypes import *
 
 Xtst = CDLL("libXtst.so.6")
 Xlib = CDLL("libX11.so.6")
 dpy = Xtst.XOpenDisplay(None)
 BG_BACKSPACE = 22
+CharacterLimit = 8
 
 class Engine(ibus.EngineBase):
 
@@ -42,6 +42,7 @@ class Engine(ibus.EngineBase):
 
     def process_key_event(self, keyval, keycode, state):
                # ignore key release events
+        time.sleep(0.0016)
         is_press = ((state & modifier.RELEASE_MASK) == 0)
         if not is_press:
             return False
@@ -51,6 +52,13 @@ class Engine(ibus.EngineBase):
                 print "Character entered: " + chr(keyval)
                 self.isFakeBackspace = True
                 self.nBackspace = len(self.__preedit_string) + 1
+                #Optimization
+                if (self.nBackspace == CharacterLimit):
+                    self.resetEngine()
+                    self.__preedit_string = unichr(keyval)
+                    self.commitPreedit()
+                    return True
+
                 print "no. of fake backspace " + str(self.nBackspace)
                 print "Old preedit:" + self.__preedit_string
                 self.processChar(keyval)
@@ -78,6 +86,8 @@ class Engine(ibus.EngineBase):
                     print "A real backspace"
                     self.removeLastCharFromPreedit()
                 return False
+
+        self.resetEngine()
         return False
 
     def resetEngine(self):
@@ -97,10 +107,6 @@ class Engine(ibus.EngineBase):
 
     def removeLastCharFromPreedit(self):
         self.__preedit_string = self.__preedit_string[:-1]
-
-    def getKeycode(self, string):
-        keysym = Xlib.XK.string_to_keysym(string)
-        return self.display.keysym_to_keycode(keysym)
 
     def commitFakeBackspace(self):
         global dpy, BG_BACKSPACE
