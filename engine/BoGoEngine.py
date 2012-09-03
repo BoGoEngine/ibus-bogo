@@ -1,3 +1,4 @@
+#
 # IBus-Bogo - The Vietnamese IME for IBus
 #
 # Copyright (c) 2012- Long T. Dam <longdt90@gmail.com>,
@@ -20,6 +21,7 @@
 from gi.repository import GObject
 from gi.repository import IBus
 from gi.repository import Pango
+# import BoGo
 
 # syntactic sugar
 keysyms = IBus
@@ -40,7 +42,7 @@ class Engine(IBus.Engine):
 
     def __init__(self):
         super(Engine, self).__init__()
-        self.resetEngine()
+        self.reset_engine()
         print "Finish Initialization"
 
 
@@ -57,14 +59,8 @@ class Engine(IBus.Engine):
                 print "Character entered: " + chr(keyval)
                 self.isFakeBackspace = True
 
-                #Optimization
-                # if (self.nBackspace == CharacterLimit):
-                #     self.resetEngine()
-                #     self.StringToCommit = unichr(keyval)
-                #     self.commitPreedit()
-                #     return True
                 self.OldString = self.NewString
-                self.process_char(keyval)
+                self.process_key(keyval)
                 print "Old string:", self.OldString
                 print "New string:", self.NewString
                 self.nBackspace, self.StringToCommit = \
@@ -106,8 +102,14 @@ class Engine(IBus.Engine):
     def commit_result(self):
         self.commit_text(IBus.Text.new_from_string(self.StringToCommit))
 
-    def process_char(self, char):
-        self.NewString += unichr(char)
+    def process_key(self, keyval):
+        self.NewString += unichr(keyval)
+        # char = unichr(keyval)
+        # if len(self.OldString) != 0:
+        #     print BoGo.process_key(self.OldString, char)
+        #     self.NewString = BoGo.process_key(self.OldString, char)
+        # else:
+        #     self.NewString = char
 
     def remove_last_char(self):
         self.NewString = self.NewString[:-1]

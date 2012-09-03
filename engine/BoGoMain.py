@@ -1,3 +1,4 @@
+#
 # IBus-BoGo - The Vietnamese IME for IBus
 #
 # Copyright (c) 2012- Long T. Dam <longdt90@gmail.com>,
@@ -26,7 +27,7 @@ import sys
 import getopt
 import locale
 
-from BogoEngine import Engine
+from BoGoEngine import Engine
 
 class IMApp:
     def __init__(self, exec_by_ibus):
