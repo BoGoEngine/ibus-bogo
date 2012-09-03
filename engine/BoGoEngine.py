@@ -35,7 +35,6 @@ Xlib = CDLL("libX11.so.6")
 dpy = Xtst.XOpenDisplay(None)
 sym = Xlib.XStringToKeysym("BackSpace")
 bg_backspace = Xlib.XKeysymToKeycode(dpy, sym)
-time_delay = 0.01
 
 class Engine(IBus.Engine):
     __gtype_name__ = 'EngineBoGo'
@@ -68,7 +67,7 @@ class Engine(IBus.Engine):
                 print "n_backspace: ", self.n_backspace
                 print "String to commit:", self.string_to_commit
                 self.commit_fake_backspace(self.n_backspace)
-                time.sleep(time_delay)
+                time.sleep(0.006)
                 self.commit_result()
                 self.isFakeBackspace = False
                 return True
@@ -80,18 +79,7 @@ class Engine(IBus.Engine):
                 return False
 
             if keyval == keysyms.BackSpace:
-                if self.isFakeBackspace:
-                    #print "Fake backspace no. " + str(self.n_backspace)
-                    # self.n_backspace -= 1
-                    # if self.n_backspace == 1:
-                    #     print "Last fake backspace. Commit..."
-                    #     self.commit_result()
-                    #     self.isFakeBackspace = False
-                    #     return True
-                    return True
-                else:
-                    print "A real backspace"
-                    self.remove_last_char()
+                self.remove_last_char()
                 return False
 
         self.reset_engine()
@@ -122,6 +110,7 @@ class Engine(IBus.Engine):
     def commit_fake_backspace(self,n_backspace):
         for i in range(n_backspace):
             self.forward_key_event(keysyms.BackSpace, 14, 0)
+            time.sleep(0.006)
 
     def get_nbackspace_and_string_to_commit(self):
         if (self.old_string):
