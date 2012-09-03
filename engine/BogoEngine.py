@@ -40,9 +40,7 @@ class Engine(IBus.Engine):
 
     def __init__(self):
         super(Engine, self).__init__()
-        self.__preedit_string = u""
-        self.nBackspace = 0
-        self.isFakeBackspace = False;
+        self.resetEngine()
         print "Finish Initialization"
 
 
@@ -58,23 +56,24 @@ class Engine(IBus.Engine):
             if state & (modifier.CONTROL_MASK | modifier.MOD1_MASK) == 0:
                 print "Character entered: " + chr(keyval)
                 self.isFakeBackspace = True
-                self.nBackspace = len(self.__preedit_string) + 1
-                #Optimization
-                if (self.nBackspace == CharacterLimit):
-                    self.resetEngine()
-                    self.__preedit_string = unichr(keyval)
-                    self.commitPreedit()
-                    return True
 
-                print "no. of fake backspace " + str(self.nBackspace)
-                print "Old preedit:" + self.__preedit_string
+                #Optimization
+                # if (self.nBackspace == CharacterLimit):
+                #     self.resetEngine()
+                #     self.StringToCommit = unichr(keyval)
+                #     self.commitPreedit()
+                #     return True
+                self.OldString = self.NewString
                 self.processChar(keyval)
-                print "New Preedit:" + self.__preedit_string
+                print "Old string:", self.OldString
+                print "New string:", self.NewString
+                self.nBackspace, self.StringToCommit = \
+                  self.getFakeBackspace_StringToCommit()
+                print "String to commit:", self.StringToCommit
                 self.commitFakeBackspace()
-                #self.commitPreedit()
                 return True
 
-        if self.__preedit_string:
+        if self.StringToCommit:
             if keyval == keysyms.Return or keyval == keysyms.Escape or\
                keyval == keysyms.space:
                 self.resetEngine()
@@ -86,34 +85,32 @@ class Engine(IBus.Engine):
                     self.nBackspace -= 1
                     if self.nBackspace == 0:
                         print "Last fake backspace. Commit..."
-                        self.commitPreedit()
+                        self.commitResult()
                         self.isFakeBackspace = False
                         return True
                 else:
                     print "A real backspace"
-                    self.removeLastCharFromPreedit()
+                    self.removeLastChar()
                 return False
 
         self.resetEngine()
         return False
 
     def resetEngine(self):
-        self.__preedit_string = u"";
+        self.StringToCommit = u""
+        self.NewString = u""
+        self.OldString = u""
+        self.isFakeBackspace = False
+        self.nBackspace = 0
 
-    def __commit_string(self, text):
-        self.commit_text(IBus.Text.new_from_string(text))
-
-    def commitPreedit(self):
-        self.__commit_string(self.__preedit_string)
+    def commitResult(self):
+        self.commit_text(IBus.Text.new_from_string(self.StringToCommit))
 
     def processChar(self, char):
-        self.addCharToPreedit(char)
+        self.NewString += unichr(char)
 
-    def addCharToPreedit(self, char):
-        self.__preedit_string += unichr(char)
-
-    def removeLastCharFromPreedit(self):
-        self.__preedit_string = self.__preedit_string[:-1]
+    def removeLastChar(self):
+        self.NewString = self.NewString[:-1]
 
     def commitFakeBackspace(self):
         global dpy, BG_BACKSPACE
@@ -123,6 +120,17 @@ class Engine(IBus.Engine):
             Xtst.XTestFakeKeyEvent(dpy, BG_BACKSPACE, True, 0)
             Xtst.XTestFakeKeyEvent(dpy, BG_BACKSPACE, False, 0)
             Xlib.XFlush(dpy)
+
+    def getFakeBackspace_StringToCommit(self):
+        length = len(self.OldString)
+        if length == 0:
+            return 1, self.NewString
+        for i in range(length):
+            if self.OldString[i] != self.NewString[i]:
+                _nbackspace = length - i + 1
+                _stringtocommit = self.NewString[i + 1:]
+                return _nbackspace, _stringtocommit
+        return 1, self.NewString[length:]
 
     def isCharacter(self, keyval):
         if keyval in xrange(33,126):
