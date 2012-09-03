@@ -31,7 +31,8 @@ from ctypes import *
 Xtst = CDLL("libXtst.so.6")
 Xlib = CDLL("libX11.so.6")
 dpy = Xtst.XOpenDisplay(None)
-BG_BACKSPACE = 22
+sym = Xlib.XStringToKeysym("BackSpace")
+BG_BACKSPACE = Xlib.XKeysymToKeycode(dpy, sym)
 CharacterLimit = 8
 
 class Engine(IBus.Engine):
