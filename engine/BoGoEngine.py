@@ -28,13 +28,6 @@ keysyms = IBus
 modifier = IBus.ModifierType
 
 import time
-from ctypes import *
-
-Xtst = CDLL("libXtst.so.6")
-Xlib = CDLL("libX11.so.6")
-dpy = Xtst.XOpenDisplay(None)
-sym = Xlib.XStringToKeysym("BackSpace")
-bg_backspace = Xlib.XKeysymToKeycode(dpy, sym)
 
 class Engine(IBus.Engine):
     __gtype_name__ = 'EngineBoGo'
@@ -67,8 +60,9 @@ class Engine(IBus.Engine):
                 print "n_backspace: ", self.n_backspace
                 print "String to commit:", self.string_to_commit
                 self.commit_fake_backspace(self.n_backspace)
-                time.sleep(0.006)
+                time.sleep(0.002)
                 self.commit_result()
+                time.sleep(0.006)
                 self.isFakeBackspace = False
                 return True
 
