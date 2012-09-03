@@ -1,6 +1,7 @@
 # IBus-Bogo - The Vietnamese IME for IBus
 #
-# Copyright (c) 2012- Long T. Dam <longdt90@gmail.com>
+# Copyright (c) 2012- Long T. Dam <longdt90@gmail.com>,
+#                     Trung Ngo <ndtrung4419@gmail.com>
 #
 # This file is part of IBus-Bogo Project
 # IBus-Bogo is free software: you can redistribute it and/or modify
@@ -8,7 +9,7 @@
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# Foobar is distributed in the hope that it will be useful,
+# IBus-Bogo is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
