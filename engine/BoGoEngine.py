@@ -21,7 +21,7 @@
 from gi.repository import GObject
 from gi.repository import IBus
 from gi.repository import Pango
-# import BoGo
+import BoGo
 
 # syntactic sugar
 keysyms = IBus
@@ -65,6 +65,7 @@ class Engine(IBus.Engine):
                 print "New string:", self.NewString
                 self.nBackspace, self.StringToCommit = \
                   self.get_nbackspace_and_string_to_commit()
+                print "nBackspace: ", self.nBackspace
                 print "String to commit:", self.StringToCommit
                 self.commit_fake_backspace()
                 return True
@@ -103,13 +104,13 @@ class Engine(IBus.Engine):
         self.commit_text(IBus.Text.new_from_string(self.StringToCommit))
 
     def process_key(self, keyval):
-        self.NewString += unichr(keyval)
-        # char = unichr(keyval)
-        # if len(self.OldString) != 0:
-        #     print BoGo.process_key(self.OldString, char)
-        #     self.NewString = BoGo.process_key(self.OldString, char)
-        # else:
-        #     self.NewString = char
+        #self.NewString += unichr(keyval)
+        ukeyval = unichr(keyval)
+        if self.OldString:
+            print BoGo.process_key(self.OldString, ukeyval)
+            self.NewString = BoGo.process_key(self.OldString, ukeyval)
+        else:
+            self.NewString = ukeyval
 
     def remove_last_char(self):
         self.NewString = self.NewString[:-1]
@@ -124,15 +125,18 @@ class Engine(IBus.Engine):
             Xlib.XFlush(dpy)
 
     def get_nbackspace_and_string_to_commit(self):
-        length = len(self.OldString)
-        if length == 0:
-            return 1, self.NewString
-        for i in range(length):
-            if self.OldString[i] != self.NewString[i]:
-                _nbackspace = length - i + 1
-                _stringtocommit = self.NewString[i + 1:]
-                return _nbackspace, _stringtocommit
-        return 1, self.NewString[length:]
+        if (self.OldString):
+            length = len(self.OldString)
+            for i in range(length):
+                if self.OldString[i] != self.NewString[i]:
+                    _nbackspace = length - i + 1
+                    _stringtocommit = self.NewString[i:]
+                    return _nbackspace, _stringtocommit
+            return 1, self.NewString[length:]
+        else:
+             return 1, self.NewString
+        # Classical method:
+        # return len(self.OldString) + 1, self.NewString
 
     def is_character(self, keyval):
         if keyval in xrange(33,126):
