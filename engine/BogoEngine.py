@@ -16,11 +16,14 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-import gobject
-import pango
-import ibus
-from ibus import keysyms
-from ibus import modifier
+from gi.repository import GObject
+from gi.repository import IBus
+from gi.repository import Pango
+
+# syntactic sugar
+keysyms = IBus
+modifier = IBus.ModifierType
+
 import time
 from ctypes import *
 
@@ -30,17 +33,19 @@ dpy = Xtst.XOpenDisplay(None)
 BG_BACKSPACE = 22
 CharacterLimit = 8
 
-class Engine(ibus.EngineBase):
-
-    def __init__(self, bus, object_path):
-        super(Engine, self).__init__(bus, object_path)
+class Engine(IBus.Engine):
+    __gtype_name__ = 'EngineBoGo'
+    
+    def __init__(self):
+        super(Engine, self).__init__()
         self.__preedit_string = u""
         self.nBackspace = 0
         self.isFakeBackspace = False;
         print "Finish Initialization"
 
 
-    def process_key_event(self, keyval, keycode, state):
+    # The "do_" part is PyGObject's way of overriding base's functions
+    def do_process_key_event(self, keyval, keycode, state):
                # ignore key release events
         time.sleep(0.0016)
         is_press = ((state & modifier.RELEASE_MASK) == 0)
@@ -48,7 +53,7 @@ class Engine(ibus.EngineBase):
             return False
 
         if self.isCharacter(keyval):
-            if state & (modifier.CONTROL_MASK | modifier.ALT_MASK) == 0:
+            if state & (modifier.CONTROL_MASK | modifier.MOD1_MASK) == 0:
                 print "Character entered: " + chr(keyval)
                 self.isFakeBackspace = True
                 self.nBackspace = len(self.__preedit_string) + 1
@@ -94,7 +99,7 @@ class Engine(ibus.EngineBase):
         self.__preedit_string = u"";
 
     def __commit_string(self, text):
-        self.commit_text(ibus.Text(text))
+        self.commit_text(IBus.Text.new_from_string(text))
 
     def commitPreedit(self):
         self.__commit_string(self.__preedit_string)
