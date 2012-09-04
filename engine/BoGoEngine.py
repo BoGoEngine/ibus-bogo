@@ -35,7 +35,7 @@ class Engine(IBus.Engine):
     def __init__(self):
         super(Engine, self).__init__()
         self.reset_engine()
-        print "Finish Initialization. Time delay: ", time_delay
+        print "Finish Initialization." 
 
 
     # The "do_" part is PyGObject's way of overriding base's functions
