@@ -37,14 +37,5 @@ Bản quyền (C) năm 2012 bởi:
 * Nguyễn Hà Dương <cmpitg@gmail.com>
 * Nguyễn Thành Hải <phaikawl@gmail.com>
 * Đàm Tiến Long <longdt90@gmail.com>
-* Trung Ngo <ndtrung4419@gmail.com >
+* Trung Ngo <ndtrung4419@gmail.com>
 
-
-
-
-
-
-
-
-
-    
