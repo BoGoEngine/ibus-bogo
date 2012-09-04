@@ -1,0 +1,6 @@
+/home/kenlong/src/ibus-bogo-python/build/BoGoEngine/src/CMakeFiles/bogoengine.dir
+/home/kenlong/src/ibus-bogo-python/build/BoGoEngine/src/CMakeFiles/bogopython.dir
+/home/kenlong/src/ibus-bogo-python/build/BoGoEngine/test/gtest/CMakeFiles/gtest.dir
+/home/kenlong/src/ibus-bogo-python/build/BoGoEngine/test/gtest/CMakeFiles/gtest_main.dir
+/home/kenlong/src/ibus-bogo-python/build/BoGoEngine/test/gtest/CMakeFiles/gtest_unittest.dir
+/home/kenlong/src/ibus-bogo-python/build/BoGoEngine/test/CMakeFiles/test_utils.dir

@@ -1,6 +1,9 @@
 /usr/libexec/ibus-engine-bogo
 /usr/share/ibus/component/bogo.xml
 /usr/share/ibus-bogo/icons/ibus-bogo.svg
-/usr/share/ibus-bogo/BogoMain.py
-/usr/share/ibus-bogo/BogoEngine.py
-/usr/share/ibus-bogo/factory.py
+/usr/share/ibus-bogo/BoGoMain.py
+/usr/share/ibus-bogo/BoGoEngine.py
+/usr/share/ibus-bogo/BoGo.py
+/usr/share/ibus-bogo/BoGoConfig.py
+/usr/share/ibus-bogo/libbogopython.so
+/home/kenlong/src/ibus-bogo-python/engine/libbogopython.so

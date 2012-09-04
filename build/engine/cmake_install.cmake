@@ -33,22 +33,29 @@ IF(NOT DEFINED CMAKE_INSTALL_SO_NO_EXE)
 ENDIF(NOT DEFINED CMAKE_INSTALL_SO_NO_EXE)
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/libexec" TYPE FILE FILES "/home/kenlong/src/ibus-bogo-python/engine/ibus-engine-bogo")
+  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/libexec" TYPE PROGRAM FILES "/home/kenlong/src/ibus-bogo-python/engine/ibus-engine-bogo")
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/ibus/component" TYPE FILE FILES "/home/kenlong/src/ibus-bogo-python/engine/bogo.xml")
+  list(APPEND CPACK_ABSOLUTE_DESTINATION_FILES
+   "/usr/share/ibus/component/bogo.xml")
+FILE(INSTALL DESTINATION "/usr/share/ibus/component" TYPE FILE FILES "/home/kenlong/src/ibus-bogo-python/engine/bogo.xml")
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/ibus-bogo/icons" TYPE FILE FILES "/home/kenlong/src/ibus-bogo-python/engine/ibus-bogo.svg")
+  list(APPEND CPACK_ABSOLUTE_DESTINATION_FILES
+   "/usr/share/ibus-bogo/icons/ibus-bogo.svg")
+FILE(INSTALL DESTINATION "/usr/share/ibus-bogo/icons" TYPE FILE FILES "/home/kenlong/src/ibus-bogo-python/engine/ibus-bogo.svg")
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 
 IF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
-  FILE(INSTALL DESTINATION "${CMAKE_INSTALL_PREFIX}/share/ibus-bogo" TYPE FILE PERMISSIONS WORLD_EXECUTE FILES
-    "/home/kenlong/src/ibus-bogo-python/engine/BogoMain.py"
-    "/home/kenlong/src/ibus-bogo-python/engine/BogoEngine.py"
-    "/home/kenlong/src/ibus-bogo-python/engine/factory.py"
+  list(APPEND CPACK_ABSOLUTE_DESTINATION_FILES
+   "/usr/share/ibus-bogo/BoGoMain.py;/usr/share/ibus-bogo/BoGoEngine.py;/usr/share/ibus-bogo/BoGo.py;/usr/share/ibus-bogo/BoGoConfig.py")
+FILE(INSTALL DESTINATION "/usr/share/ibus-bogo" TYPE FILE FILES
+    "/home/kenlong/src/ibus-bogo-python/engine/BoGoMain.py"
+    "/home/kenlong/src/ibus-bogo-python/engine/BoGoEngine.py"
+    "/home/kenlong/src/ibus-bogo-python/engine/BoGo.py"
+    "/home/kenlong/src/ibus-bogo-python/build/engine/BoGoConfig.py"
     )
 ENDIF(NOT CMAKE_INSTALL_COMPONENT OR "${CMAKE_INSTALL_COMPONENT}" STREQUAL "Unspecified")
 

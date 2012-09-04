@@ -6,16 +6,22 @@
 #    the Free Software Foundation, either version 3 of the License, or
 #    (at your option) any later version.
 #
-#    IBus-Bogo is distributed in the hope that it will be useful,
+#    IBus-BoGo is distributed in the hope that it will be useful,
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #    GNU General Public License for more details.
 #
 #    You should have received a copy of the GNU General Public License
-#    along with IBus-Bogo.  If not, see <http://www.gnu.org/licenses/>.
+#    along with IBus-BoGo.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-install (FILES
+
+configure_file (
+  BoGoConfig.py.in
+  BoGoConfig.py
+  )
+
+install (PROGRAMS
   ibus-engine-bogo
   DESTINATION
   libexec
@@ -24,17 +30,18 @@ install (FILES
 install (FILES
   bogo.xml
   DESTINATION
-  share/ibus/component/)
+  ${IBUS_COMPONENT_DIR}/)
 
 install (FILES
   ibus-bogo.svg
   DESTINATION
-  share/ibus-bogo/icons/)
+  ${BOGO_INSTALL_DIR}/icons/)
 
 install (FILES
-  BogoMain.py
-  BogoEngine.py
-  factory.py
+  BoGoMain.py
+  BoGoEngine.py
+  BoGo.py
+  ${PROJECT_BINARY_DIR}/engine/BoGoConfig.py
   DESTINATION
-  share/ibus-bogo/
-  PERMISSIONS WORLD_EXECUTE)
+  ${BOGO_INSTALL_DIR}/
+  )

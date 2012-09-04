@@ -65,6 +65,288 @@ engine/preinstall:
 .PHONY : engine/preinstall
 
 #=============================================================================
+# Directory level rules for directory BoGoEngine
+
+# Convenience name for "all" pass in the directory.
+BoGoEngine/all: BoGoEngine/src/all
+BoGoEngine/all: BoGoEngine/test/all
+.PHONY : BoGoEngine/all
+
+# Convenience name for "clean" pass in the directory.
+BoGoEngine/clean: BoGoEngine/src/clean
+BoGoEngine/clean: BoGoEngine/test/clean
+.PHONY : BoGoEngine/clean
+
+# Convenience name for "preinstall" pass in the directory.
+BoGoEngine/preinstall: BoGoEngine/src/preinstall
+BoGoEngine/preinstall: BoGoEngine/test/preinstall
+.PHONY : BoGoEngine/preinstall
+
+#=============================================================================
+# Directory level rules for directory BoGoEngine/src
+
+# Convenience name for "all" pass in the directory.
+BoGoEngine/src/all: BoGoEngine/src/CMakeFiles/bogoengine.dir/all
+BoGoEngine/src/all: BoGoEngine/src/CMakeFiles/bogopython.dir/all
+.PHONY : BoGoEngine/src/all
+
+# Convenience name for "clean" pass in the directory.
+BoGoEngine/src/clean: BoGoEngine/src/CMakeFiles/bogoengine.dir/clean
+BoGoEngine/src/clean: BoGoEngine/src/CMakeFiles/bogopython.dir/clean
+.PHONY : BoGoEngine/src/clean
+
+# Convenience name for "preinstall" pass in the directory.
+BoGoEngine/src/preinstall:
+.PHONY : BoGoEngine/src/preinstall
+
+#=============================================================================
+# Target rules for target BoGoEngine/src/CMakeFiles/bogoengine.dir
+
+# All Build rule for target.
+BoGoEngine/src/CMakeFiles/bogoengine.dir/all:
+	$(MAKE) -f BoGoEngine/src/CMakeFiles/bogoengine.dir/build.make BoGoEngine/src/CMakeFiles/bogoengine.dir/depend
+	$(MAKE) -f BoGoEngine/src/CMakeFiles/bogoengine.dir/build.make BoGoEngine/src/CMakeFiles/bogoengine.dir/build
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/kenlong/src/ibus-bogo-python/build/CMakeFiles  1 2 3
+	@echo "Built target bogoengine"
+.PHONY : BoGoEngine/src/CMakeFiles/bogoengine.dir/all
+
+# Include target in all.
+all: BoGoEngine/src/CMakeFiles/bogoengine.dir/all
+.PHONY : all
+
+# Build rule for subdir invocation for target.
+BoGoEngine/src/CMakeFiles/bogoengine.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/kenlong/src/ibus-bogo-python/build/CMakeFiles 3
+	$(MAKE) -f CMakeFiles/Makefile2 BoGoEngine/src/CMakeFiles/bogoengine.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/kenlong/src/ibus-bogo-python/build/CMakeFiles 0
+.PHONY : BoGoEngine/src/CMakeFiles/bogoengine.dir/rule
+
+# Convenience name for target.
+bogoengine: BoGoEngine/src/CMakeFiles/bogoengine.dir/rule
+.PHONY : bogoengine
+
+# clean rule for target.
+BoGoEngine/src/CMakeFiles/bogoengine.dir/clean:
+	$(MAKE) -f BoGoEngine/src/CMakeFiles/bogoengine.dir/build.make BoGoEngine/src/CMakeFiles/bogoengine.dir/clean
+.PHONY : BoGoEngine/src/CMakeFiles/bogoengine.dir/clean
+
+# clean rule for target.
+clean: BoGoEngine/src/CMakeFiles/bogoengine.dir/clean
+.PHONY : clean
+
+#=============================================================================
+# Target rules for target BoGoEngine/src/CMakeFiles/bogopython.dir
+
+# All Build rule for target.
+BoGoEngine/src/CMakeFiles/bogopython.dir/all:
+	$(MAKE) -f BoGoEngine/src/CMakeFiles/bogopython.dir/build.make BoGoEngine/src/CMakeFiles/bogopython.dir/depend
+	$(MAKE) -f BoGoEngine/src/CMakeFiles/bogopython.dir/build.make BoGoEngine/src/CMakeFiles/bogopython.dir/build
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/kenlong/src/ibus-bogo-python/build/CMakeFiles  4 5 6 7
+	@echo "Built target bogopython"
+.PHONY : BoGoEngine/src/CMakeFiles/bogopython.dir/all
+
+# Include target in all.
+all: BoGoEngine/src/CMakeFiles/bogopython.dir/all
+.PHONY : all
+
+# Build rule for subdir invocation for target.
+BoGoEngine/src/CMakeFiles/bogopython.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/kenlong/src/ibus-bogo-python/build/CMakeFiles 4
+	$(MAKE) -f CMakeFiles/Makefile2 BoGoEngine/src/CMakeFiles/bogopython.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/kenlong/src/ibus-bogo-python/build/CMakeFiles 0
+.PHONY : BoGoEngine/src/CMakeFiles/bogopython.dir/rule
+
+# Convenience name for target.
+bogopython: BoGoEngine/src/CMakeFiles/bogopython.dir/rule
+.PHONY : bogopython
+
+# clean rule for target.
+BoGoEngine/src/CMakeFiles/bogopython.dir/clean:
+	$(MAKE) -f BoGoEngine/src/CMakeFiles/bogopython.dir/build.make BoGoEngine/src/CMakeFiles/bogopython.dir/clean
+.PHONY : BoGoEngine/src/CMakeFiles/bogopython.dir/clean
+
+# clean rule for target.
+clean: BoGoEngine/src/CMakeFiles/bogopython.dir/clean
+.PHONY : clean
+
+#=============================================================================
+# Directory level rules for directory BoGoEngine/test
+
+# Convenience name for "all" pass in the directory.
+BoGoEngine/test/all: BoGoEngine/test/CMakeFiles/test_utils.dir/all
+BoGoEngine/test/all: BoGoEngine/test/gtest/all
+.PHONY : BoGoEngine/test/all
+
+# Convenience name for "clean" pass in the directory.
+BoGoEngine/test/clean: BoGoEngine/test/CMakeFiles/test_utils.dir/clean
+BoGoEngine/test/clean: BoGoEngine/test/gtest/clean
+.PHONY : BoGoEngine/test/clean
+
+# Convenience name for "preinstall" pass in the directory.
+BoGoEngine/test/preinstall: BoGoEngine/test/gtest/preinstall
+.PHONY : BoGoEngine/test/preinstall
+
+#=============================================================================
+# Target rules for target BoGoEngine/test/CMakeFiles/test_utils.dir
+
+# All Build rule for target.
+BoGoEngine/test/CMakeFiles/test_utils.dir/all: BoGoEngine/src/CMakeFiles/bogoengine.dir/all
+BoGoEngine/test/CMakeFiles/test_utils.dir/all: BoGoEngine/test/gtest/CMakeFiles/gtest.dir/all
+	$(MAKE) -f BoGoEngine/test/CMakeFiles/test_utils.dir/build.make BoGoEngine/test/CMakeFiles/test_utils.dir/depend
+	$(MAKE) -f BoGoEngine/test/CMakeFiles/test_utils.dir/build.make BoGoEngine/test/CMakeFiles/test_utils.dir/build
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/kenlong/src/ibus-bogo-python/build/CMakeFiles  11
+	@echo "Built target test_utils"
+.PHONY : BoGoEngine/test/CMakeFiles/test_utils.dir/all
+
+# Include target in all.
+all: BoGoEngine/test/CMakeFiles/test_utils.dir/all
+.PHONY : all
+
+# Build rule for subdir invocation for target.
+BoGoEngine/test/CMakeFiles/test_utils.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/kenlong/src/ibus-bogo-python/build/CMakeFiles 5
+	$(MAKE) -f CMakeFiles/Makefile2 BoGoEngine/test/CMakeFiles/test_utils.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/kenlong/src/ibus-bogo-python/build/CMakeFiles 0
+.PHONY : BoGoEngine/test/CMakeFiles/test_utils.dir/rule
+
+# Convenience name for target.
+test_utils: BoGoEngine/test/CMakeFiles/test_utils.dir/rule
+.PHONY : test_utils
+
+# clean rule for target.
+BoGoEngine/test/CMakeFiles/test_utils.dir/clean:
+	$(MAKE) -f BoGoEngine/test/CMakeFiles/test_utils.dir/build.make BoGoEngine/test/CMakeFiles/test_utils.dir/clean
+.PHONY : BoGoEngine/test/CMakeFiles/test_utils.dir/clean
+
+# clean rule for target.
+clean: BoGoEngine/test/CMakeFiles/test_utils.dir/clean
+.PHONY : clean
+
+#=============================================================================
+# Directory level rules for directory BoGoEngine/test/gtest
+
+# Convenience name for "all" pass in the directory.
+BoGoEngine/test/gtest/all: BoGoEngine/test/gtest/CMakeFiles/gtest.dir/all
+BoGoEngine/test/gtest/all: BoGoEngine/test/gtest/CMakeFiles/gtest_main.dir/all
+BoGoEngine/test/gtest/all: BoGoEngine/test/gtest/CMakeFiles/gtest_unittest.dir/all
+.PHONY : BoGoEngine/test/gtest/all
+
+# Convenience name for "clean" pass in the directory.
+BoGoEngine/test/gtest/clean: BoGoEngine/test/gtest/CMakeFiles/gtest.dir/clean
+BoGoEngine/test/gtest/clean: BoGoEngine/test/gtest/CMakeFiles/gtest_main.dir/clean
+BoGoEngine/test/gtest/clean: BoGoEngine/test/gtest/CMakeFiles/gtest_unittest.dir/clean
+.PHONY : BoGoEngine/test/gtest/clean
+
+# Convenience name for "preinstall" pass in the directory.
+BoGoEngine/test/gtest/preinstall:
+.PHONY : BoGoEngine/test/gtest/preinstall
+
+#=============================================================================
+# Target rules for target BoGoEngine/test/gtest/CMakeFiles/gtest.dir
+
+# All Build rule for target.
+BoGoEngine/test/gtest/CMakeFiles/gtest.dir/all:
+	$(MAKE) -f BoGoEngine/test/gtest/CMakeFiles/gtest.dir/build.make BoGoEngine/test/gtest/CMakeFiles/gtest.dir/depend
+	$(MAKE) -f BoGoEngine/test/gtest/CMakeFiles/gtest.dir/build.make BoGoEngine/test/gtest/CMakeFiles/gtest.dir/build
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/kenlong/src/ibus-bogo-python/build/CMakeFiles  8
+	@echo "Built target gtest"
+.PHONY : BoGoEngine/test/gtest/CMakeFiles/gtest.dir/all
+
+# Include target in all.
+all: BoGoEngine/test/gtest/CMakeFiles/gtest.dir/all
+.PHONY : all
+
+# Build rule for subdir invocation for target.
+BoGoEngine/test/gtest/CMakeFiles/gtest.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/kenlong/src/ibus-bogo-python/build/CMakeFiles 1
+	$(MAKE) -f CMakeFiles/Makefile2 BoGoEngine/test/gtest/CMakeFiles/gtest.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/kenlong/src/ibus-bogo-python/build/CMakeFiles 0
+.PHONY : BoGoEngine/test/gtest/CMakeFiles/gtest.dir/rule
+
+# Convenience name for target.
+gtest: BoGoEngine/test/gtest/CMakeFiles/gtest.dir/rule
+.PHONY : gtest
+
+# clean rule for target.
+BoGoEngine/test/gtest/CMakeFiles/gtest.dir/clean:
+	$(MAKE) -f BoGoEngine/test/gtest/CMakeFiles/gtest.dir/build.make BoGoEngine/test/gtest/CMakeFiles/gtest.dir/clean
+.PHONY : BoGoEngine/test/gtest/CMakeFiles/gtest.dir/clean
+
+# clean rule for target.
+clean: BoGoEngine/test/gtest/CMakeFiles/gtest.dir/clean
+.PHONY : clean
+
+#=============================================================================
+# Target rules for target BoGoEngine/test/gtest/CMakeFiles/gtest_main.dir
+
+# All Build rule for target.
+BoGoEngine/test/gtest/CMakeFiles/gtest_main.dir/all: BoGoEngine/test/gtest/CMakeFiles/gtest.dir/all
+	$(MAKE) -f BoGoEngine/test/gtest/CMakeFiles/gtest_main.dir/build.make BoGoEngine/test/gtest/CMakeFiles/gtest_main.dir/depend
+	$(MAKE) -f BoGoEngine/test/gtest/CMakeFiles/gtest_main.dir/build.make BoGoEngine/test/gtest/CMakeFiles/gtest_main.dir/build
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/kenlong/src/ibus-bogo-python/build/CMakeFiles  9
+	@echo "Built target gtest_main"
+.PHONY : BoGoEngine/test/gtest/CMakeFiles/gtest_main.dir/all
+
+# Include target in all.
+all: BoGoEngine/test/gtest/CMakeFiles/gtest_main.dir/all
+.PHONY : all
+
+# Build rule for subdir invocation for target.
+BoGoEngine/test/gtest/CMakeFiles/gtest_main.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/kenlong/src/ibus-bogo-python/build/CMakeFiles 2
+	$(MAKE) -f CMakeFiles/Makefile2 BoGoEngine/test/gtest/CMakeFiles/gtest_main.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/kenlong/src/ibus-bogo-python/build/CMakeFiles 0
+.PHONY : BoGoEngine/test/gtest/CMakeFiles/gtest_main.dir/rule
+
+# Convenience name for target.
+gtest_main: BoGoEngine/test/gtest/CMakeFiles/gtest_main.dir/rule
+.PHONY : gtest_main
+
+# clean rule for target.
+BoGoEngine/test/gtest/CMakeFiles/gtest_main.dir/clean:
+	$(MAKE) -f BoGoEngine/test/gtest/CMakeFiles/gtest_main.dir/build.make BoGoEngine/test/gtest/CMakeFiles/gtest_main.dir/clean
+.PHONY : BoGoEngine/test/gtest/CMakeFiles/gtest_main.dir/clean
+
+# clean rule for target.
+clean: BoGoEngine/test/gtest/CMakeFiles/gtest_main.dir/clean
+.PHONY : clean
+
+#=============================================================================
+# Target rules for target BoGoEngine/test/gtest/CMakeFiles/gtest_unittest.dir
+
+# All Build rule for target.
+BoGoEngine/test/gtest/CMakeFiles/gtest_unittest.dir/all: BoGoEngine/test/gtest/CMakeFiles/gtest_main.dir/all
+	$(MAKE) -f BoGoEngine/test/gtest/CMakeFiles/gtest_unittest.dir/build.make BoGoEngine/test/gtest/CMakeFiles/gtest_unittest.dir/depend
+	$(MAKE) -f BoGoEngine/test/gtest/CMakeFiles/gtest_unittest.dir/build.make BoGoEngine/test/gtest/CMakeFiles/gtest_unittest.dir/build
+	$(CMAKE_COMMAND) -E cmake_progress_report /home/kenlong/src/ibus-bogo-python/build/CMakeFiles  10
+	@echo "Built target gtest_unittest"
+.PHONY : BoGoEngine/test/gtest/CMakeFiles/gtest_unittest.dir/all
+
+# Include target in all.
+all: BoGoEngine/test/gtest/CMakeFiles/gtest_unittest.dir/all
+.PHONY : all
+
+# Build rule for subdir invocation for target.
+BoGoEngine/test/gtest/CMakeFiles/gtest_unittest.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/kenlong/src/ibus-bogo-python/build/CMakeFiles 3
+	$(MAKE) -f CMakeFiles/Makefile2 BoGoEngine/test/gtest/CMakeFiles/gtest_unittest.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/kenlong/src/ibus-bogo-python/build/CMakeFiles 0
+.PHONY : BoGoEngine/test/gtest/CMakeFiles/gtest_unittest.dir/rule
+
+# Convenience name for target.
+gtest_unittest: BoGoEngine/test/gtest/CMakeFiles/gtest_unittest.dir/rule
+.PHONY : gtest_unittest
+
+# clean rule for target.
+BoGoEngine/test/gtest/CMakeFiles/gtest_unittest.dir/clean:
+	$(MAKE) -f BoGoEngine/test/gtest/CMakeFiles/gtest_unittest.dir/build.make BoGoEngine/test/gtest/CMakeFiles/gtest_unittest.dir/clean
+.PHONY : BoGoEngine/test/gtest/CMakeFiles/gtest_unittest.dir/clean
+
+# clean rule for target.
+clean: BoGoEngine/test/gtest/CMakeFiles/gtest_unittest.dir/clean
+.PHONY : clean
+
+#=============================================================================
 # Special targets to cleanup operation of make.
 
 # Special rule to run CMake to check the build system integrity.

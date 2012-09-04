@@ -14,6 +14,12 @@
 # EXTERNAL cache entries
 ########################
 
+//Value Computed by CMake
+BOGOENGINE_BINARY_DIR:STATIC=/home/kenlong/src/ibus-bogo-python/build/BoGoEngine
+
+//Value Computed by CMake
+BOGOENGINE_SOURCE_DIR:STATIC=/home/kenlong/src/ibus-bogo-python/BoGoEngine
+
 //Path to a program.
 CMAKE_AR:FILEPATH=/usr/bin/ar
 
@@ -157,6 +163,36 @@ IBus-Bogo_BINARY_DIR:STATIC=/home/kenlong/src/ibus-bogo-python/build
 //Value Computed by CMake
 IBus-Bogo_SOURCE_DIR:STATIC=/home/kenlong/src/ibus-bogo-python
 
+//pkg-config executable
+PKG_CONFIG_EXECUTABLE:FILEPATH=/usr/bin/pkg-config
+
+//Path to a program.
+PYTHON_EXECUTABLE:FILEPATH=/usr/bin/python
+
+//Dependencies for the target
+bogoengine_LIB_DEPENDS:STATIC=general;glibmm-2.4;general;gobject-2.0;general;sigc-2.0;general;glib-2.0;
+
+//Dependencies for the target
+bogopython_LIB_DEPENDS:STATIC=general;glibmm-2.4;general;gobject-2.0;general;sigc-2.0;general;glib-2.0;
+
+//Build all of gtest's own tests.
+build_all_gtest_tests:BOOL=OFF
+
+//Build gtest's sample programs.
+build_gtest_samples:BOOL=OFF
+
+//Value Computed by CMake
+gtest_BINARY_DIR:STATIC=/home/kenlong/src/ibus-bogo-python/build/BoGoEngine/test/gtest
+
+//Dependencies for the target
+gtest_LIB_DEPENDS:STATIC=general;-lpthread;
+
+//Value Computed by CMake
+gtest_SOURCE_DIR:STATIC=/home/kenlong/src/ibus-bogo-python/BoGoEngine/gtest
+
+//Dependencies for the target
+gtest_main_LIB_DEPENDS:STATIC=general;-lpthread;general;gtest;
+
 
 ########################
 # INTERNAL cache entries
@@ -230,6 +266,12 @@ CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 CMAKE_EXPORT_COMPILE_COMMANDS-ADVANCED:INTERNAL=1
 //Name of generator.
 CMAKE_GENERATOR:INTERNAL=Unix Makefiles
+//Have library pthreads
+CMAKE_HAVE_PTHREADS_CREATE:INTERNAL=
+//Have library pthread
+CMAKE_HAVE_PTHREAD_CREATE:INTERNAL=1
+//Have include CMAKE_HAVE_PTHREAD_H
+CMAKE_HAVE_PTHREAD_H:INTERNAL=1
 //Start directory with the top level CMakeLists.txt file for this
 // project
 CMAKE_HOME_DIRECTORY:INTERNAL=/home/kenlong/src/ibus-bogo-python
@@ -252,7 +294,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_LOCAL_GENERATORS:INTERNAL=2
+CMAKE_NUMBER_OF_LOCAL_GENERATORS:INTERNAL=6
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP
@@ -281,4 +323,47 @@ CMAKE_UNAME:INTERNAL=/bin/uname
 CMAKE_USE_RELATIVE_PATHS-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_VERBOSE_MAKEFILE
 CMAKE_VERBOSE_MAKEFILE-ADVANCED:INTERNAL=1
+//Details about finding PythonInterp
+FIND_PACKAGE_MESSAGE_DETAILS_PythonInterp:INTERNAL=[/usr/bin/python][v2.7.3()]
+//Details about finding Threads
+FIND_PACKAGE_MESSAGE_DETAILS_Threads:INTERNAL=[TRUE][v()]
+GLIBMM_CFLAGS:INTERNAL=-I/usr/include/glibmm-2.4;-I/usr/lib/x86_64-linux-gnu/glibmm-2.4/include;-I/usr/include/sigc++-2.0;-I/usr/lib/x86_64-linux-gnu/sigc++-2.0/include;-I/usr/include/glib-2.0;-I/usr/lib/x86_64-linux-gnu/glib-2.0/include
+GLIBMM_CFLAGS_I:INTERNAL=
+GLIBMM_CFLAGS_OTHER:INTERNAL=
+GLIBMM_FOUND:INTERNAL=1
+GLIBMM_INCLUDEDIR:INTERNAL=/usr/include
+GLIBMM_INCLUDE_DIRS:INTERNAL=/usr/include/glibmm-2.4;/usr/lib/x86_64-linux-gnu/glibmm-2.4/include;/usr/include/sigc++-2.0;/usr/lib/x86_64-linux-gnu/sigc++-2.0/include;/usr/include/glib-2.0;/usr/lib/x86_64-linux-gnu/glib-2.0/include
+GLIBMM_LDFLAGS:INTERNAL=-lglibmm-2.4;-lgobject-2.0;-lsigc-2.0;-lglib-2.0
+GLIBMM_LDFLAGS_OTHER:INTERNAL=
+GLIBMM_LIBDIR:INTERNAL=/usr/lib/x86_64-linux-gnu
+GLIBMM_LIBRARIES:INTERNAL=glibmm-2.4;gobject-2.0;sigc-2.0;glib-2.0
+GLIBMM_LIBRARY_DIRS:INTERNAL=
+GLIBMM_LIBS:INTERNAL=
+GLIBMM_LIBS_L:INTERNAL=
+GLIBMM_LIBS_OTHER:INTERNAL=
+GLIBMM_LIBS_PATHS:INTERNAL=
+GLIBMM_PREFIX:INTERNAL=/usr
+GLIBMM_STATIC_CFLAGS:INTERNAL=-I/usr/include/glibmm-2.4;-I/usr/lib/x86_64-linux-gnu/glibmm-2.4/include;-I/usr/include/sigc++-2.0;-I/usr/lib/x86_64-linux-gnu/sigc++-2.0/include;-I/usr/include/glib-2.0;-I/usr/lib/x86_64-linux-gnu/glib-2.0/include
+GLIBMM_STATIC_CFLAGS_I:INTERNAL=
+GLIBMM_STATIC_CFLAGS_OTHER:INTERNAL=
+GLIBMM_STATIC_INCLUDE_DIRS:INTERNAL=/usr/include/glibmm-2.4;/usr/lib/x86_64-linux-gnu/glibmm-2.4/include;/usr/include/sigc++-2.0;/usr/lib/x86_64-linux-gnu/sigc++-2.0/include;/usr/include/glib-2.0;/usr/lib/x86_64-linux-gnu/glib-2.0/include
+GLIBMM_STATIC_LDFLAGS:INTERNAL=-pthread;-lglibmm-2.4;-lgobject-2.0;-lffi;-lsigc-2.0;-lglib-2.0;-lrt;-lpcre
+GLIBMM_STATIC_LDFLAGS_OTHER:INTERNAL=
+GLIBMM_STATIC_LIBDIR:INTERNAL=
+GLIBMM_STATIC_LIBRARIES:INTERNAL=glibmm-2.4;gobject-2.0;ffi;sigc-2.0;glib-2.0;rt;pcre
+GLIBMM_STATIC_LIBRARY_DIRS:INTERNAL=
+GLIBMM_STATIC_LIBS:INTERNAL=
+GLIBMM_STATIC_LIBS_L:INTERNAL=
+GLIBMM_STATIC_LIBS_OTHER:INTERNAL=
+GLIBMM_STATIC_LIBS_PATHS:INTERNAL=
+GLIBMM_VERSION:INTERNAL=2.32.0
+GLIBMM_glibmm-2.4_INCLUDEDIR:INTERNAL=
+GLIBMM_glibmm-2.4_LIBDIR:INTERNAL=
+GLIBMM_glibmm-2.4_PREFIX:INTERNAL=
+GLIBMM_glibmm-2.4_VERSION:INTERNAL=
+//ADVANCED property for variable: PKG_CONFIG_EXECUTABLE
+PKG_CONFIG_EXECUTABLE-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: PYTHON_EXECUTABLE
+PYTHON_EXECUTABLE-ADVANCED:INTERNAL=1
+__pkg_config_checked_GLIBMM:INTERNAL=1
 

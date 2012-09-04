@@ -18,18 +18,4 @@
 # You should have received a copy of the GNU General Public License
 # along with IBus-BoGo.  If not, see <http://www.gnu.org/licenses/>.
 
-from BoGoConfig import *
-from ctypes import *
-
-BoGoCpp = cdll.LoadLibrary(bogo_library)
-
-# Cpp functions declaration here
-cpp_process_key = BoGoCpp.py_processKey
-cpp_process_key.restype = c_char_p
-
-# Python wrappers of cpp functions
-def process_key(string, keyval):
-    _string = c_char_p(string.encode("utf8"))
-    _keyval = c_char(keyval.encode("utf8"))
-    result = unicode(cpp_process_key(_string, _keyval), "utf8")
-    return result
+bogo_library = "${BOGO_ENGINE_LIBRARY_FILE}"

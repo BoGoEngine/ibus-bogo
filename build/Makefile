@@ -136,6 +136,84 @@ depend:
 	$(CMAKE_COMMAND) -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR) --check-build-system CMakeFiles/Makefile.cmake 1
 .PHONY : depend
 
+#=============================================================================
+# Target rules for targets named bogoengine
+
+# Build rule for target.
+bogoengine: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 bogoengine
+.PHONY : bogoengine
+
+# fast build rule for target.
+bogoengine/fast:
+	$(MAKE) -f BoGoEngine/src/CMakeFiles/bogoengine.dir/build.make BoGoEngine/src/CMakeFiles/bogoengine.dir/build
+.PHONY : bogoengine/fast
+
+#=============================================================================
+# Target rules for targets named bogopython
+
+# Build rule for target.
+bogopython: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 bogopython
+.PHONY : bogopython
+
+# fast build rule for target.
+bogopython/fast:
+	$(MAKE) -f BoGoEngine/src/CMakeFiles/bogopython.dir/build.make BoGoEngine/src/CMakeFiles/bogopython.dir/build
+.PHONY : bogopython/fast
+
+#=============================================================================
+# Target rules for targets named test_utils
+
+# Build rule for target.
+test_utils: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 test_utils
+.PHONY : test_utils
+
+# fast build rule for target.
+test_utils/fast:
+	$(MAKE) -f BoGoEngine/test/CMakeFiles/test_utils.dir/build.make BoGoEngine/test/CMakeFiles/test_utils.dir/build
+.PHONY : test_utils/fast
+
+#=============================================================================
+# Target rules for targets named gtest
+
+# Build rule for target.
+gtest: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 gtest
+.PHONY : gtest
+
+# fast build rule for target.
+gtest/fast:
+	$(MAKE) -f BoGoEngine/test/gtest/CMakeFiles/gtest.dir/build.make BoGoEngine/test/gtest/CMakeFiles/gtest.dir/build
+.PHONY : gtest/fast
+
+#=============================================================================
+# Target rules for targets named gtest_main
+
+# Build rule for target.
+gtest_main: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 gtest_main
+.PHONY : gtest_main
+
+# fast build rule for target.
+gtest_main/fast:
+	$(MAKE) -f BoGoEngine/test/gtest/CMakeFiles/gtest_main.dir/build.make BoGoEngine/test/gtest/CMakeFiles/gtest_main.dir/build
+.PHONY : gtest_main/fast
+
+#=============================================================================
+# Target rules for targets named gtest_unittest
+
+# Build rule for target.
+gtest_unittest: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 gtest_unittest
+.PHONY : gtest_unittest
+
+# fast build rule for target.
+gtest_unittest/fast:
+	$(MAKE) -f BoGoEngine/test/gtest/CMakeFiles/gtest_unittest.dir/build.make BoGoEngine/test/gtest/CMakeFiles/gtest_unittest.dir/build
+.PHONY : gtest_unittest/fast
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -148,6 +226,12 @@ help:
 	@echo "... install/strip"
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
+	@echo "... bogoengine"
+	@echo "... bogopython"
+	@echo "... test_utils"
+	@echo "... gtest"
+	@echo "... gtest_main"
+	@echo "... gtest_unittest"
 .PHONY : help
 
 

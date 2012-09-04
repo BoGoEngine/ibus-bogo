@@ -1,0 +1,3 @@
+[submodule "BoGoEngine"]
+	path = BoGoEngine
+	url = git@github.com:milkycoffee/BoGoEngine.git
