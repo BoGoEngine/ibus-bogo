@@ -21,7 +21,10 @@
 from gi.repository import GObject
 from gi.repository import IBus
 from gi.repository import Pango
-from ctypes import CDLL
+import Xlib.display
+import Xlib.X
+import Xlib.XK
+import Xlib.ext.xtest
 import time
 import BoGo
 
@@ -29,11 +32,9 @@ import BoGo
 keysyms = IBus
 modifier = IBus.ModifierType
 
-Xtst = CDLL("libXtst.so.6")
-Xlib = CDLL("libX11.so.6")
-dpy = Xtst.XOpenDisplay(None)
-sym = Xlib.XStringToKeysym("BackSpace")
-bg_backspace = Xlib.XKeysymToKeycode(dpy, sym)
+dpy = Xlib.display.Display()
+sym = Xlib.XK.string_to_keysym("BackSpace")
+bg_backspace = dpy.keysym_to_keycode(sym)
 
 class Engine(IBus.Engine):
     __gtype_name__ = 'EngineBoGo'
@@ -48,7 +49,6 @@ class Engine(IBus.Engine):
     def do_process_key_event(self, keyval, keycode, state):
                # ignore key release events
 
-        time.sleep(0.01)
         is_press = ((state & modifier.RELEASE_MASK) == 0)
         if not is_press:
             return False
@@ -81,7 +81,7 @@ class Engine(IBus.Engine):
                 if (self.isFakeBackspace):
                     self.n_backspace -= 1
                     if (self.n_backspace == 0):
-                        time.sleep(0.007)
+                        time.sleep(0.03)
                         self.commit_result()
                         self.isFakeBackspace = False
                         return True
@@ -103,7 +103,6 @@ class Engine(IBus.Engine):
         self.commit_text(IBus.Text.new_from_string(self.string_to_commit))
 
     def process_key(self, keyval):
-        #self.new_string += unichr(keyval)
         ukeyval = unichr(keyval)
         if self.old_string:
             print BoGo.process_key(self.old_string, ukeyval)
@@ -116,9 +115,9 @@ class Engine(IBus.Engine):
 
     def commit_fake_backspace(self,n_backspace):
         for i in range(n_backspace):
-            Xtst.XTestFakeKeyEvent(dpy, bg_backspace, True, 0)
-            Xtst.XTestFakeKeyEvent(dpy, bg_backspace, False, 0)
-            Xlib.XFlush(dpy)
+            Xlib.ext.xtest.fake_input(dpy, Xlib.X.KeyPress, bg_backspace)
+            Xlib.ext.xtest.fake_input(dpy, Xlib.X.KeyRelease, bg_backspace)
+            dpy.flush()
 
     def get_nbackspace_and_string_to_commit(self):
         if (self.old_string):
