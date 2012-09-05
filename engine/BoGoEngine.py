@@ -21,13 +21,19 @@
 from gi.repository import GObject
 from gi.repository import IBus
 from gi.repository import Pango
+from ctypes import CDLL
+import time
 import BoGo
 
 # syntactic sugar
 keysyms = IBus
 modifier = IBus.ModifierType
 
-import time
+Xtst = CDLL("libXtst.so.6")
+Xlib = CDLL("libX11.so.6")
+dpy = Xtst.XOpenDisplay(None)
+sym = Xlib.XStringToKeysym("BackSpace")
+bg_backspace = Xlib.XKeysymToKeycode(dpy, sym)
 
 class Engine(IBus.Engine):
     __gtype_name__ = 'EngineBoGo'
@@ -35,13 +41,14 @@ class Engine(IBus.Engine):
     def __init__(self):
         super(Engine, self).__init__()
         self.reset_engine()
-        print "Finish Initialization." 
+        print "Finish Initialization."
 
 
     # The "do_" part is PyGObject's way of overriding base's functions
     def do_process_key_event(self, keyval, keycode, state):
                # ignore key release events
 
+        time.sleep(0.01)
         is_press = ((state & modifier.RELEASE_MASK) == 0)
         if not is_press:
             return False
@@ -57,13 +64,11 @@ class Engine(IBus.Engine):
                 print "New string:", self.new_string
                 self.n_backspace, self.string_to_commit = \
                   self.get_nbackspace_and_string_to_commit()
+                self.n_backspace += 1
                 print "n_backspace: ", self.n_backspace
                 print "String to commit:", self.string_to_commit
+                self.isFakeBackspace = True
                 self.commit_fake_backspace(self.n_backspace)
-                time.sleep(0.01)
-                self.commit_result()
-                time.sleep(0.01)
-                self.isFakeBackspace = False
                 return True
 
         if self.string_to_commit:
@@ -73,7 +78,15 @@ class Engine(IBus.Engine):
                 return False
 
             if keyval == keysyms.BackSpace:
-                self.remove_last_char()
+                if (self.isFakeBackspace):
+                    self.n_backspace -= 1
+                    if (self.n_backspace == 0):
+                        time.sleep(0.007)
+                        self.commit_result()
+                        self.isFakeBackspace = False
+                        return True
+                else:
+                    self.remove_last_char()
                 return False
 
         self.reset_engine()
@@ -103,8 +116,9 @@ class Engine(IBus.Engine):
 
     def commit_fake_backspace(self,n_backspace):
         for i in range(n_backspace):
-            self.forward_key_event(keysyms.BackSpace, 14, 0)
-            time.sleep(0.006)
+            Xtst.XTestFakeKeyEvent(dpy, bg_backspace, True, 0)
+            Xtst.XTestFakeKeyEvent(dpy, bg_backspace, False, 0)
+            Xlib.XFlush(dpy)
 
     def get_nbackspace_and_string_to_commit(self):
         if (self.old_string):
