@@ -79,9 +79,9 @@ class Engine(IBus.Engine):
 
             if keyval == keysyms.BackSpace:
                 if (self.isFakeBackspace):
+                    time.sleep(0.008)
                     self.n_backspace -= 1
                     if (self.n_backspace == 0):
-                        time.sleep(0.03)
                         self.commit_result()
                         self.isFakeBackspace = False
                         return True
