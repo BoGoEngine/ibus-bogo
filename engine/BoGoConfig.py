@@ -18,5 +18,5 @@
 # You should have received a copy of the GNU General Public License
 # along with IBus-BoGo.  If not, see <http://www.gnu.org/licenses/>.
 
-bogo_library = "./libbogopython.so"
+bogo_library = "libbogopython.so"
 

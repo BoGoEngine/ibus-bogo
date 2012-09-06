@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- filename: bogo.xml -->
+<!-- filename: bogo-utf8.xml -->
 <component>
 	<name>org.freedesktop.IBus.BogoPython</name>
-	<description>Bogo Component (Python)</description>
-	<exec>/usr/libexec/ibus-engine-bogo --ibus</exec>
-	<version>1.2.99.20120817</version>
+	<description>Bogo Engine for IBus (UTF8)</description>
+	<exec>/usr/libexec/ibus-engine-bogo --utf8</exec>
+	<version>0.0.1</version>
 	<author>Dam Tien Long &lt;longdt90@gmail.com&gt;</author>
 	<license>GPL</license>
 	<homepage>http://github.com/milkycoffee</homepage>
@@ -19,7 +19,7 @@
 			<icon>/usr/share/ibus-bogo/icons/ibus-bogo.svg</icon>
 			<layout>us</layout>
 			<longname>Bogo</longname>
-			<description>Bogo IME for IBus (Python)</description>
+			<description>Bogo Engine for IBus (UTF8)</description>
 			<rank>0</rank>
 		</engine>
 	</engines>

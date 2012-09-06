@@ -16,11 +16,6 @@
 #
 
 
-configure_file (
-  BoGoConfig.py.in
-  BoGoConfig.py
-  )
-
 install (PROGRAMS
   ibus-engine-bogo
   DESTINATION
@@ -28,7 +23,8 @@ install (PROGRAMS
   )
 
 install (FILES
-  bogo.xml
+  bogo-utf8.xml
+  bogo-tcvn3.xml
   DESTINATION
   ${IBUS_COMPONENT_DIR}/)
 
@@ -41,7 +37,8 @@ install (FILES
   BoGoMain.py
   BoGoEngine.py
   BoGo.py
-  ${PROJECT_BINARY_DIR}/engine/BoGoConfig.py
+  BoGoConfig.py
+  Charset.py
   DESTINATION
   ${BOGO_INSTALL_DIR}/
   )

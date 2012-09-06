@@ -1,5 +1,5 @@
 #!/bin/sh
 
 rm /usr/libexec/ibus-engine-bogo
-rm /usr/share/ibus/component/bogo.xml
+rm /usr/share/ibus/component/bogo*.xml
 rm -rf /usr/share/ibus-bogo/

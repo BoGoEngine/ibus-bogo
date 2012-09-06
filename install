@@ -1,9 +1,0 @@
-#!/bin/bash
-
-cp engine/ibus-engine-bogo /usr/libexec/ibus-engine-bogo
-cp engine/bogo.xml /usr/share/ibus/component/bogo.xml
-mkdir -p /usr/share/ibus-bogo/icons
-cp engine/ibus-bogo.svg /usr/share/ibus-bogo/icons/ibus-bogo.svg
-cp engine/*.py /usr/share/ibus-bogo/
-cp engine/*.pyx /usr/share/ibus-bogo/
-

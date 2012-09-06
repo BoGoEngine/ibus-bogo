@@ -34,7 +34,7 @@ class IMApp:
         engine_name = "Bogo Engine (" + charset +")"
         self.__component = \
                 IBus.Component.new("org.freedesktop.IBus.BoGoPython",
-                                   "BoGo Python Component",
+                                   "BoGo Engine for IBus (" + charset + ")",
                                    "0.1.0",
                                    "GPLv3",
                                    "Long T. Dam <longdt90@gmail.com>",
@@ -43,11 +43,11 @@ class IMApp:
                                    "ibus-bogo")
         engine = IBus.EngineDesc.new("bogo-python",
                                      engine_name,
-                                     "English BoGo",
+                                     "BoGo Engine for IBus (" + charset + ")",
                                      "vi",
                                      "GPLv3",
                                      "Long T. Dam <longdt90@gmail.com>",
-                                     "",
+                                     "/usr/share/ibus-bogo/icons/ibus-bogo.svg",
                                      "us")
         self.__component.add_engine(engine)
         self.__mainloop = GLib.MainLoop()
