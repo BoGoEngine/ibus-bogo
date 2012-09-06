@@ -55,7 +55,6 @@ class Engine(IBus.Engine):
     # The "do_" part is PyGObject's way of overriding base's functions
     def do_process_key_event(self, keyval, keycode, state):
                # ignore key release events
-
         is_press = ((state & modifier.RELEASE_MASK) == 0)
         if not is_press:
             return False
@@ -90,7 +89,6 @@ class Engine(IBus.Engine):
                     self.n_backspace -= 1
                     if (self.n_backspace == 0):
                         self.commit_result()
-                        time.sleep(0.01)
                         self.isFakeBackspace = False
                         return True
                 else:
