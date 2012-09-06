@@ -90,6 +90,7 @@ class Engine(IBus.Engine):
                     self.n_backspace -= 1
                     if (self.n_backspace == 0):
                         self.commit_result()
+                        time.sleep(0.002)
                         self.isFakeBackspace = False
                         return True
                 else:
