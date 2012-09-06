@@ -30,8 +30,8 @@ import locale
 from BoGoEngine import Engine
 
 class IMApp:
-    def __init__(self, exec_by_ibus):
-        engine_name = "bogo python" if exec_by_ibus else "bogo python (debug)"
+    def __init__(self, exec_by_ibus, charset):
+        engine_name = "Bogo Engine (" + charset +")"
         self.__component = \
                 IBus.Component.new("org.freedesktop.IBus.BoGoPython",
                                    "BoGo Python Component",
@@ -70,14 +70,16 @@ class IMApp:
         self.__mainloop.quit()
 
 
-def launch_engine(exec_by_ibus):
+def launch_engine(exec_by_ibus, charset):
     IBus.init()
-    IMApp(exec_by_ibus).run()
+    IMApp(exec_by_ibus, charset).run()
 
 def print_help(out, v = 0):
     print >> out, "-i, --ibus             executed by IBus."
     print >> out, "-h, --help             show this message."
     print >> out, "-d, --daemonize        daemonize ibus"
+    print >> out, "-u, --utf8             use UTF8 charset"
+    print >> out, "-t, --tcvn3            use TCVN3 charset"
     sys.exit(v)
 
 def main():
@@ -88,9 +90,10 @@ def main():
 
     exec_by_ibus = False
     daemonize = False
+    charset = "UTF8"
 
-    shortopt = "ihd"
-    longopt = ["ibus", "help", "daemonize"]
+    shortopt = "ihdut"
+    longopt = ["ibus", "help", "daemonize", "utf8", "tcvn3"]
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], shortopt, longopt)
@@ -104,6 +107,10 @@ def main():
             daemonize = True
         elif o in ("-i", "--ibus"):
             exec_by_ibus = True
+        elif o in ("-u", "--utf8"):
+            charset = "UTF8"
+        elif o in ("-t", "--tcvn3"):
+            charset = "TCVN3"
         else:
             print >> sys.stderr, "Unknown argument: %s" % o
             print_help(sys.stderr, 1)
@@ -112,7 +119,7 @@ def main():
         if os.fork():
             sys.exit()
 
-    launch_engine(exec_by_ibus)
+    launch_engine(exec_by_ibus,charset)
 
 if __name__ == "__main__":
     main()
