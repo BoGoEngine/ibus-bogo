@@ -64,7 +64,7 @@ class Engine(IBus.Engine):
         if keyval == keysyms.Delete :
             print "Here"
             if self.is_fake_backspace:
-                time.sleep(self.number_fake_backspace * 0.011)
+                time.sleep(self.number_fake_backspace * 0.0115)
                 self.commit_result(self.string_to_commit)
                 self.is_fake_backspace = False
                 return True
