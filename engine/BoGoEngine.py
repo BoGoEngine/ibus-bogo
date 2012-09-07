@@ -30,6 +30,8 @@ import getopt
 import time
 import BoGo
 
+import datetime
+
 # syntactic sugar
 keysyms = IBus
 modifier = IBus.ModifierType
@@ -58,48 +60,41 @@ class Engine(IBus.Engine):
         is_press = ((state & modifier.RELEASE_MASK) == 0)
         if not is_press:
             return True
-	 
+
         if self.is_character(keyval):
             if state & (modifier.CONTROL_MASK | modifier.MOD1_MASK) == 0:
-                print "Character entered: " + chr(keyval)
                 self.is_fake_backspace = True
-
                 self.old_string = self.new_string
                 self.process_key(keyval)
-                print "Old string:", self.old_string
-                print "New string:", self.new_string
-                self.n_backspace, self.string_to_commit = \
+                self.number_fake_backspace, self.string_to_commit = \
                   self.get_nbackspace_and_string_to_commit()
-                self.n_backspace += 1
-                print "n_backspace: ", self.n_backspace
-                print "String to commit:", self.string_to_commit
+                self.number_fake_backspace += 1
                 self.is_fake_backspace = True
-                self.is_1st_fake_backspace = True
-                self.time_to_sleep = 0.02 * (self.n_backspace - 1)
-                self.commit_fake_backspace(self.n_backspace)
+                self.commit_fake_backspace(self.number_fake_backspace)
+                time.sleep(0.0005)
                 return True
 
-        if self.string_to_commit:
-            if keyval == keysyms.Return or keyval == keysyms.Escape or\
-               keyval == keysyms.space:
-                self.reset_engine()
-                return False
+        if keyval == keysyms.Return or keyval == keysyms.Escape:
+            self.reset_engine()
+            return False
 
-            if keyval == keysyms.BackSpace:
-                if (self.is_fake_backspace):                
-                    self.n_backspace -= 1  
-                    if (self.n_backspace == 0):
-                        time.sleep(self.time_to_sleep)
-                        self.commit_result()
-                        self.is_fake_backspace = False
-                        return True
-                    return False
-                else:
-                    self.remove_last_char()
-                    return False
+        if keyval == keysyms.space:
+            self.reset_engine()
+            self.commit_result(" ")
+            return True
 
-        self.reset_engine()
-        return False
+        if keyval == keysyms.BackSpace:
+            if (self.is_fake_backspace):
+                self.number_fake_backspace -= 1
+                time.sleep(0.0005)
+                if (self.number_fake_backspace == 0):
+                    time.sleep(0.00005)
+                    self.commit_result(self.string_to_commit)
+                    self.is_fake_backspace = False
+                    return True
+            else:
+                self.remove_last_char()
+            return False
 
     def reset_engine(self):
         self.string_to_commit = u""
@@ -107,13 +102,13 @@ class Engine(IBus.Engine):
         self.old_string = u""
         self.is_fake_backspace = False
         self.is_1st_fake_backspace = False
-        self.n_backspace = 0
+        self.number_fake_backspace = 0
 
-    def commit_utf8(self):
-        self.commit_text(IBus.Text.new_from_string(self.string_to_commit))
-        
-    def commit_tcvn3(self):
-        tcvn3_string = BoGo.utf8_to_tcvn3(self.string_to_commit)
+    def commit_utf8(self, string):
+        self.commit_text(IBus.Text.new_from_string(string))
+
+    def commit_tcvn3(self, string):
+        tcvn3_string = BoGo.utf8_to_tcvn3(string)
         self.commit_text(IBus.Text.new_from_string(tcvn3_string))
 
     def process_key(self, keyval):
@@ -127,8 +122,8 @@ class Engine(IBus.Engine):
     def remove_last_char(self):
         self.new_string = self.new_string[:-1]
 
-    def commit_fake_backspace(self,n_backspace):
-        for i in range(n_backspace):
+    def commit_fake_backspace(self,number_fake_backspace):
+        for i in range(number_fake_backspace):
             Xlib.ext.xtest.fake_input(dpy, Xlib.X.KeyPress, bg_backspace)
             Xlib.ext.xtest.fake_input(dpy, Xlib.X.KeyRelease, bg_backspace)
             dpy.flush()
@@ -144,8 +139,6 @@ class Engine(IBus.Engine):
             return 0, self.new_string[length:]
         else:
              return 0, self.new_string
-        # Classical method:
-        # return len(self.old_string) + 1, self.new_string
 
     def is_character(self, keyval):
         if keyval in xrange(33,126):
