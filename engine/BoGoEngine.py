@@ -60,10 +60,9 @@ class Engine(IBus.Engine):
             return True
 	 
         if self.is_character(keyval):
-            time.sleep(0.01)
             if state & (modifier.CONTROL_MASK | modifier.MOD1_MASK) == 0:
                 print "Character entered: " + chr(keyval)
-                self.isFakeBackspace = True
+                self.is_fake_backspace = True
 
                 self.old_string = self.new_string
                 self.process_key(keyval)
@@ -74,7 +73,9 @@ class Engine(IBus.Engine):
                 self.n_backspace += 1
                 print "n_backspace: ", self.n_backspace
                 print "String to commit:", self.string_to_commit
-                self.isFakeBackspace = True
+                self.is_fake_backspace = True
+                self.is_1st_fake_backspace = True
+                self.time_to_sleep = 0.02 * (self.n_backspace - 1)
                 self.commit_fake_backspace(self.n_backspace)
                 return True
 
@@ -85,17 +86,17 @@ class Engine(IBus.Engine):
                 return False
 
             if keyval == keysyms.BackSpace:
-                if (self.isFakeBackspace):
-                    time.sleep(0.015)
-                    self.n_backspace -= 1
+                if (self.is_fake_backspace):                
+                    self.n_backspace -= 1  
                     if (self.n_backspace == 0):
+                        time.sleep(self.time_to_sleep)
                         self.commit_result()
-                        time.sleep(0.02)
-                        self.isFakeBackspace = False
+                        self.is_fake_backspace = False
                         return True
+                    return False
                 else:
                     self.remove_last_char()
-                return False
+                    return False
 
         self.reset_engine()
         return False
@@ -104,11 +105,13 @@ class Engine(IBus.Engine):
         self.string_to_commit = u""
         self.new_string = u""
         self.old_string = u""
-        self.isFakeBackspace = False
+        self.is_fake_backspace = False
+        self.is_1st_fake_backspace = False
         self.n_backspace = 0
 
     def commit_utf8(self):
         self.commit_text(IBus.Text.new_from_string(self.string_to_commit))
+        
     def commit_tcvn3(self):
         tcvn3_string = BoGo.utf8_to_tcvn3(self.string_to_commit)
         self.commit_text(IBus.Text.new_from_string(tcvn3_string))
