@@ -57,9 +57,10 @@ class Engine(IBus.Engine):
                # ignore key release events
         is_press = ((state & modifier.RELEASE_MASK) == 0)
         if not is_press:
-            return False
-
+            return True
+	 
         if self.is_character(keyval):
+            time.sleep(0.01)
             if state & (modifier.CONTROL_MASK | modifier.MOD1_MASK) == 0:
                 print "Character entered: " + chr(keyval)
                 self.isFakeBackspace = True
@@ -85,10 +86,11 @@ class Engine(IBus.Engine):
 
             if keyval == keysyms.BackSpace:
                 if (self.isFakeBackspace):
-                    time.sleep(0.01)
+                    time.sleep(0.015)
                     self.n_backspace -= 1
                     if (self.n_backspace == 0):
                         self.commit_result()
+                        time.sleep(0.02)
                         self.isFakeBackspace = False
                         return True
                 else:
