@@ -1,0 +1,4 @@
+build/*
+debian/*
+obj-x86_64-linux-gnu/*
+obj-i686-linux-gnu/*
