@@ -26,6 +26,33 @@ Tài liệu của dự án sẽ được cung cấp trong thời gian sớm nh�
 * gcc 4.2
 * ibus 1.4
 
+## Hướng dẫn build
+
+### Build bình thường
+
+    $ mkdir build && cd build
+    $ cmake .. && make install
+
+### Build gói debian
+
+Cần cài gói:
+
+* devscripts
+
+Commands:
+
+    $ git checkout debian
+    $ git checkout -b build
+    $ git merge master
+    $ debuild -us -uc
+   
+(optional - xóa branch build)
+
+    $ git branch -D build
+
+**Ghi chú:** debian là một branch riêng chỉ chứa thư mục debian. Do vậy nên
+không được merge trực tiếp vào đây mà phải copy sang branch build mới được merge.
+
 ## Giấy phép xuất bản (License)
 
 Toàn bộ mã nguồn của **IBusBoGoEngine** và **BoGoEngine** cùng tất cả các tài nguyên đi kèm đều được phát hành dưới các quy định ghi trong Giấy phép Công cộng GNU, phiên bản 3.0 (GNU General Public License v3.0).  Xem tệp *COPYING* để biết thêm chi tiết.
