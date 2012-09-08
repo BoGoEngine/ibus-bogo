@@ -36,9 +36,6 @@ install (FILES
 install (FILES
   BoGoMain.py
   BoGoEngine.py
-  BoGo.py
-  BoGoConfig.py
-  Charset.py
   DESTINATION
   ${BOGO_INSTALL_DIR}/
   )
