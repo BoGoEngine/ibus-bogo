@@ -30,8 +30,13 @@ Tài liệu của dự án sẽ được cung cấp trong thời gian sớm nh�
 
 ### Build bình thường
 
+Cài đặt:
+
     $ mkdir build && cd build
     $ cmake .. && make install
+
+Gỡ cài đặt:
+    $ cd build && sudo make uninstall
 
 ### Build gói debian
 
