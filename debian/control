@@ -1,0 +1,19 @@
+Source: ibus-bogo
+Section: misc
+Priority: extra
+Maintainer: Trung Ngo <ndtrung4419@gmail.com>
+Build-Depends: debhelper (>= 8.0.0), python (>= 2.7), python-support (>= 0.90.0)
+Standards-Version: 3.9.3
+#Homepage: <insert the upstream URL, if relevant>
+#Vcs-Git: git://git.debian.org/collab-maint/sleepy.git
+#Vcs-Browser: http://git.debian.org/?p=collab-maint/sleepy.git;a=summary
+
+Package: ibus-bogo
+Architecture: all
+Depends: ${python:Depends}, ${shlibs:Depends}, ${misc:Depends}, python-gi, 
+Description: BoGo engine for IBus
+ IBus is an Intelligent Input Bus. It is a new input framework for Linux OS.
+ It provides full featured and user friendly input method user interface.
+ It also may help developers to develop input method easily.
+ .
+ BoGo is a Vietnamese Input Method Editor (IME).
