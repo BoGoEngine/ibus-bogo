@@ -57,7 +57,20 @@ class Engine(IBus.Engine):
 
     # The "do_" part is PyGObject's way of overriding base's functions
     def do_process_key_event(self, keyval, keycode, state):
-               # ignore key release events
+        """Implement IBus.Engine's process_key_event default signal handler.
+        
+        Args:
+            keyval - The keycode, transformed through a keymap, stays the
+                same for every keyboard
+            keycode - Keyboard-dependant key code
+            state - The state of modifier keys like Shift, Control, etc.
+        Return:
+            True - if successfully process the keyevent
+            False - otherwise
+            
+        This function gets called whenever a key is pressed.
+        """
+        # ignore key release events
         is_press = ((state & IBus.ModifierType.RELEASE_MASK) == 0)
         if not is_press:
             return False
@@ -158,9 +171,17 @@ class Engine(IBus.Engine):
             return False
 
     def do_focus_in(self):
+        """Implements IBus.Engine's forcus_in's default signal handler.
+        
+        Called when the input client widget gets focus.
+        """
         self.register_properties(self.__prop_list)
 
     def do_focus_out(self):
+        """Implements IBus.Engine's forcus_out's default signal handler.
+        
+        Called when the input client widget loses focus.
+        """
         self.reset_engine()
 
     def do_property_activate(self, prop_name, state):
