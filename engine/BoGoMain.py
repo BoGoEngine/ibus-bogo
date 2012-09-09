@@ -30,27 +30,27 @@ import locale
 from BoGoEngine import Engine
 
 class IMApp:
-    def __init__(self, exec_by_ibus, charset):
-        engine_name = "Bogo Engine (" + charset +")"
+    def __init__(self, exec_by_ibus):
+        engine_name = "Bogo Engine"
         self.__component = \
-                IBus.Component.new("org.freedesktop.IBus.BoGoPython",
-                                   "BoGo Engine for IBus (" + charset + ")",
-                                   "0.1.0",
-                                   "GPLv3",
-                                   "Long T. Dam <longdt90@gmail.com>",
-                                   "http://example.com",
-                                   "/usr/bin/exec",
-                                   "ibus-bogo")
-        engine = IBus.EngineDesc.new("bogo-python",
-                                     engine_name,
-                                     "BoGo Engine for IBus (" + charset + ")",
-                                     "vi",
-                                     "GPLv3",
-                                     "Long T. Dam <longdt90@gmail.com>",
-                                     "/usr/share/ibus-bogo/icons/ibus-bogo.svg",
-                                     "us")
+          IBus.Component.new("org.freedesktop.IBus.BoGoPython",
+                             "BoGo Engine for IBus",
+                             "0.1.0",
+                             "GPLv3",
+                             "Long T. Dam <longdt90@gmail.com>",
+                             "https://github.com/BoGoEngine/ibus-bogo-python",
+                             "/usr/bin/exec",
+                             "ibus-bogo")
+        engine = IBus.EngineDesc(name = "bogo-python",
+                                  longname = engine_name,
+                                  description = "BoGo Engine for IBus",
+                                  language = "vi",
+                                  license = "GPLv3",
+                                  author = "Long T. Dam <longdt90@gmail.com>",
+                                  icon = "/usr/share/ibus-bogo/icons/ibus-bogo.svg",
+                                  layout = "us")
         self.__component.add_engine(engine)
-        self.__mainloop = GLib.MainLoop()
+        self.__mainloop = GObject.MainLoop()
         self.__bus = IBus.Bus()
         self.__bus.connect("disconnected", self.__bus_disconnected_cb)
         self.__factory = IBus.Factory.new(self.__bus.get_connection())
@@ -70,16 +70,14 @@ class IMApp:
         self.__mainloop.quit()
 
 
-def launch_engine(exec_by_ibus, charset):
+def launch_engine(exec_by_ibus):
     IBus.init()
-    IMApp(exec_by_ibus, charset).run()
+    IMApp(exec_by_ibus).run()
 
 def print_help(out, v = 0):
     print >> out, "-i, --ibus             executed by IBus."
     print >> out, "-h, --help             show this message."
     print >> out, "-d, --daemonize        daemonize ibus"
-    print >> out, "-u, --utf8             use UTF8 charset"
-    print >> out, "-t, --tcvn3            use TCVN3 charset"
     sys.exit(v)
 
 def main():
@@ -90,10 +88,9 @@ def main():
 
     exec_by_ibus = False
     daemonize = False
-    charset = "UTF8"
 
-    shortopt = "ihdut"
-    longopt = ["ibus", "help", "daemonize", "utf8", "tcvn3"]
+    shortopt = "ihd"
+    longopt = ["ibus", "help", "daemonize",]
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], shortopt, longopt)
@@ -107,10 +104,6 @@ def main():
             daemonize = True
         elif o in ("-i", "--ibus"):
             exec_by_ibus = True
-        elif o in ("-u", "--utf8"):
-            charset = "UTF8"
-        elif o in ("-t", "--tcvn3"):
-            charset = "TCVN3"
         else:
             print >> sys.stderr, "Unknown argument: %s" % o
             print_help(sys.stderr, 1)
@@ -119,7 +112,7 @@ def main():
         if os.fork():
             sys.exit()
 
-    launch_engine(exec_by_ibus,charset)
+    launch_engine(exec_by_ibus)
 
 if __name__ == "__main__":
     main()

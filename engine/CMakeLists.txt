@@ -23,8 +23,7 @@ install (PROGRAMS
   )
 
 install (FILES
-  bogo-utf8.xml
-  bogo-tcvn3.xml
+  bogo.xml
   DESTINATION
   ${IBUS_COMPONENT_DIR}/)
 

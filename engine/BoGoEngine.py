@@ -38,20 +38,21 @@ modifier = IBus.ModifierType
 
 dpy = Xlib.display.Display()
 bg_backspace = dpy.keysym_to_keycode(Xlib.XK.string_to_keysym("BackSpace"))
-bg_delete = dpy.keysym_to_keycode(Xlib.XK.string_to_keysym("Delete"))
+bg_space = dpy.keysym_to_keycode(Xlib.XK.string_to_keysym("space"))
+
+CHARSET_UTF8 = 0
+CHARSET_TCVN3 = 1
 
 class Engine(IBus.Engine):
     __gtype_name__ = 'EngineBoGo'
 
     def __init__(self):
         super(Engine, self).__init__()
-        self.charset = self.get_charset_from_argument()
-        if (self.charset == "TCVN3"):
-            self.commit_result = self.commit_tcvn3
-        else:
-            self.commit_result = self.commit_utf8
+        self.__charset_list = ["UTF8","TCVN3"]
+        self.__init_props()
+        self.commit_result = self.commit_utf8
         self.reset_engine()
-        print "You are running BoGo Ibus Engine with charset " + self.charset
+        print "You are running BoGo Ibus Engine"
 
 
     # The "do_" part is PyGObject's way of overriding base's functions
@@ -60,16 +61,6 @@ class Engine(IBus.Engine):
         is_press = ((state & IBus.ModifierType.RELEASE_MASK) == 0)
         if not is_press:
             return False
-
-        if keyval == keysyms.Delete :
-            print "Here"
-            if self.is_fake_backspace:
-                time.sleep(self.number_fake_backspace * 0.0115)
-                self.commit_result(self.string_to_commit)
-                self.is_fake_backspace = False
-                return True
-            else:
-                return False                
 
         if self.is_character(keyval):
             if state & (modifier.CONTROL_MASK | modifier.MOD1_MASK) == 0:
@@ -82,9 +73,10 @@ class Engine(IBus.Engine):
                   self.get_nbackspace_and_string_to_commit()
                 self.is_fake_backspace = True
                 print "Number of fake backspace: ", self.number_fake_backspace
+                self.committed_fake_backspace = 0
                 print "String to commit: ", self.string_to_commit
-                self.commit_fake_backspace(self.number_fake_backspace)
-                self.commit_fake_key(bg_delete)
+                self.commit_fake_key(bg_backspace)
+                dpy.flush()
                 return True
 
         if keyval == keysyms.Return or keyval == keysyms.Escape:
@@ -93,14 +85,28 @@ class Engine(IBus.Engine):
 
         if keyval == keysyms.space:
             self.reset_engine()
-            self.commit_result(" ")
+            self.commit_result(u" ")
+            #BUG: There is no space char defined in BoGo TCVN3 table
             return True
 
         if keyval == keysyms.BackSpace:
-            if (not self.is_fake_backspace):
-                # Remove the last char
-                self.new_string = self.new_string[:-1]              
-            return False
+            if self.is_fake_backspace:
+                if (self.number_fake_backspace == self.committed_fake_backspace):
+                    print "Ready to commit"
+                    self.is_fake_backspace = False
+                    time.sleep(0.0005)
+                    self.commit_result(self.string_to_commit)
+                    return True
+                else:
+                    print "Commit fake backspace"
+                    self.committed_fake_backspace += 1
+                    self.commit_fake_key(bg_backspace)
+                    return False
+            else:
+                self.new_string = self.new_string[:-1]
+
+        self.reset_engine()
+        return False
 
     def reset_engine(self):
         self.string_to_commit = u""
@@ -126,12 +132,13 @@ class Engine(IBus.Engine):
     def commit_fake_backspace(self,number_fake_backspace):
         for i in range(number_fake_backspace):
             self.commit_fake_key(bg_backspace)
-            
+
     def commit_fake_key(self, keycode):
         Xlib.ext.xtest.fake_input(dpy, Xlib.X.KeyPress, keycode)
         Xlib.ext.xtest.fake_input(dpy, Xlib.X.KeyRelease, keycode)
         dpy.flush()
-           
+
+
     def get_nbackspace_and_string_to_commit(self):
         if (self.old_string):
             length = len(self.old_string)
@@ -150,16 +157,50 @@ class Engine(IBus.Engine):
         else:
             return False
 
-    def get_charset_from_argument(self):
-        shortopt = "ihdut"
-        longopt = ["ibus", "help", "daemonize", "utf8", "tcvn3"]
+    def do_focus_in(self):
+        self.register_properties(self.__prop_list)
 
-        try:
-            opts, args = getopt.getopt(sys.argv[1:], shortopt, longopt)
-        except getopt.GetoptError, err:
-            print_help(sys.stderr, 1)
+    def do_focus_out(self):
+        self.reset_engine()
 
-        for o, a in opts:
-            if o in ("-t", "--tcvn3"):
-                return "TCVN3"
-        return "UTF8"
+    def do_property_activate(self, prop_name, state):
+        if state == IBus.PropState.CHECKED:
+            if prop_name == None:
+                return
+            elif prop_name == "UTF8":
+                self.commit_result = self.commit_utf8
+                print "UTF8"
+            elif prop_name == "TCVN3":
+                self.commit_result = self.commit_tcvn3
+                print "TCVN3"
+
+    def __init_charset_prop_menu(self):
+        charset_prop_list = IBus.PropList()
+        for charset in self.__charset_list:
+            charset_prop_list.append(
+                IBus.Property(key = charset,
+                              prop_type = IBus.PropType.RADIO,
+                              label = IBus.Text.new_from_string(charset),
+                              icon = '',
+                              tooltip = IBus.Text.new_from_string(charset),
+                              sensitive = True,
+                              visible = True,
+                              state = IBus.PropState.UNCHECKED,
+                              sub_props = None))
+
+        charset_prop_menu = IBus.Property(
+            key = "charset",
+            prop_type = IBus.PropType.MENU,
+            label = IBus.Text.new_from_string("Charset"),
+            icon = "gtk-preferences",
+            tooltip = IBus.Text.new_from_string("Choose charset"),
+            sensitive = True,
+            visible = True,
+            state = IBus.PropState.UNCHECKED,
+            sub_props = charset_prop_list)
+        return charset_prop_menu
+
+    def __init_props(self):
+        self.__prop_list = IBus.PropList()
+        self.__charset_prop_menu = self.__init_charset_prop_menu()
+        self.__prop_list.append(self.__charset_prop_menu)

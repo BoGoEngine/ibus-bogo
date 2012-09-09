@@ -25,5 +25,4 @@ add_custom_target(uninstall
 
 # Directories with CMakeLists.txt
 add_subdirectory (engine)
-add_subdirectory (BoGoEngine)
 
