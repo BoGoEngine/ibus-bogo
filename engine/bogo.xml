@@ -3,7 +3,7 @@
 <component>
 	<name>org.freedesktop.IBus.BoGoPython</name>
 	<description>BoGo Engine for IBus</description>
-	<exec>/usr/libexec/ibus-engine-bogo</exec>
+	<exec>/usr/libexec/ibus-engine-bogo --ibus</exec>
 	<version>0.0.1</version>
 	<author>Dam Tien Long &lt;longdt90@gmail.com&gt;</author>
 	<license>GPL</license>
