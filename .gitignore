@@ -2,3 +2,7 @@ build/*
 debian/*
 obj-x86_64-linux-gnu/*
 obj-i686-linux-gnu/*
+/engine/BoGoEngine.pyc
+/engine/BoGoMain.pyc
+/engine/bogo-utf8.xml~
+/engine/bogo.xml~

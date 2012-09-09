@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- filename: bogo.xml -->
 <component>
-	<name>org.freedesktop.IBus.BogoPython</name>
-	<description>Bogo Engine for IBus</description>
+	<name>org.freedesktop.IBus.BoGoPython</name>
+	<description>BoGo Engine for IBus</description>
 	<exec>/usr/libexec/ibus-engine-bogo</exec>
 	<version>0.0.1</version>
 	<author>Dam Tien Long &lt;longdt90@gmail.com&gt;</author>
@@ -18,8 +18,8 @@
             <author>Dam Tien Long &lt;longdt90@gmail.com&gt;</author>
             <icon>/usr/share/ibus-bogo/icons/ibus-bogo.svg</icon>
             <layout>us</layout>
-            <longname>Bogo</longname>
-            <description>Bogo Engine for IBus</description>
+            <longname>BoGo</longname>
+            <description>BoGo Engine for IBus</description>
             <rank>0</rank>
         </engine>
 	</engines>

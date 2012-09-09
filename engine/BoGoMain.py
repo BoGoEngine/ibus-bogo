@@ -31,7 +31,7 @@ from BoGoEngine import Engine
 
 class IMApp:
     def __init__(self, exec_by_ibus):
-        engine_name = "Bogo Engine"
+        engine_name = "BoGo Engine"
         self.__component = \
           IBus.Component.new("org.freedesktop.IBus.BoGoPython",
                              "BoGo Engine for IBus",

@@ -1,11 +1,11 @@
 #
-# IBus-Bogo - The Vietnamese IME for IBus
+# IBus-BoGo - The Vietnamese IME for IBus
 #
 # Copyright (c) 2012- Long T. Dam <longdt90@gmail.com>,
 #                     Trung Ngo <ndtrung4419@gmail.com>
 #
 # This file is part of IBus-BoGo Project
-# IBus-Bogo is free software: you can redistribute it and/or modify
+# IBus-BoGo is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
@@ -52,7 +52,7 @@ class Engine(IBus.Engine):
         self.__init_props()
         self.commit_result = self.commit_utf8
         self.reset_engine()
-        print "You are running BoGo Ibus Engine"
+        print "You are running BoGo IBus Engine"
 
 
     # The "do_" part is PyGObject's way of overriding base's functions
