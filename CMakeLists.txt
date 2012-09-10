@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 2.6)
-project (IBus-Bogo)
+project (IBus-BoGo)
 
 # Author and software info:
 set (AUTHORS "Long T. Dam")

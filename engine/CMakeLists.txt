@@ -1,7 +1,7 @@
-#    This file is part of IBus-Bogo project.
+#    This file is part of IBus-BoGo project.
 #    Copyright (C) Long T. Dam <longdt90@gmail.com>
 #
-#    IBus-Bogo is free software: you can redistribute it and/or modify
+#    IBus-BoGo is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
 #    the Free Software Foundation, either version 3 of the License, or
 #    (at your option) any later version.

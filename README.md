@@ -36,6 +36,7 @@ Cài đặt:
     $ cmake .. && make install
 
 Gỡ cài đặt:
+
     $ cd build && sudo make uninstall
 
 ### Build gói debian
@@ -62,7 +63,7 @@ không được merge trực tiếp vào đây mà phải copy sang branch build
 
 Toàn bộ mã nguồn của **IBusBoGoEngine** và **BoGoEngine** cùng tất cả các tài nguyên đi kèm đều được phát hành dưới các quy định ghi trong Giấy phép Công cộng GNU, phiên bản 3.0 (GNU General Public License v3.0).  Xem tệp *COPYING* để biết thêm chi tiết.
 
-## Cretdit
+## Credit
 
 Bản quyền (C) năm 2012 bởi:
 
