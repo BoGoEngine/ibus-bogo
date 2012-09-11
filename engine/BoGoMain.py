@@ -26,6 +26,7 @@ import os
 import sys
 import getopt
 import locale
+import logging
 
 from BoGoEngine import Engine
 
@@ -111,6 +112,9 @@ def main():
     if daemonize:
         if os.fork():
             sys.exit()
+
+    if not exec_by_ibus:
+        logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
     launch_engine(exec_by_ibus)
 

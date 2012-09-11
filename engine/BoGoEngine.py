@@ -28,9 +28,12 @@ import Xlib.ext.xtest
 import sys
 import getopt
 import time
+import logging
+import datetime
+
 import BoGo
 
-import datetime
+
 
 # syntactic sugar
 keysyms = IBus
@@ -54,7 +57,7 @@ class Engine(IBus.Engine):
         self.__init_props()
         self.commit_result = self.commit_utf8
         self.reset_engine()
-        print "You are running BoGo IBus Engine"
+        logging.info("You are running BoGo IBus Engine")
 
 
     # The "do_" part is PyGObject's way of overriding base's functions
@@ -85,17 +88,17 @@ class Engine(IBus.Engine):
         if self.is_character(keyval):
             if state & (modifier.CONTROL_MASK | modifier.MOD1_MASK) == 0:
 
-                print "Key pressed: ", chr(keyval)
-                print "Old string: ", self.old_string
+                logging.info("Key pressed: %c", chr(keyval))
+                logging.info("Old string: %s", self.old_string)
                 self.old_string = self.new_string
                 self.new_string = self.process_key(self.old_string, keyval)
-                print "New string:", self.new_string
+                logging.info("New string: %s", self.new_string)
                 self.number_fake_backspace, self.string_to_commit = \
                   self.get_nbackspace_and_string_to_commit()
                 self.is_fake_key = True
-                print "Number of fake backspace: ", self.number_fake_backspace
+                logging.info("Number of fake backspace: %d", self.number_fake_backspace)
                 self.committed_fake_backspace = 0
-                print "String to commit: ", self.string_to_commit
+                logging.info("String to commit: %s", self.string_to_commit)
                 self.commit_fake_key(bg_backspace)
                 dpy.flush()
                 return True
@@ -113,7 +116,7 @@ class Engine(IBus.Engine):
         if keyval == keysyms.BackSpace:
             if self.is_fake_key:
                 if (self.number_fake_backspace == self.committed_fake_backspace):
-                    print "Ready to commit"
+                    logging.info("Ready to commit")
                     self.is_fake_key = False
                     # time.sleep(0.0005)
                     self.commit_result(self.string_to_commit)
@@ -124,7 +127,7 @@ class Engine(IBus.Engine):
                         self.key_queue = []
                     return True
                 else:
-                    print "Commit fake backspace"
+                    logging.info("Commit fake backspace")
                     self.committed_fake_backspace += 1
                     self.commit_fake_key(bg_backspace)
                     dpy.flush()
@@ -209,10 +212,10 @@ class Engine(IBus.Engine):
                 return
             elif prop_name == "UTF8":
                 self.commit_result = self.commit_utf8
-                print "UTF8"
+                logging.info("UTF8")
             elif prop_name == "TCVN3":
                 self.commit_result = self.commit_tcvn3
-                print "TCVN3"
+                logging.info("TCVN3")
 
     def __init_charset_prop_menu(self):
         charset_prop_list = IBus.PropList()
