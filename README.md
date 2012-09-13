@@ -13,18 +13,22 @@ Tài liệu của dự án sẽ được cung cấp trong thời gian sớm nh�
 
 ## Yêu cầu
 
+Các gói cần phải cài đặt trên hệ thống Ubuntu. Nếu bạn sử dụng một distro khác, 
+vui lòng tham khảo cách đặt tên trong distro của bạn.
+
 ### Cho việc biên dịch
 
-* python 2.7
-* glibmm 2.4
-* gcc 4.2+
-* CMake 2.6+
+* cmake
 
 ### Cho việc sử dụng
 
-* glibmm 2.4
-* gcc 4.2
 * ibus 1.4
+* python 2.7
+* python-support
+* python-gi
+* python-xlib
+* gir1.2-ibus-1.0 (gobject introspection data)
+* python-bogo (python binding của thư viện BoGo)
 
 ## Hướng dẫn build
 
