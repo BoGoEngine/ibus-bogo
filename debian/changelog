@@ -1,3 +1,9 @@
+ibus-bogo (0.0.99+0.1.0alpha1.1) precise; urgency=low
+
+  * Alpha 1 (fix typo in control)
+
+ -- Trung Ngo (Chin) <ndtrung4419@gmail.com>  Thu, 13 Sep 2012 21:44:45 +0700
+
 ibus-bogo (0.0.99+0.1.0alpha1) precise; urgency=low
 
   * Alpha 1 release.

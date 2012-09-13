@@ -11,7 +11,7 @@ Package: ibus-bogo
 Architecture: all
 Depends: ${python:Depends}, ${shlibs:Depends}, ${misc:Depends}, python-gi,
  gir1.2-ibus-1.0,
- python-xlib
+ python-xlib,
  python-bogo
 Description: BoGo engine for IBus
  IBus is an Intelligent Input Bus. It is a new input framework for Linux OS.
