@@ -25,8 +25,6 @@ import Xlib.display
 import Xlib.X
 import Xlib.XK
 import Xlib.ext.xtest
-import sys
-import getopt
 import time
 import logging
 import datetime
@@ -228,7 +226,7 @@ class Engine(IBus.Engine):
                               tooltip = IBus.Text.new_from_string(charset),
                               sensitive = True,
                               visible = True,
-                              state = IBus.PropState.UNCHECKED,
+                              state = IBus.PropState.CHECKED if charset == "UTF8" else IBus.PropState.UNCHECKED,
                               sub_props = None))
 
         charset_prop_menu = IBus.Property(
