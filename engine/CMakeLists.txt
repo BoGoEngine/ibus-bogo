@@ -19,7 +19,7 @@
 install (PROGRAMS
   ibus-engine-bogo
   DESTINATION
-  libexec
+  lib/bogo
   )
 
 install (FILES
