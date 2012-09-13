@@ -1,5 +1,5 @@
-ibus-bogo (0.1.0) precise; urgency=low
+ibus-bogo (0.0.99+0.1.0alpha1) precise; urgency=low
 
-  * Initial release.
+  * Alpha 1 release.
 
  -- Trung Ngo (Chin) <ndtrung4419@gmail.com>  Sat, 08 Sep 2012 09:28:44 +0700

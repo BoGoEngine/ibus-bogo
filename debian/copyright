@@ -1,10 +1,14 @@
-Format: http://dep.debian.net/deps/dep5
-Upstream-Name: sleepy
-Source: https://github.com/lewtds/sleepy
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: ibus-bogo-python
+Source: https://github.com/bogoengine/ibus-bogo-python
 
 Files: *
-Copyright: 2012 Ngo Trung <ndtrung4419@gmail.com>
+Copyright:
+ Copyright 2012 Đàm Tiến Long longdt90@gmail.com
+ Copyright 2012 Ngô Trung ndtrung4419@gmail.com
+
 License: GPL-3
+ /usr/share/common-licenses/GPL-3
 
 Files: debian/*
 Copyright: 2012 Trung Ngo <ndtrung4419@gmail.com>
