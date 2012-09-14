@@ -61,7 +61,7 @@ class Engine(IBus.Engine):
     # The "do_" part is PyGObject's way of overriding base's functions
     def do_process_key_event(self, keyval, keycode, state):
         """Implement IBus.Engine's process_key_event default signal handler.
-        
+
         Args:
             keyval - The keycode, transformed through a keymap, stays the
                 same for every keyboard
@@ -70,7 +70,7 @@ class Engine(IBus.Engine):
         Return:
             True - if successfully process the keyevent
             False - otherwise
-            
+
         This function gets called whenever a key is pressed.
         """
         # ignore key release events
@@ -119,6 +119,8 @@ class Engine(IBus.Engine):
                     # time.sleep(0.0005)
                     self.commit_result(self.string_to_commit)
                     if self.key_queue:
+                        logging.info("Process key queue. Number of key queue",
+                                     + str(len(self.key_queue)))
                         for key in self.key_queue:
                             self.commit_fake_char(chr(key))
                         dpy.flush()
@@ -163,6 +165,8 @@ class Engine(IBus.Engine):
         Xlib.ext.xtest.fake_input(dpy, Xlib.X.KeyRelease, keycode)
 
     def commit_fake_char(self, char):
+        if char == " ":
+            char = "space"
         keycode = bg_backspace = dpy.keysym_to_keycode \
           (Xlib.XK.string_to_keysym(char))
         if not char.islower():
@@ -192,14 +196,14 @@ class Engine(IBus.Engine):
 
     def do_focus_in(self):
         """Implements IBus.Engine's forcus_in's default signal handler.
-        
+
         Called when the input client widget gets focus.
         """
         self.register_properties(self.__prop_list)
 
     def do_focus_out(self):
         """Implements IBus.Engine's forcus_out's default signal handler.
-        
+
         Called when the input client widget loses focus.
         """
         self.reset_engine()
