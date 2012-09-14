@@ -28,12 +28,13 @@ import Xlib.ext.xtest
 import time
 import logging
 import datetime
+import Queue
 
 import BoGo
 
 
 
-# syntactic sugar
+# Syntactic sugar
 keysyms = IBus
 modifier = IBus.ModifierType
 
@@ -55,6 +56,7 @@ class Engine(IBus.Engine):
         self.__init_props()
         self.commit_result = self.commit_utf8
         self.reset_engine()
+        self.key_queue = Queue.Queue()
         logging.info("You are running BoGo IBus Engine")
 
 
@@ -78,14 +80,17 @@ class Engine(IBus.Engine):
         if not is_press:
             return False
 
-        if self.is_fake_key and keyval != keysyms.BackSpace:
+        if keyval == keysyms.Return or keyval == keysyms.Escape:
+            self.reset_engine()
+            return False
+
+        if self.is_faking_backspace and keyval != keysyms.BackSpace:
             if state & (modifier.CONTROL_MASK | modifier.MOD1_MASK) == 0:
-                self.key_queue.append(keyval)
+                self.key_queue.put(chr(keyval))
                 return True
 
         if self.is_character(keyval):
             if state & (modifier.CONTROL_MASK | modifier.MOD1_MASK) == 0:
-
                 logging.info("Key pressed: %c", chr(keyval))
                 logging.info("Old string: %s", self.old_string)
                 self.old_string = self.new_string
@@ -93,7 +98,7 @@ class Engine(IBus.Engine):
                 logging.info("New string: %s", self.new_string)
                 self.number_fake_backspace, self.string_to_commit = \
                   self.get_nbackspace_and_string_to_commit()
-                self.is_fake_key = True
+                self.is_faking_backspace = True
                 logging.info("Number of fake backspace: %d", self.number_fake_backspace)
                 self.committed_fake_backspace = 0
                 logging.info("String to commit: %s", self.string_to_commit)
@@ -101,30 +106,24 @@ class Engine(IBus.Engine):
                 dpy.flush()
                 return True
 
-        if keyval == keysyms.Return or keyval == keysyms.Escape:
-            self.reset_engine()
-            return False
 
         if keyval == keysyms.space:
             self.reset_engine()
             self.commit_result(u" ")
-            #BUG: There is no space char defined in BoGo TCVN3 table
             return True
 
         if keyval == keysyms.BackSpace:
-            if self.is_fake_key:
+            if self.is_faking_backspace:
                 if (self.number_fake_backspace == self.committed_fake_backspace):
                     logging.info("Ready to commit")
-                    self.is_fake_key = False
+                    self.is_faking_backspace = False
                     # time.sleep(0.0005)
                     self.commit_result(self.string_to_commit)
-                    if self.key_queue:
-                        logging.info("Process key queue. Number of key queue",
-                                     + str(len(self.key_queue)))
-                        for key in self.key_queue:
-                            self.commit_fake_char(chr(key))
+                    if self.key_queue.qsize():
+                        logging.info("Process key queue")
+                        char = self.key_queue.get()
+                        self.commit_fake_char(char)
                         dpy.flush()
-                        self.key_queue = []
                     return True
                 else:
                     logging.info("Commit fake backspace")
@@ -139,11 +138,11 @@ class Engine(IBus.Engine):
         return False
 
     def reset_engine(self):
-        self.key_queue = []
+        self.key_queue = Queue.Queue()
         self.string_to_commit = u""
         self.new_string = u""
         self.old_string = u""
-        self.is_fake_key = False
+        self.is_faking_backspace = False
         self.number_fake_backspace = 0
 
     def commit_utf8(self, string):
