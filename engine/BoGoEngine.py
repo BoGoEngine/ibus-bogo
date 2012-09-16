@@ -42,8 +42,6 @@ dpy = Xlib.display.Display()
 bg_backspace = dpy.keysym_to_keycode(Xlib.XK.string_to_keysym("BackSpace"))
 bg_shift = dpy.keysym_to_keycode(Xlib.XK.string_to_keysym("Shift_L"))
 
-
-
 CHARSET_UTF8 = 0
 CHARSET_TCVN3 = 1
 
@@ -102,34 +100,31 @@ class Engine(IBus.Engine):
                 logging.info("Number of fake backspace: %d", self.number_fake_backspace)
                 self.committed_fake_backspace = 0
                 logging.info("String to commit: %s", self.string_to_commit)
-                self.commit_fake_key(bg_backspace)
-                dpy.flush()
+                for i in range(self.number_fake_backspace + 1):
+                    self.commit_fake_key(bg_backspace)
                 return True
 
 
         if keyval == keysyms.space:
             self.reset_engine()
-            self.commit_result(u" ")
-            return True
+            return False
 
         if keyval == keysyms.BackSpace:
             if self.is_faking_backspace:
                 if (self.number_fake_backspace == self.committed_fake_backspace):
                     logging.info("Ready to commit")
                     self.is_faking_backspace = False
-                    # time.sleep(0.0005)
+                    time.sleep(0.01)
                     self.commit_result(self.string_to_commit)
+                    time.sleep(0.01)
                     if self.key_queue.qsize():
                         logging.info("Process key queue")
                         char = self.key_queue.get()
                         self.commit_fake_char(char)
-                        dpy.flush()
                     return True
                 else:
                     logging.info("Commit fake backspace")
                     self.committed_fake_backspace += 1
-                    self.commit_fake_key(bg_backspace)
-                    dpy.flush()
                     return False
             else:
                 self.new_string = self.new_string[:-1]
@@ -162,6 +157,7 @@ class Engine(IBus.Engine):
     def commit_fake_key(self, keycode):
         Xlib.ext.xtest.fake_input(dpy, Xlib.X.KeyPress, keycode)
         Xlib.ext.xtest.fake_input(dpy, Xlib.X.KeyRelease, keycode)
+        dpy.flush()
 
     def commit_fake_char(self, char):
         if char == " ":
@@ -174,6 +170,7 @@ class Engine(IBus.Engine):
         Xlib.ext.xtest.fake_input(dpy, Xlib.X.KeyRelease, keycode)
         if not char.islower():
             Xlib.ext.xtest.fake_input(dpy, Xlib.X.KeyRelease, bg_shift)
+        dpy.flush()
 
     def get_nbackspace_and_string_to_commit(self):
         if (self.old_string):
