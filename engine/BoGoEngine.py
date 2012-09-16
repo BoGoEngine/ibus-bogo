@@ -106,6 +106,7 @@ class Engine(IBus.Engine):
 
 
         if keyval == keysyms.space:
+            logging.info("Pressed a space")
             self.reset_engine()
             return False
 
@@ -123,7 +124,7 @@ class Engine(IBus.Engine):
                         self.commit_fake_char(char)
                     return True
                 else:
-                    logging.info("Commit fake backspace")
+                    logging.info("Fake backspace")
                     self.committed_fake_backspace += 1
                     return False
             else:
