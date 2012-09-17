@@ -27,7 +27,6 @@ import Xlib.XK
 import Xlib.ext.xtest
 import time
 import logging
-import datetime
 import Queue
 
 import BoGo
@@ -55,6 +54,7 @@ class Engine(IBus.Engine):
         self.commit_result = self.commit_utf8
         self.reset_engine()
         self.key_queue = Queue.Queue()
+        self.has_space = False
         logging.info("You are running BoGo IBus Engine")
 
 
@@ -81,12 +81,11 @@ class Engine(IBus.Engine):
         if keyval == keysyms.Return or keyval == keysyms.Escape:
             self.reset_engine()
             return False
-
-        if self.is_faking_backspace and keyval != keysyms.BackSpace:
-            if state & (modifier.CONTROL_MASK | modifier.MOD1_MASK) == 0:
-                self.key_queue.put(chr(keyval))
-                return True
-
+            
+        if keyval == keysyms.BackSpace:
+            self.new_string = self.new_string[:-1]
+            return False
+        
         if self.is_character(keyval):
             if state & (modifier.CONTROL_MASK | modifier.MOD1_MASK) == 0:
                 logging.info("Key pressed: %c", chr(keyval))
@@ -100,8 +99,12 @@ class Engine(IBus.Engine):
                 logging.info("Number of fake backspace: %d", self.number_fake_backspace)
                 self.committed_fake_backspace = 0
                 logging.info("String to commit: %s", self.string_to_commit)
-                for i in range(self.number_fake_backspace + 1):
-                    self.commit_fake_key(bg_backspace)
+
+                for i in range(self.number_fake_backspace):
+                    self.forward_key_event(keysyms.BackSpace, 14, 0)
+                    time.sleep(0.001)
+                
+                self.commit_result(self.string_to_commit)
                 return True
 
 
@@ -109,26 +112,6 @@ class Engine(IBus.Engine):
             logging.info("Pressed a space")
             self.reset_engine()
             return False
-
-        if keyval == keysyms.BackSpace:
-            if self.is_faking_backspace:
-                if (self.number_fake_backspace == self.committed_fake_backspace):
-                    logging.info("Ready to commit")
-                    self.is_faking_backspace = False
-                    time.sleep(0.01)
-                    self.commit_result(self.string_to_commit)
-                    time.sleep(0.01)
-                    if self.key_queue.qsize():
-                        logging.info("Process key queue")
-                        char = self.key_queue.get()
-                        self.commit_fake_char(char)
-                    return True
-                else:
-                    logging.info("Fake backspace")
-                    self.committed_fake_backspace += 1
-                    return False
-            else:
-                self.new_string = self.new_string[:-1]
 
         self.reset_engine()
         return False

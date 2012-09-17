@@ -39,6 +39,19 @@ Cài đặt:
     $ mkdir build && cd build
     $ cmake .. && make install
 
+Cấu hình hệ thống:
+    
+    Thêm các dòng sau vào ~/.profile:
+        
+        export GTK_IM_MODULE=ibus
+        export XMODIFIERS=@im=ibus
+        export QT_IM_MODULE=ibus
+        
+    Để gõ được tiếng Việt trong các ứng dụng qt cần:
+        
+        $ qtconfig
+        Chọn xim input style là *off the spot*
+
 Gỡ cài đặt:
 
     $ cd build && sudo make uninstall
