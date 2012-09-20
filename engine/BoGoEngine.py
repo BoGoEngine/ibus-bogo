@@ -102,8 +102,8 @@ class Engine(IBus.Engine):
 
                 for i in range(self.number_fake_backspace):
                     self.forward_key_event(keysyms.BackSpace, 14, 0)
-                    time.sleep(0.002)
-
+                    time.sleep(0.001)
+                time.sleep(0.001)
                 self.commit_result(self.string_to_commit)
                 return True
 
