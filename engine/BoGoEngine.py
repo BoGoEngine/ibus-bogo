@@ -81,11 +81,11 @@ class Engine(IBus.Engine):
         if keyval == keysyms.Return or keyval == keysyms.Escape:
             self.reset_engine()
             return False
-            
+
         if keyval == keysyms.BackSpace:
             self.new_string = self.new_string[:-1]
             return False
-        
+
         if self.is_character(keyval):
             if state & (modifier.CONTROL_MASK | modifier.MOD1_MASK) == 0:
                 logging.info("Key pressed: %c", chr(keyval))
@@ -102,8 +102,8 @@ class Engine(IBus.Engine):
 
                 for i in range(self.number_fake_backspace):
                     self.forward_key_event(keysyms.BackSpace, 14, 0)
-                    time.sleep(0.001)
-                
+                    time.sleep(0.002)
+
                 self.commit_result(self.string_to_commit)
                 return True
 
