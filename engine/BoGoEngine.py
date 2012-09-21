@@ -39,7 +39,6 @@ class Engine(IBus.Engine):
         self.__init_props()
         self.commit_result = self.commit_utf8
         self.reset_engine()
-        self.key_queue = Queue.Queue()
         self.has_space = False
         logging.info("You are running BoGo IBus Engine")
 
@@ -88,6 +87,8 @@ class Engine(IBus.Engine):
                 for i in range(self.number_fake_backspace):
                     self.forward_key_event(keysyms.BackSpace, 14, 0)
 
+                # Sleep to ensure then all fake backspaces are committed.
+                # Adjust time sleep to obtain proper behaviour
                 time.sleep(0.0015 * self.number_fake_backspace)
                 self.commit_result(self.string_to_commit)
                 return True
