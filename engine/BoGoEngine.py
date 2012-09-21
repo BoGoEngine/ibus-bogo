@@ -89,10 +89,10 @@ class Engine(IBus.Engine):
 
                 # Sleep to ensure then all fake backspaces are committed.
                 # Adjust time sleep to obtain proper behaviour
-                time.sleep(0.0015 * self.number_fake_backspace)
+                time.sleep(0.004 * self.number_fake_backspace)
                 self.commit_result(self.string_to_commit)
+                time.sleep(0.003)
                 return True
-
 
         if keyval == keysyms.space:
             logging.info("Pressed a space")
