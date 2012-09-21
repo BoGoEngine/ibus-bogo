@@ -21,28 +21,14 @@
 from gi.repository import GObject
 from gi.repository import IBus
 from gi.repository import Pango
-import Xlib.display
-import Xlib.X
-import Xlib.XK
-import Xlib.ext.xtest
 import time
 import logging
-import Queue
 
 import BoGo
-
-
 
 # Syntactic sugar
 keysyms = IBus
 modifier = IBus.ModifierType
-
-dpy = Xlib.display.Display()
-bg_backspace = dpy.keysym_to_keycode(Xlib.XK.string_to_keysym("BackSpace"))
-bg_shift = dpy.keysym_to_keycode(Xlib.XK.string_to_keysym("Shift_L"))
-
-CHARSET_UTF8 = 0
-CHARSET_TCVN3 = 1
 
 class Engine(IBus.Engine):
     __gtype_name__ = 'EngineBoGo'
@@ -102,8 +88,8 @@ class Engine(IBus.Engine):
 
                 for i in range(self.number_fake_backspace):
                     self.forward_key_event(keysyms.BackSpace, 14, 0)
-                    time.sleep(0.001)
-                time.sleep(0.001)
+
+                time.sleep(0.001 * self.number_fake_backspace)
                 self.commit_result(self.string_to_commit)
                 return True
 
@@ -137,24 +123,6 @@ class Engine(IBus.Engine):
             return BoGo.process_key(string, uni_keyval)
         else:
             return uni_keyval
-
-    def commit_fake_key(self, keycode):
-        Xlib.ext.xtest.fake_input(dpy, Xlib.X.KeyPress, keycode)
-        Xlib.ext.xtest.fake_input(dpy, Xlib.X.KeyRelease, keycode)
-        dpy.flush()
-
-    def commit_fake_char(self, char):
-        if char == " ":
-            char = "space"
-        keycode = bg_backspace = dpy.keysym_to_keycode \
-          (Xlib.XK.string_to_keysym(char))
-        if not char.islower():
-            Xlib.ext.xtest.fake_input(dpy, Xlib.X.KeyPress, bg_shift)
-        Xlib.ext.xtest.fake_input(dpy, Xlib.X.KeyPress, keycode)
-        Xlib.ext.xtest.fake_input(dpy, Xlib.X.KeyRelease, keycode)
-        if not char.islower():
-            Xlib.ext.xtest.fake_input(dpy, Xlib.X.KeyRelease, bg_shift)
-        dpy.flush()
 
     def get_nbackspace_and_string_to_commit(self):
         if (self.old_string):
