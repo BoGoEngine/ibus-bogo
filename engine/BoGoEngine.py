@@ -83,13 +83,12 @@ class Engine(IBus.Engine):
                   self.get_nbackspace_and_string_to_commit()
                 self.is_faking_backspace = True
                 logging.info("Number of fake backspace: %d", self.number_fake_backspace)
-                self.committed_fake_backspace = 0
                 logging.info("String to commit: %s", self.string_to_commit)
 
                 for i in range(self.number_fake_backspace):
                     self.forward_key_event(keysyms.BackSpace, 14, 0)
 
-                time.sleep(0.001 * self.number_fake_backspace)
+                time.sleep(0.0015 * self.number_fake_backspace)
                 self.commit_result(self.string_to_commit)
                 return True
 
@@ -103,11 +102,9 @@ class Engine(IBus.Engine):
         return False
 
     def reset_engine(self):
-        self.key_queue = Queue.Queue()
         self.string_to_commit = u""
         self.new_string = u""
         self.old_string = u""
-        self.is_faking_backspace = False
         self.number_fake_backspace = 0
 
     def commit_utf8(self, string):
