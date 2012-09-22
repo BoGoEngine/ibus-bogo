@@ -39,7 +39,6 @@ class Engine(IBus.Engine):
         self.__init_props()
         self.commit_result = self.commit_utf8
         self.reset_engine()
-        self.has_space = False
         logging.info("You are running BoGo IBus Engine")
 
 
