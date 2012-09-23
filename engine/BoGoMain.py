@@ -30,6 +30,9 @@ import logging
 
 from BoGoEngine import Engine
 
+current_path = os.path.dirname(os.path.abspath(__file__))
+print(current_path)
+
 class IMApp:
     def __init__(self, exec_by_ibus):
         engine_name = "BoGo Engine"
@@ -48,7 +51,7 @@ class IMApp:
                                   language = "vi",
                                   license = "GPLv3",
                                   author = "Long T. Dam <longdt90@gmail.com>",
-                                  icon = "/usr/share/ibus-bogo/icons/ibus-bogo.svg",
+                                  icon = current_path + "/ibus-bogo.svg",
                                   layout = "us")
         self.__component.add_engine(engine)
         self.__mainloop = GObject.MainLoop()
