@@ -46,11 +46,6 @@ Cấu hình hệ thống:
         export GTK_IM_MODULE=ibus
         export XMODIFIERS=@im=ibus
         export QT_IM_MODULE=ibus
-        
-    Để gõ được tiếng Việt trong các ứng dụng qt cần:
-        
-        $ qtconfig
-        Chọn xim input style là *off the spot*
 
 Gỡ cài đặt:
 
