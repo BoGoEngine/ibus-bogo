@@ -2,7 +2,10 @@ Source: ibus-bogo
 Section: misc
 Priority: optional
 Maintainer: Trung Ngo <ndtrung4419@gmail.com>
-Build-Depends: debhelper (>= 8.0.0), python (>= 2.7), python-support (>= 0.90.0)
+Build-Depends: debhelper (>= 8.0.0),
+ python (>= 2.7),
+ python-support (>= 0.90.0),
+ cmake
 Standards-Version: 3.9.3
 Homepage: https://github.com/BoGoEngine/ibus-bogo-python
 Vcs-Git: git://github.com/BoGoEngine/ibus-bogo-python.git
