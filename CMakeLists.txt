@@ -7,12 +7,16 @@ set (EMAIL "longdt90@gmail.com")
 set (VENDOR "Hanoi Community Space")
 set (HOMEPAGE "https://github.com/milkycoffee/ibus-bogo")
 
-# Default install prefix
-set (CMAKE_INSTALL_PREFIX "/usr")
+# IBus wouldn't detect our engine if we installed to /usr/local
+# But we also have to allow other prefixes for packaging
+if (CMAKE_INSTALL_PREFIX STREQUAL "/usr/local")
+	message ("-- Installing to /usr by default")
+	set (CMAKE_INSTALL_PREFIX "/usr")
+endif()
 
 # Installation variables
-set (BOGO_INSTALL_DIR "/usr/share/ibus-bogo")
-set (IBUS_COMPONENT_DIR "/usr/share/ibus/component")
+set (BOGO_INSTALL_DIR "share/ibus-bogo")
+set (IBUS_COMPONENT_DIR "share/ibus/component")
 
 # uninstall target
 configure_file(
