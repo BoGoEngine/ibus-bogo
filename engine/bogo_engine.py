@@ -24,7 +24,7 @@ from gi.repository import Pango
 import time
 import logging
 
-import BoGo
+import new_bogo_engine
 
 # Syntactic sugar
 keysyms = IBus

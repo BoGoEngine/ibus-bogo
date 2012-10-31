@@ -15,7 +15,6 @@
 #    along with IBus-BoGo.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-
 install (PROGRAMS
   ibus-engine-bogo
   DESTINATION
@@ -33,8 +32,8 @@ install (FILES
   ${BOGO_INSTALL_DIR}/icons/)
 
 install (FILES
-  BoGoMain.py
-  BoGoEngine.py
+  bogo_main.py
+  bogo_engine.py
   DESTINATION
   ${BOGO_INSTALL_DIR}/
   )
