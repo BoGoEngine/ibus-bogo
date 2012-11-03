@@ -65,7 +65,7 @@ simple_telex_im = {
     }
 
 def process_key(string, key, im = simple_telex_im):
-    trans_list = get_transformation_list(key, im);
+    trans_list = get_transformation_list(key.lower(), im);
     newstring = string
     for trans in trans_list:
         newstring = transform(newstring, trans)
