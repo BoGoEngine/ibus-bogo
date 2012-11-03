@@ -191,6 +191,8 @@ def add_mark_char(char, mark):
     elif mark == Mark.NONE:
         if char in FAMILY_A:
             new_char = u"a"
+        elif char in FAMILY_E:
+            new_char = u"e"
         elif char in FAMILY_O:
             new_char = u"o"
         elif char in FAMILY_U:
@@ -208,7 +210,8 @@ def add_accent_at(string, mark, accent):
     if index == -1:
         return string
     # Python can handle the case which index is out of range of given string
-    return string[:index] + add_accent_char(string[index], accent) + string[index+1:]
+    return string[:index] + add_accent_char(string[index], accent) \
+        + string[index+1:]
 
 def add_accent(components, accent):
     """
