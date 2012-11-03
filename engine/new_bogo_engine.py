@@ -69,8 +69,12 @@ def process_key(string, key, im = simple_telex_im):
     newstring = string
     for trans in trans_list:
         newstring = transform(newstring, trans)
-    if (newstring == string):
-        newstring = reverse(newstring, trans) + unicode(key)
+    if newstring == string:
+        for trans in trans_list:
+            newstring = reverse(newstring, trans)
+            if newstring != string:
+                break
+        newstring += unicode(key)
     return newstring;
 
 def get_transformation_list(key, im):
@@ -267,8 +271,8 @@ def add_mark(components, mark):
             if raw_vowel != u"ua":
                 comp[1] = add_mark_at(comp[1], raw_vowel.find(u"a"), Mark.BREVE)
         elif mark == Mark.HORN:
-            if raw_vowel == u"uo":
-                comp[1] = u"".join(add_mark_char(c, Mark.HORN) for c in comp[1])
+            if raw_vowel in (u"uo", u"uoi", u"uou"):
+                comp[1] = u"".join(add_mark_char(c, Mark.HORN) for c in comp[1][:2]) + comp[1][2:]
             else:
                 pos = max(raw_vowel.find(u"u"), raw_vowel.find(u"o"))
                 comp[1] = add_mark_at(comp[1], pos, Mark.HORN)
@@ -362,11 +366,13 @@ def reverse(string, trans):
     """
     action, factor = get_action (trans)
     components = seperate(string);
+
     if action == Action.ADD_ACCENT:
         components = add_accent(components, Accent.NONE)
     elif action == Action.ADD_MARK:
         if factor == Mark.BAR:
-            components[0] = components[0][:-1] + add_mark_char(components[0][-1], Mark.NONE)
+            components[0] = components[0][:-1] + add_mark_char(components[0][-1:], Mark.NONE)
         else:
-            components[1] = u"".join([add_mark_char(c, Mark.NONE) for c in components[1]])
+            if is_valid_mark(components, trans):
+                components[1] = u"".join([add_mark_char(c, Mark.NONE) for c in components[1]])
     return join(components)
