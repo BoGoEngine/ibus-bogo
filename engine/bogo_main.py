@@ -28,7 +28,7 @@ import getopt
 import locale
 import logging
 
-from BoGoEngine import Engine
+from bogo_engine import Engine
 
 current_path = os.path.dirname(os.path.abspath(__file__))
 print(current_path)

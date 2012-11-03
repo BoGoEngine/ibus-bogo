@@ -25,6 +25,7 @@ import time
 import logging
 
 import new_bogo_engine
+core = new_bogo_engine
 
 # Syntactic sugar
 keysyms = IBus
@@ -71,6 +72,7 @@ class Engine(IBus.Engine):
             return False
 
         if self.is_character(keyval):
+            # Process entered key here
             if state & (modifier.CONTROL_MASK | modifier.MOD1_MASK) == 0:
                 logging.info("Key pressed: %c", chr(keyval))
                 logging.info("Old string: %s", self.old_string)
@@ -115,11 +117,10 @@ class Engine(IBus.Engine):
         self.commit_text(IBus.Text.new_from_string(tcvn3_string))
 
     def process_key(self, string, keyval):
-        uni_keyval = unichr(keyval)
         if self.old_string:
-            return BoGo.process_key(string, uni_keyval)
+            return core.process_key(string, unichr(keyval))
         else:
-            return uni_keyval
+            return unichr(keyval)
 
     def get_nbackspace_and_string_to_commit(self):
         if (self.old_string):
