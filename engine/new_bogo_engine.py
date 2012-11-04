@@ -273,6 +273,8 @@ def add_mark(components, mark):
         elif mark == Mark.HORN:
             if raw_vowel in (u"uo", u"uoi", u"uou"):
                 comp[1] = u"".join(add_mark_char(c, Mark.HORN) for c in comp[1][:2]) + comp[1][2:]
+            elif raw_vowel == u"oa":
+                comp[1] = add_mark_at(comp[1], 1, Mark.HORN)
             else:
                 pos = max(raw_vowel.find(u"u"), raw_vowel.find(u"o"))
                 comp[1] = add_mark_at(comp[1], pos, Mark.HORN)
