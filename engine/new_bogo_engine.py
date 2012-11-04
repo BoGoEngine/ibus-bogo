@@ -69,6 +69,7 @@ def process_key(string, key, im = simple_telex_im):
     newstring = string
     for trans in trans_list:
         newstring = transform(newstring, trans)
+
     if newstring == string:
         for trans in trans_list:
             newstring = reverse(newstring, trans)
@@ -109,11 +110,14 @@ def seperate(string):
     has_vowel = False
     for i in range(len(string)):
         index = -1 - i
+        if not string[index].isalpha():
+            comp[0] = string[:index + 1] + comp[0]
+            break
         if not is_vower(string[index]):
             if not has_vowel:
                 comp[2] = string[index] + comp[2]
             else:
-                comp[0] = string[:index+1]
+                comp[0] = string[:index + 1]
                 break
         else:
             has_vowel = True
@@ -126,7 +130,7 @@ def seperate(string):
             comp[0] += comp[1][0]
             comp[1] = comp[1][1:]
     if not comp[1] and not comp[0]:
-        comp[0] = comp[2];
+        comp[0] += comp[2]
         comp[2] = u""
     return comp
 
@@ -336,6 +340,8 @@ def transform(string, trans):
 
     if trans[0] == u'<':
         string += trans[1]
+        if not trans[1].isalpha():
+            return string
         components = seperate(string)
         accent = Accent.NONE
         for c in components[1]:
