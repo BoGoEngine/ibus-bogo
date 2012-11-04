@@ -34,6 +34,7 @@ install (FILES
 install (FILES
   bogo_main.py
   bogo_engine.py
+  new_bogo_engine.py
   DESTINATION
   ${BOGO_INSTALL_DIR}/
   )
