@@ -65,7 +65,7 @@ simple_telex_im = {
     }
 
 def process_key(string, key, im = simple_telex_im):
-    trans_list = get_transformation_list(key.lower(), im);
+    trans_list = get_transformation_list(key, im);
     newstring = string
     for trans in trans_list:
         newstring = transform(newstring, trans)
@@ -87,11 +87,12 @@ def get_transformation_list(key, im):
         entered key to current text
     """
 
-    if key in im:
-        if isinstance(im[key], list):
-            return im[key]
+    lkey = key.lower()
+    if lkey in im:
+        if isinstance(im[lkey], list):
+            return im[lkey]
         else:
-            return [im[key]]
+            return [im[lkey]]
     else:
         return [u'<' + unicode(key)]
 
