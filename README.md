@@ -28,7 +28,6 @@ vui lòng tham khảo cách đặt tên trong distro của bạn.
 * python-gi
 * python-xlib
 * gir1.2-ibus-1.0 (gobject introspection data)
-* python-bogo (python binding của thư viện BoGo)
 
 ## Hướng dẫn build
 
