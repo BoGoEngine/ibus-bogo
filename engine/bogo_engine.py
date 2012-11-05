@@ -117,10 +117,11 @@ class Engine(IBus.Engine):
         self.commit_text(IBus.Text.new_from_string(tcvn3_string))
 
     def process_key(self, string, keyval):
-        if self.old_string:
-            return core.process_key(string, unichr(keyval))
-        else:
-            return unichr(keyval)
+        return core.process_key(string, unichr(keyval))
+        # if self.old_string:
+        #     return core.process_key(string, unichr(keyval))
+        # else:
+        #     return unichr(keyval)
 
     def get_nbackspace_and_string_to_commit(self):
         if (self.old_string):
