@@ -1,24 +1,26 @@
 #-*- coding: utf-8
-# IBus-BoGo - The Vietnamese IME for IBus
+# New BoGo Engine - Vietnamese Text processing engine
 #
 # Copyright (c) 2012- Long T. Dam <longdt90@gmail.com>,
-# Trung Ngo <ndtrung4419@gmail.com>
 #
-# This file is part of IBus-BoGo Project
-# IBus-BoGo is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
+# This file is part of BoGo IBus Engine Project BoGo IBus Engine is
+# free software: you can redistribute it and/or modify it under the
+# terms of the GNU General Public License as published by the Free
+# Software Foundation, either version 3 of the License, or (at your
+# option) any later version.
 #
-# IBus-BoGo is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU General Public License for more details.
+# IBus-BoGo is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
 # along with IBus-BoGo. If not, see <http://www.gnu.org/licenses/>.
 
 CONFIG_LOADED = False
+
+# Don't change the following constants or the program will behave
+# unexpectedly
 VOWELS= u"àáảãạaằắẳẵặăầấẩẫậâèéẻẽẹeềếểễệêìíỉĩịi" \
         u"òóỏõọoồốổỗộôờớởỡợơùúủũụuừứửữựưỳýỷỹỵy"
 
@@ -83,12 +85,12 @@ def process_key(string, key, im = simple_telex_im):
 
 def get_transformation_list(key, im):
     """
-        Return list of transformations inferred from entered key.
-        The map between transform types and keys is given by module bogo_config (if exists)
-        or by variable simple_telex_im
+        Return list of transformations inferred from entered key.  The
+        map between transform types and keys is given by module
+        bogo_config (if exists) or by variable simple_telex_im
 
-        if entered key is not in im, return u"<key", meaning appending the
-        entered key to current text
+        if entered key is not in im, return u"<key", meaning appending
+        the entered key to current text
     """
 
     lkey = key.lower()
@@ -217,7 +219,8 @@ def add_mark_char(char, mark):
 
 def add_accent_at(string, mark, accent):
     """
-    Add mark to the index-th character of the given string. Return the new string after applying change.
+    Add mark to the index-th character of the given string.  Return
+    the new string after applying change.
     """
     if index == -1:
         return string
@@ -227,7 +230,8 @@ def add_accent_at(string, mark, accent):
 
 def add_accent(components, accent):
     """
-    Add accent to the given components. The parameter components is the result of function seperate()
+    Add accent to the given components.  The parameter components is
+    the result of function seperate()
     """
     vowel = components[1]
     last_consonant = components[2]
@@ -238,7 +242,7 @@ def add_accent(components, accent):
     if vowel == u"":
         return components
     #raw_string is a list, not a str object
-    raw_string = u"".join([add_accent_char(c, Accent.NONE).lower() for c in vowel])
+    raw_string = join([add_accent_char(c, Accent.NONE).lower() for c in vowel])
     new_vowel = u""
     # Highest priority for ê and ơ
     index = max(raw_string.find(u"ê"), raw_string.find(u"ơ"))
@@ -280,7 +284,7 @@ def add_mark(components, mark):
                 comp[1] = add_mark_at(comp[1], raw_vowel.find(u"a"), Mark.BREVE)
         elif mark == Mark.HORN:
             if raw_vowel in (u"uo", u"uoi", u"uou"):
-                comp[1] = u"".join(add_mark_char(c, Mark.HORN) for c in comp[1][:2]) + comp[1][2:]
+                comp[1] = join([add_mark_char(c, Mark.HORN) for c in comp[1][:2]]) + comp[1][2:]
             elif raw_vowel == u"oa":
                 comp[1] = add_mark_at(comp[1], 1, Mark.HORN)
             else:
@@ -326,7 +330,7 @@ def is_valid_mark(components, mark_trans):
     """
     if components[1] != u"":
         raw_vowel = add_accent(components, Accent.NONE)[1].lower()
-        raw_vowel = u"".join([add_mark_char(c, Mark.NONE) for c in raw_vowel])
+        raw_vowel = join([add_mark_char(c, Mark.NONE) for c in raw_vowel])
     if mark_trans[0] == 'd' and components[0] \
             and components[0][-1].lower() in (u"d", u"đ"):
         return True
@@ -346,7 +350,7 @@ def transform(string, trans):
             return string[:-1]
         else:
             string += trans[1]
-          
+
     if trans[0] == u'+':
         string += trans[1]
         if not trans[1].isalpha():
@@ -389,8 +393,10 @@ def reverse(string, trans):
         components = add_accent(components, Accent.NONE)
     elif action == Action.ADD_MARK:
         if factor == Mark.BAR:
-            components[0] = components[0][:-1] + add_mark_char(components[0][-1:], Mark.NONE)
+            components[0] = components[0][:-1] + \
+                add_mark_char(components[0][-1:], Mark.NONE)
         else:
             if is_valid_mark(components, trans):
-                components[1] = u"".join([add_mark_char(c, Mark.NONE) for c in components[1]])
+                components[1] = u"".join([add_mark_char(c, Mark.NONE)
+                                          for c in components[1]])
     return join(components)
