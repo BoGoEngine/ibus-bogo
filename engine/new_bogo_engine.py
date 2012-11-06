@@ -103,11 +103,11 @@ def get_transformation_list(key, im):
         return [u'+' + unicode(key)]
 
 
-def is_vower(char):
+def is_vowel(char):
     char = char.lower()
     return True if (char in VOWELS) else False
 
-def seperate(string):
+def separate(string):
     """
     Seperate the given string into 3 parts, based on its structure
     """
@@ -118,7 +118,7 @@ def seperate(string):
         if not string[index].isalpha():
             comp[0] = string[:index] + string[index] + comp[0]
             break
-        if not is_vower(string[index]):
+        if not is_vowel(string[index]):
             if not has_vowel:
                 comp[2] = string[index] + comp[2]
             else:
@@ -231,7 +231,7 @@ def add_accent_at(string, mark, accent):
 def add_accent(components, accent):
     """
     Add accent to the given components.  The parameter components is
-    the result of function seperate()
+    the result of function separate()
     """
     vowel = components[1]
     last_consonant = components[2]
@@ -266,7 +266,7 @@ def add_mark_at(string, index, mark):
 
 def add_mark(components, mark):
     """
-    Case Mark.NONE will be deal with seperately by user
+    Case Mark.NONE will be deal with separately by user
     """
     comp = components
     if mark == Mark.BAR and comp[0] and comp[0][-1].lower() in FAMILY_D:
@@ -355,7 +355,7 @@ def transform(string, trans):
         string += trans[1]
         if not trans[1].isalpha():
             return string
-        components = seperate(string)
+        components = separate(string)
         accent = Accent.NONE
         for c in components[1]:
             accent = get_accent_char(c)
@@ -368,7 +368,7 @@ def transform(string, trans):
             return join(components)
 
 
-    components = seperate(string);
+    components = separate(string);
     action, factor = get_action (trans)
     if action == Action.ADD_ACCENT:
         components =  add_accent(components, factor)
@@ -387,7 +387,7 @@ def reverse(string, trans):
     is ADD_ACCENT action, remove mark if the trans is ADD_MARK action)
     """
     action, factor = get_action (trans)
-    components = seperate(string);
+    components = separate(string);
 
     if action == Action.ADD_ACCENT:
         components = add_accent(components, Accent.NONE)
