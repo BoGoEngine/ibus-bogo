@@ -57,7 +57,6 @@ def remove_accent(string):
             # 2, 3 -> 5
             # 6, 8 -> 10
             pos = ((VOWELS.index(string[i]) + 1)/ 6 + 1) * 6 - 1
-            print(pos)
             string = string[:i] + VOWELS[pos] + string[i+1:]
     return string
 

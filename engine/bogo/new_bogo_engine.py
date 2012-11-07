@@ -59,7 +59,6 @@ def process_key(string, key, im = IMs['simple-telex']):
     # effectively skipping it then put it back later. 
     garbage = u''
     for i in range(-1, -len(string)-1, -1): # Reverse indices [-1, -2, -3, ...]
-        print(i)
         if not string[i].isalpha():
             garbage += string[:i] + string[i]
             string = u'' + string[i+1:]

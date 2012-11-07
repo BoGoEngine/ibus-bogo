@@ -31,7 +31,6 @@ import logging
 from ibus_engine import Engine
 
 current_path = os.path.dirname(os.path.abspath(__file__))
-print(current_path)
 
 class IMApp:
     def __init__(self, exec_by_ibus):
