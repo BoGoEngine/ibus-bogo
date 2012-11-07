@@ -27,6 +27,8 @@ import logging
 import new_bogo_engine
 core = new_bogo_engine
 
+from valid_vietnamese import is_valid_combination
+
 # Syntactic sugar
 keysyms = IBus
 modifier = IBus.ModifierType
@@ -69,15 +71,21 @@ class Engine(IBus.Engine):
 
         if keyval == keysyms.BackSpace:
             self.new_string = self.new_string[:-1]
+            self.__raw_string = self.__raw_string[:-1]
             return False
 
         if self.is_character(keyval):
             # Process entered key here
             if state & (modifier.CONTROL_MASK | modifier.MOD1_MASK) == 0:
+                self.__raw_string = self.__raw_string + chr(keyval)
+                
                 logging.info("Key pressed: %c", chr(keyval))
                 logging.info("Old string: %s", self.old_string)
                 self.old_string = self.new_string
                 self.new_string = self.process_key(self.old_string, keyval)
+                if self.new_string == None:
+                    self.new_string = self.__raw_string
+                    
                 logging.info("New string: %s", self.new_string)
                 self.number_fake_backspace, self.string_to_commit = \
                   self.get_nbackspace_and_string_to_commit()
@@ -107,6 +115,7 @@ class Engine(IBus.Engine):
         self.string_to_commit = u""
         self.new_string = u""
         self.old_string = u""
+        self.__raw_string = u""
         self.number_fake_backspace = 0
 
     def commit_utf8(self, string):

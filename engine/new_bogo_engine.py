@@ -17,7 +17,11 @@
 # You should have received a copy of the GNU General Public License
 # along with IBus-BoGo. If not, see <http://www.gnu.org/licenses/>.
 
+from valid_vietnamese import is_valid_combination
+
 CONFIG_LOADED = False
+
+SKIP_MISSPELLED = True
 
 # Don't change the following constants or the program will behave
 # unexpectedly
@@ -67,21 +71,32 @@ simple_telex_im = {
     }
 
 def process_key(string, key, im = simple_telex_im):
+    comps = separate(string)
+    # We refuse to process things like process('zzam', 'f')
+    if SKIP_MISSPELLED and comps == None:
+        return None
+    
     trans_list = get_transformation_list(key, im);
-    newstring = string
+    new_comps = comps
     for trans in trans_list:
-        newstring = transform(newstring, trans)
+        new_comps = transform(new_comps, trans)
 
-    if newstring == string:
-        for trans in trans_list:
-            newstring = reverse(newstring, trans)
-            if newstring != string:
-                break
-        newstring += unicode(key)
+    new_string = join(new_comps)
+    if new_string == string:
+        #for trans in trans_list:
+            #newstring = reverse(new_comps, trans)
+            #if newstring != string:
+                #break
+        new_string += unicode(key)
 
-    if len(newstring) < len(string):
-        newstring += unicode(key)
-    return newstring;
+    #if len(newstring) < len(string):
+        #newstring += unicode(key)
+    
+    
+    # One last check to rule out cases like 'ảch' or 'chuyểnl'
+    if SKIP_MISSPELLED and not is_valid_combination(new_comps):
+        return None
+    return new_string;
 
 def get_transformation_list(key, im):
     """
@@ -107,37 +122,6 @@ def is_vowel(char):
     char = char.lower()
     return True if (char in VOWELS) else False
 
-def separate(string):
-    """
-    Seperate the given string into 3 parts, based on its structure
-    """
-    comp = [u'',u'',u'']
-    has_vowel = False
-    for i in range(len(string)):
-        index = -1 - i
-        if not string[index].isalpha():
-            comp[0] = string[:index] + string[index] + comp[0]
-            break
-        if not is_vowel(string[index]):
-            if not has_vowel:
-                comp[2] = string[index] + comp[2]
-            else:
-                comp[0] = string[:index + 1]
-                break
-        else:
-            has_vowel = True
-            comp[1] = string[index] + comp[1]
-    # Special consonents qu and gi
-    if (comp[0]) and (comp[1]):
-        if (comp[0][-1]+comp[1][0]).lower() == u'qu' \
-            or ((comp[0][-1]+comp[1][0]).lower() == u'gi' \
-                and len(comp[1]) > 1):
-            comp[0] += comp[1][0]
-            comp[1] = comp[1][1:]
-    if not comp[1]:
-        comp[0] += comp[2]
-        comp[2] = u""
-    return comp
 
 def change_case(string, case):
     """
@@ -146,8 +130,10 @@ def change_case(string, case):
     """
     return string.lower() if case else string.upper()
 
+
 def join(alist):
     return u"".join(alist)
+
 
 def add_accent_char(char, accent):
     """
@@ -164,6 +150,7 @@ def add_accent_char(char, accent):
         char = VOWELS[index - accent]
     return change_case(char, case)
 
+
 def get_accent_char(char):
     """
     Get accent of an single char
@@ -173,6 +160,7 @@ def get_accent_char(char):
         return 5 - index % 6
     else:
         return Accent.NONE
+
 
 def add_mark_char(char, mark):
     """
@@ -217,6 +205,7 @@ def add_mark_char(char, mark):
     new_char = add_accent_char(new_char, accent)
     return change_case(new_char, case)
 
+
 def add_accent_at(string, mark, accent):
     """
     Add mark to the index-th character of the given string.  Return
@@ -227,6 +216,7 @@ def add_accent_at(string, mark, accent):
     # Python can handle the case which index is out of range of given string
     return string[:index] + add_accent_char(string[index], accent) \
         + string[index+1:]
+
 
 def add_accent(components, accent):
     """
@@ -254,6 +244,7 @@ def add_accent(components, accent):
         new_vowel = vowel[:1] + add_accent_char(vowel[1], accent) + vowel[2:]
     return [components[0], new_vowel, components[2]]
 
+
 def add_mark_at(string, index, mark):
     """
     Add mark to the index-th character of the given string. Return the new string after applying change.
@@ -263,6 +254,7 @@ def add_mark_at(string, index, mark):
         return string
     # Python can handle the case which index is out of range of given string
     return string[:index] + add_mark_char(string[index], mark) + string[index+1:]
+
 
 def add_mark(components, mark):
     """
@@ -291,6 +283,7 @@ def add_mark(components, mark):
                 pos = max(raw_vowel.find(u"u"), raw_vowel.find(u"o"))
                 comp[1] = add_mark_at(comp[1], pos, Mark.HORN)
     return comp
+
 
 def get_action(trans):
     """
@@ -324,10 +317,12 @@ def get_action(trans):
         if trans[0] == "_":
             return Action.ADD_ACCENT, Accent.NONE
 
-def is_valid_mark(components, mark_trans):
+
+def is_valid_mark(comps, mark_trans):
     """
     Check whether the mark given by mark_trans is valid to add to the components
     """
+    components = comps
     if components[1] != u"":
         raw_vowel = add_accent(components, Accent.NONE)[1].lower()
         raw_vowel = join([add_mark_char(c, Mark.NONE) for c in raw_vowel])
@@ -340,44 +335,51 @@ def is_valid_mark(components, mark_trans):
         return False
 
 
-def transform(string, trans):
+def transform(comps, trans):
     """
     Transform the given string with transfrom type trans
     """
-
+    
+    components = comps
+    
+    # Special case for 'ư, ơ'
     if trans[0] == u'<':
-        if string[-1:] == trans[1]:
-            return string[:-1]
-        else:
-            string += trans[1]
+            components[1] += trans[1]
+ #       if string[-1:] == trans[1]:
+ #           return string[:-1]
+ #       else:
+ #           string += trans[1]
+
 
     if trans[0] == u'+':
-        string += trans[1]
-        if not trans[1].isalpha():
-            return string
-        components = separate(string)
-        accent = Accent.NONE
-        for c in components[1]:
-            accent = get_accent_char(c)
-            if accent:
-                break
-        if accent:
-            # Remove accent
-            components = add_accent(components, Accent.NONE)
-            components = add_accent(components, accent)
-            return join(components)
+        if components[2] == u'' and is_vowel(trans[1]):
+            components[1] += trans[1]
+        else:
+            components[2] += trans[1]
+        return components
+        #if not trans[1].isalpha():
+            #return string
+        #accent = Accent.NONE
+        #for c in components[1]:
+            #accent = get_accent_char(c)
+            #if accent:
+                #break
+        #if accent:
+            ## Remove accent
+            #components = add_accent(components, Accent.NONE)
+            #components = add_accent(components, accent)
+            #return components
 
-
-    components = separate(string);
     action, factor = get_action (trans)
     if action == Action.ADD_ACCENT:
         components =  add_accent(components, factor)
     elif action == Action.ADD_MARK:
         if (is_valid_mark(components, trans)):
             components = add_mark(components, factor)
-    return join(components)
+    return components
 
-def reverse(string, trans):
+
+def reverse(comps, trans):
     """
     Reverse the effect of transformation trans on string
     If the transformation does not effect the string, return the original string
@@ -386,8 +388,8 @@ def reverse(string, trans):
     - Transform this part to the original state (remove accent if the trans
     is ADD_ACCENT action, remove mark if the trans is ADD_MARK action)
     """
+    components = comps
     action, factor = get_action (trans)
-    components = separate(string);
 
     if action == Action.ADD_ACCENT:
         components = add_accent(components, Accent.NONE)
@@ -399,4 +401,48 @@ def reverse(string, trans):
             if is_valid_mark(components, trans):
                 components[1] = u"".join([add_mark_char(c, Mark.NONE)
                                           for c in components[1]])
-    return join(components)
+    return components
+
+def separate(string):
+    """
+        Separates a valid Vietnamese word into 3 components:
+        the start sound, the middle sound and the end sound.
+        Eg: toán -> [u't', u'oá', u't']
+        Otherwise returns None (not a valid Vietnamese word).
+    """
+    comps = [u'', u'', u'']
+    if not string.isalpha():
+        return None
+    
+    # Search for the first vowel
+    for i in range(len(string)):
+        if is_vowel(string[i]):
+            comps[0] = u'' + string[:i]
+            string = u'' + string[i:]
+            break
+            
+    # No vowel?
+    if comps[0] == u'' and not is_vowel(string[0]):
+        comps[0] = string
+        string = u''
+    
+    # Search for the first consonant after the first vowel
+    for i in range(len(string)):
+        if not is_vowel(string[i]):
+            comps[1] = string[:i]
+            comps[2] = string[i:]
+            break
+       
+    # No ending consonant?
+    if comps[1] == u'':
+        comps[1] = string
+    
+    if (len(comps[1]) > 0) and \
+    ((comps[0] == u'g' and comps[1][0] == 'i' and len(comps[1]) > 1) or \
+    (comps[0] == u'q' and comps[1][0] == 'u')):
+        comps[0] += comps[1][:1]
+        comps[1] = comps[1][1:]
+    
+    if not is_valid_combination(comps) and SKIP_MISSPELLED:
+        return None
+    return comps
