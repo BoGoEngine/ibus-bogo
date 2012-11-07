@@ -24,10 +24,7 @@ from gi.repository import Pango
 import time
 import logging
 
-import new_bogo_engine
-core = new_bogo_engine
-
-from valid_vietnamese import is_valid_combination
+from bogo import new_bogo_engine as core
 
 # Syntactic sugar
 keysyms = IBus

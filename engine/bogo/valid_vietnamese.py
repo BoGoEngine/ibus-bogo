@@ -1,7 +1,9 @@
 #!/usr/bin/env python2.7
 #-*- coding: utf-8
 
-from utils import is_vowel
+import utils
+import accent
+Accent = accent.Accent
 
 CONSONANTS = [
     u'b', u'c', u'd', u'đ', u'',
@@ -42,17 +44,10 @@ CLOSED_COMPOUND_VOWELS = [
 
 OPEN_COMPOUND_VOWELS = [
     u'oa', u'uye', u'uyê', u'ua',
-    u'uâ', u'oo', u'ươ', u'uo', u'uô',
+    u'uâ', u'oo', u'ươ', u'uo', u'uô', u'ưo',
     u'ye', u'yê', u'ie', u'iê',
 ]
 
-class Accent:
-    GRAVE = 5
-    ACUTE = 4
-    HOOK = 3
-    TIDLE= 2
-    DOT = 1
-    NONE = 0
 
 def remove_accent(string):
     for i in range(len(string)):
@@ -70,7 +65,8 @@ def is_valid_combination(components):
     comps = components
     #import pdb; pdb.set_trace()
     # Check if our start sound is a proper consonant
-    if (comps[0] != u'') and (not (comps[0] in CONSONANTS)):
+    first_consonant = utils.change_case(comps[0],1)
+    if (first_consonant != u'') and (not (first_consonant in CONSONANTS)):
         return False
     
     # And if our ending sound is a proper ending consonant
@@ -97,25 +93,15 @@ def is_valid_combination(components):
     if comps[2] == u'c' and vowel in u'ê':
         return False
     
-    accent = Accent.NONE
+    ac = Accent.NONE
     for i in range(len(comps[1])):
-        a = get_accent_char(comps[1][i])
+        a = accent.get_accent_char(comps[1][i])
         if a != Accent.NONE:
-            accent = a
+            ac = a
             break
     
     # These consonants can only go with ACUTE, DOT or NONE accents
-    if comps[2] in [u'c', u'p', u't', u'ch'] and not accent in [Accent.NONE, Accent.ACUTE, Accent.DOT]:
+    if comps[2] in [u'c', u'p', u't', u'ch'] and not ac in [Accent.NONE, Accent.ACUTE, Accent.DOT]:
         return False
     
     return True
-        
-def get_accent_char(char):
-    """
-    Get accent of an single char
-    """
-    index = VOWELS.find(char.lower())
-    if (index != -1):
-        return 5 - index % 6
-    else:
-        return Accent.NONE

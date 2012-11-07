@@ -16,18 +16,18 @@
 #
 
 install (PROGRAMS
-  ibus-engine-bogo
+  data/ibus-engine-bogo
   DESTINATION
   lib/bogo
   )
 
 install (FILES
-  bogo.xml
+  data/bogo.xml
   DESTINATION
   ${IBUS_COMPONENT_DIR}/)
 
 install (FILES
-  ibus-bogo.svg
+  data/ibus-bogo.svg
   DESTINATION
   ${BOGO_INSTALL_DIR}/icons/)
 
@@ -35,6 +35,8 @@ install (FILES
   bogo_main.py
   bogo_engine.py
   new_bogo_engine.py
+  valid_vietnamese.py
+  utils.py
   DESTINATION
   ${BOGO_INSTALL_DIR}/
   )
