@@ -2,6 +2,7 @@
 # New BoGo Engine - Vietnamese Text processing engine
 #
 # Copyright (c) 2012- Long T. Dam <longdt90@gmail.com>,
+#                     Trung Ngo <ndtrung4419@gmail.com>
 #
 # This file is part of BoGo IBus Engine Project BoGo IBus Engine is
 # free software: you can redistribute it and/or modify it under the
