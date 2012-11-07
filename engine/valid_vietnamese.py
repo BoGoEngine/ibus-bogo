@@ -29,19 +29,21 @@ CLOSED_COMPOUND_VOWELS = [
     u'âu', u'ây', #u'au',
     u'eo',
     u'êu', u'eu',
-    u'iu', u'ie', u'iê', u'iêu',
+    u'ia', u'iu', u'iêu',
     u'oi',
     #u'ô',
     u'ơi', #u'oi'
+    u'ôi',
     u'ua', u'ui',
-    u'ưa', u'ưi', u'ươi', u'ưu', u'uo', u'uu', u'uoi',
-    u'uya', u'uye', u'uyê',
-    u'yêu', u'yeu', u'ye', u'yê'
+    u'ưa', u'ưi', u'ươi', u'ưu', u'uu', u'uoi',
+    u'uya',
+    u'yêu', u'yeu', 
 ]
 
 OPEN_COMPOUND_VOWELS = [
     u'oa', u'uye', u'uyê', u'ua',
-    u'uâ', u'oo', u'ươ', u'uo'
+    u'uâ', u'oo', u'ươ', u'uo', u'uô',
+    u'ye', u'yê', u'ie', u'iê',
 ]
 
 class Accent:
@@ -66,7 +68,7 @@ def remove_accent(string):
 
 def is_valid_combination(components):
     comps = components
-    
+    #import pdb; pdb.set_trace()
     # Check if our start sound is a proper consonant
     if (comps[0] != u'') and (not (comps[0] in CONSONANTS)):
         return False
@@ -77,7 +79,7 @@ def is_valid_combination(components):
     
     vowel = remove_accent(comps[1])
     if len(vowel) > 1:
-        if not (vowel in OPEN_COMPOUND_VOWELS or
+        if not (vowel in OPEN_COMPOUND_VOWELS or \
             vowel in CLOSED_COMPOUND_VOWELS):
             return False
     
@@ -85,7 +87,7 @@ def is_valid_combination(components):
         return False
     
     # 'ăch'?
-    if comps[2] == u'ch' and (vowel in u'ăâeêôơuư') or (vowel in OPEN_COMPOUND_VOWELS):
+    if comps[2] == u'ch' and ((vowel in u'ăâeêôơuư') or (vowel in OPEN_COMPOUND_VOWELS)):
         return False
     
     # 'ương' is ok but 'ơng' ?

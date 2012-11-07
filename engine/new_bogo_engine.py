@@ -54,7 +54,8 @@ FAMILY_O = u"oơô"
 FAMILY_U = u"uư"
 FAMILY_D = u"dđ"
 
-simple_telex_im = {
+IMs = {
+'simple-telex' : {
     'a':'a^',
     'o':'o^',
     'e':'e^',
@@ -69,8 +70,24 @@ simple_telex_im = {
     ']':u'<ư',
     '[':u'<ơ'
     }
+}
 
-def process_key(string, key, im = simple_telex_im):
+def process_key(string, key, im = IMs['simple-telex']):
+    # Handle things like tôi_là_ai by putting "tôi_là_" in the 'garbage' variable,
+    # effectively skipping it then put it back later. 
+    garbage = u''
+    for i in range(-1, -len(string)-1, -1): # Reverse indices [-1, -2, -3, ...]
+        print(i)
+        if not string[i].isalpha():
+            garbage += string[:i] + string[i]
+            string = u'' + string[i+1:]
+            break
+    #import pdb; pdb.set_trace()
+    # Handle process_key('â', '_')
+    if not key in im and not key.isalpha():
+        string += key
+        return garbage + string
+        
     comps = separate(string)
     # We refuse to process things like process('zzam', 'f')
     if SKIP_MISSPELLED and comps == None:
@@ -96,7 +113,7 @@ def process_key(string, key, im = simple_telex_im):
     # One last check to rule out cases like 'ảch' or 'chuyểnl'
     if SKIP_MISSPELLED and not is_valid_combination(new_comps):
         return None
-    return new_string;
+    return garbage + new_string;
 
 def get_transformation_list(key, im):
     """
