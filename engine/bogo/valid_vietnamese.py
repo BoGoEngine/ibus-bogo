@@ -50,7 +50,7 @@ CLOSED_COMPOUND_VOWELS = [
     u'eo',
     u'êu', u'eu',
     u'ia', u'iu', u'iêu',
-    u'oi',
+    u'oi', u'oai',
     #u'ô',
     u'ơi', #u'oi'
     u'ôi',
@@ -61,7 +61,7 @@ CLOSED_COMPOUND_VOWELS = [
 ]
 
 OPEN_COMPOUND_VOWELS = [
-    u'oa', u'uye', u'uyê', u'ua',
+    u'oa', u'oă', u'oe', u'uye', u'uyê', u'ua',
     u'uâ', u'oo', u'ươ', u'uo', u'uô', u'ưo',
     u'ye', u'yê', u'ie', u'iê',
 ]

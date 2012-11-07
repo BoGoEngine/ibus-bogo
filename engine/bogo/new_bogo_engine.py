@@ -38,33 +38,49 @@ class Action:
     ADD_CHAR = 0
 
 IMs = {
-'simple-telex' : {
-    'a':'a^',
-    'o':'o^',
-    'e':'e^',
-    'w':['u*','o*','a+'],
-    'd':'d-',
-    'f':'\\',
-    's':'/',
-    'r':'?',
-    'x':'~',
-    'j':'.',
-    'z':'_',
-    ']':u'<ư',
-    '[':u'<ơ'
+    'simple-telex' : {
+        'a':'a^',
+        'o':'o^',
+        'e':'e^',
+        'w':['u*','o*','a+'],
+        'd':'d-',
+        'f':'\\',
+        's':'/',
+        'r':'?',
+        'x':'~',
+        'j':'.',
+        'z':'_',
+        ']':u'<ư',
+        '[':u'<ơ'
+    },
+    'vni' : {
+        '6':['a^', 'o^', 'e^'],
+        '7':['u*','o*'],
+        '8':'a+',
+        '9':'d-',
+        '2':'\\',
+        '1':'/',
+        '3':'?',
+        '4':'~',
+        '5':'.',
+        '0':'_'
     }
 }
 
 def process_key(string, key, im = IMs['simple-telex']):
-    # Handle things like tôi_là_ai by putting "tôi_là_" in the 'garbage' variable,
-    # effectively skipping it then put it back later. 
+    # Handle non-alpha string like 'tôi_là_ai' by putting 'tôi_là_' in the `garbage` variable,
+    # effectively skipping it then put it back later.
     garbage = u''
     for i in range(-1, -len(string)-1, -1): # Reverse indices [-1, -2, -3, ...]
         if not string[i].isalpha():
             garbage += string[:i] + string[i]
-            string = u'' + string[i+1:]
+            string = u'' + string[i+1:] if i != -1 else u''
             break
-    #import pdb; pdb.set_trace()
+    
+    # Empty string?
+    if string == u'':
+        return garbage + key
+    
     # Handle process_key('â', '_')
     if not key in im and not key.isalpha():
         string += key
@@ -75,23 +91,18 @@ def process_key(string, key, im = IMs['simple-telex']):
     if SKIP_MISSPELLED and comps == None:
         return None
     
+    # Apply transformations
     trans_list = get_transformation_list(key, im);
     new_comps = comps
     for trans in trans_list:
         new_comps = transform(new_comps, trans)
 
+    # If the string doesn't change, that mean the transformations are
+    # not applicable, then just append the key.
     new_string = utils.join(new_comps)
     if new_string == string:
-        #for trans in trans_list:
-            #newstring = reverse(new_comps, trans)
-            #if newstring != string:
-                #break
         new_string += unicode(key)
 
-    #if len(newstring) < len(string):
-        #newstring += unicode(key)
-    
-    
     # One last check to rule out cases like 'ảch' or 'chuyểnl'
     if SKIP_MISSPELLED and not is_valid_combination(new_comps):
         return None
@@ -150,9 +161,6 @@ def get_action(trans):
             return Action.ADD_ACCENT, Accent.NONE
 
 
-
-
-
 def transform(comps, trans):
     """
     Transform the given string with transfrom type trans
@@ -175,18 +183,6 @@ def transform(comps, trans):
         else:
             components[2] += trans[1]
         return components
-        #if not trans[1].isalpha():
-            #return string
-        #accent = Accent.NONE
-        #for c in components[1]:
-            #accent = accent.get_accent_char(c)
-            #if accent:
-                #break
-        #if accent:
-            ## Remove accent
-            #components = accent.add_accent(components, Accent.NONE)
-            #components = accent.add_accent(components, accent)
-            #return components
 
     action, factor = get_action (trans)
     if action == Action.ADD_ACCENT:
@@ -197,30 +193,6 @@ def transform(comps, trans):
     return components
 
 
-def reverse(comps, trans):
-    """
-    Reverse the effect of transformation trans on string
-    If the transformation does not effect the string, return the original string
-    Workflow:
-    - Find the part of string that is effected by the transformation
-    - Transform this part to the original state (remove accent if the trans
-    is ADD_ACCENT action, remove mark if the trans is ADD_MARK action)
-    """
-    components = comps
-    action, factor = get_action (trans)
-
-    if action == Action.ADD_ACCENT:
-        components = accent.add_accent(components, Accent.NONE)
-    elif action == Action.ADD_MARK:
-        if factor == Mark.BAR:
-            components[0] = components[0][:-1] + \
-                mark.mark.add_mark_char(components[0][-1:], Mark.NONE)
-        else:
-            if mark.is_valid_mark(components, trans):
-                components[1] = u"".utils.join([mark.mark.add_mark_char(c, Mark.NONE)
-                                          for c in components[1]])
-    return components
-
 def separate(string):
     """
         Separates a valid Vietnamese word into 3 components:
@@ -229,8 +201,8 @@ def separate(string):
         Otherwise returns None (not a valid Vietnamese word).
     """
     comps = [u'', u'', u'']
-    if not string.isalpha():
-        return None
+    #if not string.isalpha():
+    #    return None
     
     # Search for the first vowel
     for i in range(len(string)):
@@ -238,7 +210,7 @@ def separate(string):
             comps[0] = u'' + string[:i]
             string = u'' + string[i:]
             break
-            
+
     # No vowel?
     if comps[0] == u'' and not utils.is_vowel(string[0]):
         comps[0] = string
@@ -251,10 +223,13 @@ def separate(string):
             comps[2] = string[i:]
             break
        
-    # No ending consonant?
+    # No ending consonant? Then the rest of the string must be the vowel part
     if comps[1] == u'':
         comps[1] = string
     
+    # 'gi' and 'qu' need some special treatments
+    # We want something like this:
+    #     ['g', 'ia', ''] -> ['gi', 'a', '']
     if (len(comps[1]) > 0) and \
     ((comps[0] == u'g' and comps[1][0] == 'i' and len(comps[1]) > 1) or \
     (comps[0] == u'q' and comps[1][0] == 'u')):
