@@ -166,7 +166,7 @@ def transform(comps, trans):
     Transform the given string with transfrom type trans
     """
     
-    components = comps
+    components = list(comps)
     
     # Special case for 'ư, ơ'
     if trans[0] == u'<':
@@ -231,8 +231,8 @@ def separate(string):
     # We want something like this:
     #     ['g', 'ia', ''] -> ['gi', 'a', '']
     if (len(comps[1]) > 0) and \
-    ((comps[0] == u'g' and comps[1][0] == 'i' and len(comps[1]) > 1) or \
-    (comps[0] == u'q' and comps[1][0] == 'u')):
+    ((comps[0] in u'gG' and comps[1][0] == 'iI' and len(comps[1]) > 1) or \
+    (comps[0] in u'qQ' and comps[1][0] == 'uU')):
         comps[0] += comps[1][:1]
         comps[1] = comps[1][1:]
     

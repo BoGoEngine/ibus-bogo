@@ -37,9 +37,6 @@ ENDING_CONSONANTS = [
     u't', u'ch', u'ng', u'nh'
 ]
 
-VOWELS= u"àáảãạaằắẳẵặăầấẩẫậâèéẻẽẹeềếểễệêìíỉĩịi" \
-        u"òóỏõọoồốổỗộôờớởỡợơùúủũụuừứửữựưỳýỷỹỵy"
-
 # After a closed compound vowel, there can be no consonants while there
 # can be for an open vowel.
 # NOTE: Actually, we'll include their pre-processed form too.
@@ -67,30 +64,28 @@ OPEN_COMPOUND_VOWELS = [
 ]
 
 
-def remove_accent(string):
-    for i in range(len(string)):
-        if (string[i] in VOWELS) and (not string[i] in u'aăâeêioôơuưy'):
-            # Convert á, ả -> a
-            # Actually, we're doing 
-            # 2, 3 -> 5
-            # 6, 8 -> 10
-            pos = ((VOWELS.index(string[i]) + 1)/ 6 + 1) * 6 - 1
-            string = string[:i] + VOWELS[pos] + string[i+1:]
-    return string
-
 def is_valid_combination(components):
-    comps = components
-    #import pdb; pdb.set_trace()
+    """Check if a character combination complies to Vietnamese spelling.
+    
+    Input:
+        components - a list of the form [u'c', u'a', u'm']
+    Output:
+        True if OK, False otherwise.
+    """
+    comps = list(components)
+    # We only work with lower case
+    for i in range(len(comps)):
+        comps[i] = utils.change_case(comps[i], 1)
+    
     # Check if our start sound is a proper consonant
-    first_consonant = utils.change_case(comps[0],1)
-    if (first_consonant != u'') and (not (first_consonant in CONSONANTS)):
+    if (comps[0] != u'') and (not (comps[0] in CONSONANTS)):
         return False
     
     # And if our ending sound is a proper ending consonant
     if (comps[2] != u'') and (not (comps[2] in ENDING_CONSONANTS)):
         return False
     
-    vowel = remove_accent(comps[1])
+    vowel = accent.remove_accent_string(comps[1])
     if len(vowel) > 1:
         if not (vowel in OPEN_COMPOUND_VOWELS or \
             vowel in CLOSED_COMPOUND_VOWELS):
@@ -110,6 +105,7 @@ def is_valid_combination(components):
     if comps[2] == u'c' and vowel in u'ê':
         return False
     
+    # Get the first accent
     ac = Accent.NONE
     for i in range(len(comps[1])):
         a = accent.get_accent_char(comps[1][i])

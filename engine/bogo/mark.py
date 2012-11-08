@@ -39,7 +39,7 @@ def add_mark(components, mark):
     """
     Case Mark.NONE will be deal with separately by user
     """
-    comp = components
+    comp = list(components)
     if mark == Mark.BAR and comp[0] and comp[0][-1].lower() in FAMILY_D:
         comp[0] = add_mark_at(comp[0], len(comp[0])-1, Mark.BAR)
     else:
@@ -120,7 +120,7 @@ def is_valid_mark(comps, mark_trans):
     """
     Check whether the mark given by mark_trans is valid to add to the components
     """
-    components = comps
+    components = list(comps)
     if components[1] != u"":
         raw_vowel = accent.add_accent(components, Accent.NONE)[1].lower()
         raw_vowel = utils.join([add_mark_char(c, Mark.NONE) for c in raw_vowel])
