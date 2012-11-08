@@ -24,7 +24,7 @@ import accent
 Accent = accent.Accent
 
 CONSONANTS = [
-    u'b', u'c', u'd', u'đ', u'',
+    u'b', u'c', u'd', u'đ',
     u'g', u'h', u'k', u'l', u'm', 
     u'n', u'p', u'q', u'r', u's', 
     u't', u'v', u'x', u'ch', u'gh', 
