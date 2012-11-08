@@ -25,6 +25,7 @@ import time
 import logging
 
 from bogo import new_bogo_engine as core
+from config import Config
 
 # Syntactic sugar
 keysyms = IBus
@@ -35,8 +36,7 @@ class Engine(IBus.Engine):
 
     def __init__(self):
         super(Engine, self).__init__()
-        self.__charset_list = ["UTF8","TCVN3"]
-        self.__init_props()
+        self.__config = Config()
         self.commit_result = self.commit_utf8
         self.reset_engine()
         logging.info("You are running BoGo IBus Engine")
@@ -148,14 +148,14 @@ class Engine(IBus.Engine):
             return False
 
     def do_focus_in(self):
-        """Implements IBus.Engine's forcus_in's default signal handler.
+        """Implements IBus.Engine's focus_in's default signal handler.
 
         Called when the input client widget gets focus.
         """
-        self.register_properties(self.__prop_list)
+        self.register_properties(self.__config.prop_list)
 
     def do_focus_out(self):
-        """Implements IBus.Engine's forcus_out's default signal handler.
+        """Implements IBus.Engine's focus_out's default signal handler.
 
         Called when the input client widget loses focus.
         """
@@ -171,34 +171,3 @@ class Engine(IBus.Engine):
             elif prop_name == "TCVN3":
                 self.commit_result = self.commit_tcvn3
                 logging.info("TCVN3")
-
-    def __init_charset_prop_menu(self):
-        charset_prop_list = IBus.PropList()
-        for charset in self.__charset_list:
-            charset_prop_list.append(
-                IBus.Property(key = charset,
-                              prop_type = IBus.PropType.RADIO,
-                              label = IBus.Text.new_from_string(charset),
-                              icon = '',
-                              tooltip = IBus.Text.new_from_string(charset),
-                              sensitive = True,
-                              visible = True,
-                              state = IBus.PropState.CHECKED if charset == "UTF8" else IBus.PropState.UNCHECKED,
-                              sub_props = None))
-
-        charset_prop_menu = IBus.Property(
-            key = "charset",
-            prop_type = IBus.PropType.MENU,
-            label = IBus.Text.new_from_string("Charset"),
-            icon = "gtk-preferences",
-            tooltip = IBus.Text.new_from_string("Choose charset"),
-            sensitive = True,
-            visible = True,
-            state = IBus.PropState.UNCHECKED,
-            sub_props = charset_prop_list)
-        return charset_prop_menu
-
-    def __init_props(self):
-        self.__prop_list = IBus.PropList()
-        self.__charset_prop_menu = self.__init_charset_prop_menu()
-        self.__prop_list.append(self.__charset_prop_menu)
