@@ -24,24 +24,35 @@ install (PROGRAMS
 install (FILES
   data/bogo.xml
   DESTINATION
-  ${IBUS_COMPONENT_DIR}/
+  ${IBUS_COMPONENT_DIR}
   )
 
 install (FILES
   data/ibus-bogo.svg
   DESTINATION
-  ${BOGO_INSTALL_DIR}/icons/
+  ${BOGO_INSTALL_DIR}/icons
+  )
+
+install (FILES
+  data/ibus-bogo.gschema.xml
+  DESTINATION
+  share/glib-2.0/schemas
   )
 
 install (FILES
   main.py
   ibus_engine.py
+  config.py
   DESTINATION
   ${BOGO_INSTALL_DIR}
   )
 
-install (DIRECTORY
-  bogo
+FILE (GLOB
+ bogo "bogo/*.py"
+ )
+
+install (FILES
+  ${bogo}
   DESTINATION
-  ${BOGO_INSTALL_DIR}
+  ${BOGO_INSTALL_DIR}/bogo
   )

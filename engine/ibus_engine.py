@@ -31,12 +31,17 @@ from config import Config
 keysyms = IBus
 modifier = IBus.ModifierType
 
+# I know, I know. Singleton/global objects are horrible but
+# right now there is no known way to pass more args to Engine
+# because of how python-gobject works.
+config = Config()
+
 class Engine(IBus.Engine):
     __gtype_name__ = 'EngineBoGo'
 
     def __init__(self):
         super(Engine, self).__init__()
-        self.__config = Config()
+        self.__config = config
         self.commit_result = self.commit_utf8
         self.reset_engine()
         logging.info("You are running BoGo IBus Engine")
@@ -79,7 +84,7 @@ class Engine(IBus.Engine):
                 logging.info("Key pressed: %c", chr(keyval))
                 logging.info("Old string: %s", self.old_string)
                 self.old_string = self.new_string
-                self.new_string = self.process_key(self.old_string, keyval)
+                self.new_string = self.process_key(self.old_string, keyval, self.__config.input_method)
                 if self.new_string == None:
                     self.new_string = self.__raw_string
                     
@@ -122,8 +127,8 @@ class Engine(IBus.Engine):
         tcvn3_string = BoGo.utf8_to_tcvn3(string)
         self.commit_text(IBus.Text.new_from_string(tcvn3_string))
 
-    def process_key(self, string, keyval):
-        return core.process_key(string, unichr(keyval))
+    def process_key(self, string, keyval, im):
+        return core.process_key(string, unichr(keyval), im)
         # if self.old_string:
         #     return core.process_key(string, unichr(keyval))
         # else:
@@ -162,12 +167,4 @@ class Engine(IBus.Engine):
         self.reset_engine()
 
     def do_property_activate(self, prop_name, state):
-        if state == IBus.PropState.CHECKED:
-            if prop_name == None:
-                return
-            elif prop_name == "UTF8":
-                self.commit_result = self.commit_utf8
-                logging.info("UTF8")
-            elif prop_name == "TCVN3":
-                self.commit_result = self.commit_tcvn3
-                logging.info("TCVN3")
+        self.__config.do_property_activate(prop_name, state)

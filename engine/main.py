@@ -29,11 +29,13 @@ import locale
 import logging
 
 from ibus_engine import Engine
+from config import Config
 
 current_path = os.path.dirname(os.path.abspath(__file__))
 
 class IMApp:
     def __init__(self, exec_by_ibus):
+        self.__id = 0
         engine_name = "BoGo Engine"
         self.__component = \
           IBus.Component.new("org.freedesktop.IBus.BoGoPython",
@@ -56,6 +58,7 @@ class IMApp:
         self.__mainloop = GObject.MainLoop()
         self.__bus = IBus.Bus()
         self.__bus.connect("disconnected", self.__bus_disconnected_cb)
+        self.__config = Config()
         self.__factory = IBus.Factory.new(self.__bus.get_connection())
         self.__factory.add_engine("bogo-python",
                 GObject.type_from_name("EngineBoGo"))

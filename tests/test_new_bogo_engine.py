@@ -29,7 +29,7 @@ from bogo.accent import *
 from bogo.mark import *
 from bogo.utils import *
 
-def process_seq(orig, seq, im=IMs['simple-telex']):
+def process_seq(orig, seq, im='simple-telex'):
     string = u'' + orig
     for i in range(len(seq)):
         string = process_key(string, seq[i], im)
@@ -179,6 +179,11 @@ Only the vowel part will be changed after the add_accent take places
         self.assertEqual(process_seq('', 'tooi'), u'tôi')
         self.assertEqual(process_seq('', 'chuyeenr'), u'chuyển')
         self.assertEqual(process_seq('', 'ddoonjg'), u'động')
+        
+        # Test fallback IM
+        self.assertEqual(process_seq('', 'tooi', 'shut'), u'tôi')
+        self.assertEqual(process_seq('', 'chuyeenr', 'down'), u'chuyển')
+        self.assertEqual(process_seq('', 'ddoonjg', 'blah'), u'động')
         
 if __name__ == '__main__':
     unittest.main()

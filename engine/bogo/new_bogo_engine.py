@@ -49,6 +49,19 @@ IMs = {
         'r':'?',
         'x':'~',
         'j':'.',
+        'z':'_'
+    },
+    'telex' : {
+        'a':'a^',
+        'o':'o^',
+        'e':'e^',
+        'w':['u*','o*','a+'],
+        'd':'d-',
+        'f':'\\',
+        's':'/',
+        'r':'?',
+        'x':'~',
+        'j':'.',
         'z':'_',
         ']':u'<ư',
         '[':u'<ơ'
@@ -68,11 +81,19 @@ IMs = {
 }
 
 
-def process_key(string, key, im = IMs['simple-telex']):
+def process_key(string, key, im = 'telex'):
+    ## BEGIN TRICKS (scroll down please)
+    
     # Empty string?
     if not string:
         return key
-        
+    
+    # People can sometimes be really mischievous :<
+    if im in IMs:
+        im = IMs[im]
+    else:
+        im = IMs['telex']
+
     # Handle non-alpha string like 'tôi_là_ai' by putting 'tôi_là_' in the `garbage` variable,
     # effectively skipping it then put it back later.
     garbage = u''
@@ -90,7 +111,11 @@ def process_key(string, key, im = IMs['simple-telex']):
     if not key in im and not key.isalpha():
         string += key
         return garbage + string
-        
+    
+    ## END TRICKS (here comes real code)
+    
+    # Try to break the string down to 3 components
+    # separate('chuyen') = ['ch', 'uye', 'n']
     comps = separate(string)
     # We refuse to process things like process('zzam', 'f')
     if SKIP_MISSPELLED and comps == None:
