@@ -22,15 +22,15 @@ from gi.repository import IBus, GLib, GObject, Gio
 
 class Config(GObject.GObject):
     charsets = {
-        'utf-8' : ('UTF-8', 'UTF-8 Unicode (Times New Roman)'),
+        'charset.utf-8' : ('UTF-8', 'UTF-8 Unicode (Times New Roman)', 'utf-8'),
         #'tcvn3' : ('TCVN3', 'Vietnamese Standard No.3 (.VnTimes)'),
         #'vni' : ('VNI', 'VNI Encoding (VNI-Times)')
     }
     methods = {
-        'telex' : ('Telex', 'Telex with [, ], and w.'),
-        'simple-telex' : ('STelex', 'Minimal Telex'),
-        'vni' : ('VNI', 'VNI Input Method')
-     }
+        'im.telex' : ('Telex', 'Telex with [, ], and w.', 'telex'),
+        'im.simple-telex' : ('STelex', 'Minimal Telex', 'simple-telex'),
+        'im.vni' : ('VNI', 'VNI Input Method', 'vni')
+    }
     
     # Read this:
     # http://python-gtk-3-tutorial.readthedocs.org/en/latest/objects.html#properties
@@ -40,8 +40,8 @@ class Config(GObject.GObject):
     def __init__(self):
         GObject.GObject.__init__(self)
         self.__backend = Gio.Settings('org.kgcd.ibus-bogo')
-        self.__backend.bind('current-input-method', self, 'input-method', Gio.SettingsBindFlags.DEFAULT)
-        self.__backend.bind('current-output-charset', self, 'output-charset', Gio.SettingsBindFlags.DEFAULT)
+        self.__backend.bind('input-method', self, 'input-method', Gio.SettingsBindFlags.DEFAULT)
+        self.__backend.bind('output-charset', self, 'output-charset', Gio.SettingsBindFlags.DEFAULT)
         self.__init_props()
 
     # This is horrible. I know. Blame IBus.
@@ -52,24 +52,23 @@ class Config(GObject.GObject):
                 IBus.Property(key = charset,
                               prop_type = IBus.PropType.RADIO,
                               label = IBus.Text.new_from_string(Config.charsets[charset][0]),
-                              icon = None,
                               tooltip = IBus.Text.new_from_string(Config.charsets[charset][1]),
                               sensitive = True,
                               visible = True,
-                              state = IBus.PropState.CHECKED if charset == self.output_charset else IBus.PropState.UNCHECKED,
+                              state = IBus.PropState.CHECKED if Config.charsets[charset][2] == self.output_charset else IBus.PropState.UNCHECKED,
                               sub_props = None))
 
-        charset_prop_menu = IBus.Property(
+        self.__charset_prop_menu = IBus.Property(
             key = "charset",
             prop_type = IBus.PropType.MENU,
-            label = IBus.Text.new_from_string("Charset"),
+            label = IBus.Text.new_from_string(Config.charsets['charset.' + self.output_charset][0]),
             icon = None,
             tooltip = IBus.Text.new_from_string("Choose charset"),
             sensitive = True,
             visible = True,
             state = IBus.PropState.UNCHECKED,
             sub_props = charset_prop_list)
-        return charset_prop_menu
+        return self.__charset_prop_menu
 
     def __init_method_prop_menu(self):
         method_prop_list = IBus.PropList()
@@ -85,17 +84,17 @@ class Config(GObject.GObject):
                               state = IBus.PropState.CHECKED if method == self.input_method else IBus.PropState.UNCHECKED,
                               sub_props = None))
 
-        method_prop_menu = IBus.Property(
+        self.__method_prop_menu = IBus.Property(
             key = "method",
             prop_type = IBus.PropType.MENU,
-            label = IBus.Text.new_from_string("Typing Method"),
+            label = IBus.Text.new_from_string(Config.methods['im.' + self.input_method][0]),
             icon = None,
             tooltip = IBus.Text.new_from_string("Choose typing method"),
             sensitive = True,
             visible = True,
             state = IBus.PropState.UNCHECKED,
             sub_props = method_prop_list)
-        return method_prop_menu
+        return self.__method_prop_menu
 
     def __init_props(self):
         self.prop_list = IBus.PropList()
@@ -105,13 +104,21 @@ class Config(GObject.GObject):
         self.prop_list.append(self.__method_prop_menu)
 
     def do_property_activate(self, prop_name, state):
-        if prop_name in Config.methods and state == IBus.PropState.CHECKED:
-            # For some unknown reason, GSettings property binding
-            # won't work for write operation so we have to do this.
-            
+        """Called when the user press a button on the panel (activate a property)
+        """
+
+        if prop_name in Config.methods and state == IBus.PropState.CHECKED:         
             #self.input_method = prop_name
-            self.__backend.set_string('current-input-method', prop_name)
+            # For some unknown reason, GSettings property binding
+            # won't work for write operation so we have to do this.            
+            self.__backend.set_string('input-method', Config.methods[prop_name][2])
+            t = IBus.Text.new_from_string(Config.methods[prop_name][0])
+            self.__method_prop_menu.set_label(t)
+            return self.__method_prop_menu
 
         if prop_name in Config.charsets and state == IBus.PropState.CHECKED:
             #self.output_charset = prop_name
-            self.__backend.set_string('current-output-charset', prop_name)
+            self.__backend.set_string('output-charset', charsets[prop_name][2])
+            t = IBus.Text.new_from_string(Config.charsets[prop_name][0])
+            self.__charset_prop_menu.set_label(t)
+            return self.__charset_prop_menu

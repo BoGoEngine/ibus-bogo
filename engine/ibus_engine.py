@@ -46,7 +46,6 @@ class Engine(IBus.Engine):
         self.reset_engine()
         logging.info("You are running BoGo IBus Engine")
 
-
     # The "do_" part is PyGObject's way of overriding base's functions
     def do_process_key_event(self, keyval, keycode, state):
         """Implement IBus.Engine's process_key_event default signal handler.
@@ -167,4 +166,6 @@ class Engine(IBus.Engine):
         self.reset_engine()
 
     def do_property_activate(self, prop_name, state):
-        self.__config.do_property_activate(prop_name, state)
+        prop = self.__config.do_property_activate(prop_name, state)
+        self.update_property(prop)
+        self.reset_engine()
