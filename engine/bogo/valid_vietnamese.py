@@ -52,7 +52,7 @@ CLOSED_COMPOUND_VOWELS = [
     u'ơi', #u'oi'
     u'ôi',
     u'ua', u'ui',
-    u'ưa', u'ưi', u'ươi', u'ưu', u'uu', u'uoi',
+    u'ưa', u'ưi', u'ươi', u'ưu', u'uu', u'uoi', u'uôi',
     u'uya',
     u'yêu', u'yeu', 
 ]
@@ -95,7 +95,8 @@ def is_valid_combination(components):
         return False
     
     # 'ăch'?
-    if comps[2] == u'ch' and ((vowel in u'ăâeêôơuư') or (vowel in OPEN_COMPOUND_VOWELS)):
+    if comps[2] == u'ch' and ((vowel in u'ăâeêôơuư') or \
+        (vowel in OPEN_COMPOUND_VOWELS)):
         return False
     
     # 'ương' is ok but 'ơng' ?
@@ -114,7 +115,8 @@ def is_valid_combination(components):
             break
     
     # These consonants can only go with ACUTE, DOT or NONE accents
-    if comps[2] in [u'c', u'p', u't', u'ch'] and not ac in [Accent.NONE, Accent.ACUTE, Accent.DOT]:
+    if comps[2] in [u'c', u'p', u't', u'ch'] and \
+        not ac in [Accent.NONE, Accent.ACUTE, Accent.DOT]:
         return False
     
     return True

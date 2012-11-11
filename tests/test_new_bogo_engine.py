@@ -51,6 +51,8 @@ class TestBoGoEngine(unittest.TestCase):
         self.assertEqual(separate(u'a'), [u'',u'a',u''])
         self.assertEqual(separate(u'aoe'), None)
         self.assertEqual(separate(u'nn'), None)
+        self.assertEqual(separate(u'uo'), [u'',u'uo',u''])
+        self.assertEqual(separate(u'uong'), [u'',u'uo',u'ng'])
 
     def test_add_accent_char(self):
         self.assertEqual(add_accent_char(u'a', Accent.GRAVE), u'à')
@@ -174,6 +176,7 @@ Only the vowel part will be changed after the add_accent take places
         self.assertEqual(process_key(u'ư','w'), u'uw')
         self.assertEqual(process_key(u'đ','x'), u'đx')
         self.assertEqual(process_key(u'hoac','w'), u'hoăc')
+        self.assertEqual(process_key(u'cuô','i'), u'cuôi')
 
     def test_process_seq(self):
         self.assertEqual(process_seq('', 'tooi'), u'tôi')
