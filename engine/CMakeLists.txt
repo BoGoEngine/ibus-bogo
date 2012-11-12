@@ -18,7 +18,7 @@
 install (PROGRAMS
   data/ibus-engine-bogo
   DESTINATION
-  lib/bogo
+  lib/ibus-bogo
   )
 
 install (FILES
@@ -33,11 +33,8 @@ install (FILES
   ${BOGO_INSTALL_DIR}/icons
   )
 
-install (FILES
-  data/ibus-bogo.gschema.xml
-  DESTINATION
-  share/glib-2.0/schemas
-  )
+include (GSettings)
+add_schema(data/ibus-bogo.gschema.xml)
 
 install (FILES
   main.py

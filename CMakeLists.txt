@@ -1,6 +1,8 @@
 cmake_minimum_required (VERSION 2.6)
 project (IBus-BoGo)
 
+list (APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
+
 # Author and software info:
 set (AUTHORS "Long T. Dam")
 set (EMAIL "longdt90@gmail.com")
