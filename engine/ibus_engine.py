@@ -80,19 +80,20 @@ class Engine(IBus.Engine):
             if state & (modifier.CONTROL_MASK | modifier.MOD1_MASK) == 0:
                 self.__raw_string = self.__raw_string + chr(keyval)
                 
-                logging.info("Key pressed: %c", chr(keyval))
-                logging.info("Old string: %s", self.old_string)
+                logging.debug("Key pressed: %c", chr(keyval))
+                logging.debug("Old string: %s", self.old_string)
                 self.old_string = self.new_string
                 self.new_string = self.process_key(self.old_string, keyval, self.__config.input_method)
                 if self.new_string == None:
-                    self.new_string = self.__raw_string
+                    #self.new_string = self.__raw_string
+                    self.new_string = self.old_string + chr(keyval)
                     
-                logging.info("New string: %s", self.new_string)
+                logging.debug("New string: %s", self.new_string)
                 self.number_fake_backspace, self.string_to_commit = \
                   self.get_nbackspace_and_string_to_commit()
                 self.is_faking_backspace = True
-                logging.info("Number of fake backspace: %d", self.number_fake_backspace)
-                logging.info("String to commit: %s", self.string_to_commit)
+                logging.debug("Number of fake backspace: %d", self.number_fake_backspace)
+                logging.debug("String to commit: %s", self.string_to_commit)
 
                 for i in range(self.number_fake_backspace):
                     self.forward_key_event(keysyms.BackSpace, 14, 0)
@@ -105,7 +106,7 @@ class Engine(IBus.Engine):
                 return True
 
         if keyval == keysyms.space:
-            logging.info("Pressed a space")
+            logging.debug("Pressed a space")
             self.reset_engine()
             return False
 

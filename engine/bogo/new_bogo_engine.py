@@ -216,6 +216,12 @@ def transform(comps, trans):
             elif not components[1] or \
                 (components[1] == u'ư' and trans[1] == u'ơ'):
                 components[1] += trans[1]
+            # Quite a hack. If you want to type gi[f = 'giờ', separate()
+            # will create ['g', 'i', '']. Therefore we have to allow
+            # components[1] == 'i'.
+            elif components[1] == 'i':
+                components[1] += trans[1]
+                components = separate(utils.join(components))
 
     if trans[0] == u'+':
         # See this and you'll understand:
