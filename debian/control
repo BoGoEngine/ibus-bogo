@@ -13,9 +13,9 @@ Vcs-Git: git://github.com/BoGoEngine/ibus-bogo-python.git
 Package: ibus-bogo
 Architecture: all
 Depends: ${python:Depends}, ${shlibs:Depends}, ${misc:Depends}, python-gi,
- gir1.2-ibus-1.0,
- python-xlib,
- python-bogo
+ gir1.2-ibus-1.0
+Conflicts: python-bogo, ibus-bogo-python, libbogo0
+Replaces: python-bogo, ibus-bogo-python, libbogo0
 Description: BoGo engine for IBus
  IBus is an Intelligent Input Bus. It is a new input framework for Linux OS.
  It provides full featured and user friendly input method user interface.
