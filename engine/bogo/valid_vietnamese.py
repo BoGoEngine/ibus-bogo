@@ -77,6 +77,14 @@ def is_valid_combination(components):
     for i in range(len(comps)):
         comps[i] = utils.change_case(comps[i], 1)
     
+    # Allow 'đ' to appear in abbreviations like 'đm', 'đc', 'kgcđ', etc.
+    if comps[0] and not comps[1] and not comps[2] and \
+        not comps[0] in ('gi', 'qu'):
+        for c in comps[0]:
+            if not c in CONSONANTS:
+                return False
+        return True
+    
     # Check if our start sound is a proper consonant
     if (comps[0] != u'') and (not (comps[0] in CONSONANTS)):
         return False
