@@ -146,15 +146,18 @@ Only the vowel part will be changed after the add_accent take places
         self.assertEqual(transform([u'c', 'o', ''],'+o'), [u'c', 'oo', ''])
         self.assertEqual(transform([u't', u'óa', ''],'+n'), [u't', u'oá', 'n'])
         self.assertEqual(transform([u't', u'óa', ''],'+o'), [u't', u'oáo', ''])
+        self.assertEqual(transform([u'', u'u', ''], u'u*'), [u'', u'ư', ''])
         
 
     def test_process_key(self):
         self.assertEqual(process_key(u'','v'), u'v')
-        self.assertEqual(process_key(u'','w'), u'w')
         self.assertEqual(process_key(u'a','w'), u'ă')
+        self.assertEqual(process_key(u'u','w'), u'ư')
+        self.assertEqual(process_key(u'o','w'), u'ơ')
         self.assertEqual(process_key(u'o','o'), u'ô')
         self.assertEqual(process_key(u'O','o'), u'Ô')
         self.assertEqual(process_key(u'd','d'), u'đ')
+        self.assertEqual(process_key(u'','w', im='telex'), u'ư')
         self.assertEqual(process_key(u'mua','f'), u'mùa')
         self.assertEqual(process_key(u'Dông','d'), u'Đông')
         self.assertEqual(process_key(u'gi','f'), u'gì')
@@ -177,6 +180,18 @@ Only the vowel part will be changed after the add_accent take places
         self.assertEqual(process_key(u'đ','x'), u'đx')
         self.assertEqual(process_key(u'hoac','w'), u'hoăc')
         self.assertEqual(process_key(u'cuô','i'), u'cuôi')
+        # Undo
+        self.assertEqual(process_key(u'â','a'), u'aa')
+        self.assertEqual(process_key(u'ă','w'), u'aw')
+        self.assertEqual(process_key(u'á','s'), u'as')
+        self.assertEqual(process_key(u'à','f'), u'af')
+        self.assertEqual(process_key(u'ả','r'), u'ar')
+        self.assertEqual(process_key(u'ã','x'), u'ax')
+        self.assertEqual(process_key(u'ạ','j'), u'aj')
+        self.assertEqual(process_key(u'ư','w'), u'uw')
+        self.assertEqual(process_key(u'ơ','w'), u'ow')
+        self.assertEqual(process_key(u'ư',']', im='telex'), u']')
+        self.assertEqual(process_key(u'ơ','[', im='telex'), u'[')
 
     def test_process_seq(self):
         self.assertEqual(process_seq('', 'tooi'), u'tôi')

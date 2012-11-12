@@ -24,8 +24,6 @@ import utils, accent, mark
 Mark = mark.Mark
 Accent = accent.Accent
 
-CONFIG_LOADED = False
-
 SKIP_MISSPELLED = True
 
 # Don't change the following constants or the program will behave
@@ -55,7 +53,7 @@ IMs = {
         'a':'a^',
         'o':'o^',
         'e':'e^',
-        'w':['u*','o*','a+'],
+        'w':['u*','o*','a+', u'<ư'],
         'd':'d-',
         'f':'\\',
         's':'/',
@@ -80,13 +78,17 @@ IMs = {
     }
 }
 
-
-def process_key(string, key, im = 'telex'):
-    ## BEGIN TRICKS (scroll down please)
+default_config = {
+    'skip-misspelled' : True,
     
-    # Empty string?
-    if not string:
-        return key
+}
+
+def process_key(string, key, im = 'telex', config = default_config):
+    """
+    Process the given string and key based on the given input method and
+    config.
+    """
+    ## BEGIN TRICKS (scroll down please)
     
     # People can sometimes be really mischievous :<
     if im in IMs:
@@ -96,16 +98,13 @@ def process_key(string, key, im = 'telex'):
 
     # Handle non-alpha string like 'tôi_là_ai' by putting 'tôi_là_' in the `garbage` variable,
     # effectively skipping it then put it back later.
+    # TODO Should this be the ibus engine's job?
     garbage = u''
     for i in range(-1, -len(string)-1, -1): # Reverse indices [-1, -2, -3, ...]
         if not string[i].isalpha():
             garbage += string[:i] + string[i]
             string = u'' + string[i+1:] if i != -1 else u''
             break
-    
-    # Still empty?
-    if string == u'':
-        return garbage + key
     
     # Handle process_key('â', '_')
     if not key in im and not key.isalpha():
@@ -127,8 +126,10 @@ def process_key(string, key, im = 'telex'):
     for trans in trans_list:
         new_comps = transform(new_comps, trans)
 
-    # If the string doesn't change, that mean the transformations are
-    # not applicable, then just append the key.
+    # Double typing an IM key to undo.
+    # Eg: process_key(u'à', 'f')
+    #  -> transform(['', u'à', ''], '\\') = ['', 'à', '']
+    #  -> reverse(u'à', '\\') = 'a'
     new_string = utils.join(new_comps)
     if new_string == string:
         for trans in trans_list:
@@ -198,19 +199,23 @@ def get_action(trans):
 
 def transform(comps, trans):
     """
-    Transform the given string with transfrom type trans
+    Transform the given string with transform type trans
     """
     
     components = list(comps)
     
     # Special case for 'ư, ơ'
+    if trans[0] == '<' and not trans[1] in (u'ư', u'ơ'):
+            trans = '+' + trans[1]
     if trans[0] == u'<':
-            components[1] += trans[1]
- #       if string[-1:] == trans[1]:
- #           return string[:-1]
- #       else:
- #           string += trans[1]
-
+        if not components[2]:
+            # Undo operation
+            if components[1][-1:] == trans[1]:
+                return components
+            # Only allow ư, ơ or ươ sitting alone in the middle part
+            elif not components[1] or \
+                (components[1] == u'ư' and trans[1] == u'ơ'):
+                components[1] += trans[1]
 
     if trans[0] == u'+':
         # See this and you'll understand:
@@ -309,9 +314,11 @@ def reverse(string, trans):
     is ADD_ACCENT action, remove mark if the trans is ADD_MARK action)
     """
     action, factor = get_action (trans)
-    components = separate(string);
+    components = separate(string)
 
-    if action == Action.ADD_ACCENT:
+    if action == Action.ADD_CHAR and string[-1] == trans[1]:
+        return string[:-1]
+    elif action == Action.ADD_ACCENT:
         components = accent.add_accent(components, Accent.NONE)
     elif action == Action.ADD_MARK:
         if factor == Mark.BAR:
