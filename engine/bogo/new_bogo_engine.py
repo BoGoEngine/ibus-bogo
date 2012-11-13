@@ -90,12 +90,19 @@ def process_key(string, key, im = 'telex', config = default_config):
     config.
     """
     ## BEGIN TRICKS (scroll down please)
-    
+    imname = im
     # People can sometimes be really mischievous :<
     if im in IMs:
         im = IMs[im]
     else:
         im = IMs['telex']
+
+    # Special case: enter w 2 times at the beginning of the string =>
+    # result is w not uw
+    if imname == 'telex' and string in (u'ư', u'Ư') and (key in ('w', 'W')):
+        return unicode(key)
+
+
 
     # Handle non-alpha string like 'tôi_là_ai' by putting 'tôi_là_' in the `garbage` variable,
     # effectively skipping it then put it back later.
@@ -124,11 +131,6 @@ def process_key(string, key, im = 'telex', config = default_config):
     # Apply transformations
     trans_list = get_transformation_list(key, im);
     new_comps = comps
-
-    # Special case: enter w 2 times at the beginning of the string =>
-    # result is w not uw
-    if im == 'telex' and string in (u'ư', u'Ư') and (key in ('w', 'W')):
-        return unicode(key)
 
     for trans in trans_list:
         new_comps = transform(new_comps, trans)
