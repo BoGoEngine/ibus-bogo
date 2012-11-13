@@ -182,10 +182,12 @@ Only the vowel part will be changed after the add_accent take places
         self.assertEqual(process_key(u'mơi','s'), u'mới')
         self.assertEqual(process_key(u'ư','a'), u'ưa')
         self.assertEqual(process_key(u'ư','o'), u'ưo')
-        self.assertEqual(process_key(u'ư','w'), u'uw')
+        #self.assertEqual(process_key(u'ư','w'), u'uw')
         self.assertEqual(process_key(u'đ','x'), u'đx')
         self.assertEqual(process_key(u'hoac','w'), u'hoăc')
         self.assertEqual(process_key(u'cuô','i'), u'cuôi')
+        #self.assertEqual(process_key(u'cá','e'), None)
+        
         # Undo
         self.assertEqual(process_key(u'â','a'), u'aa')
         self.assertEqual(process_key(u'ă','w'), u'aw')
@@ -194,7 +196,7 @@ Only the vowel part will be changed after the add_accent take places
         self.assertEqual(process_key(u'ả','r'), u'ar')
         self.assertEqual(process_key(u'ã','x'), u'ax')
         self.assertEqual(process_key(u'ạ','j'), u'aj')
-        self.assertEqual(process_key(u'ư','w'), u'uw')
+        #self.assertEqual(process_key(u'ư','w'), u'uw')
         self.assertEqual(process_key(u'ơ','w'), u'ow')
         self.assertEqual(process_key(u'ư',']', im='telex'), u']')
         self.assertEqual(process_key(u'ơ','[', im='telex'), u'[')
@@ -208,6 +210,7 @@ Only the vowel part will be changed after the add_accent take places
         self.assertEqual(process_seq('', 'tooi'), u'tôi')
         self.assertEqual(process_seq('', 'chuyeenr'), u'chuyển')
         self.assertEqual(process_seq('', 'ddoonjg'), u'động')
+        self.assertEqual(process_seq(u'nhê', 'chs'), u'nhếch')
         
         # Test fallback IM
         self.assertEqual(process_seq('', 'tooi', 'shut'), u'tôi')

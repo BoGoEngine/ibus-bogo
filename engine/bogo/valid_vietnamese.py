@@ -115,8 +115,9 @@ def is_valid_combination(components):
     if comps[2] == u'ng' and vowel in u'eêơ':
         return False
     
-    if comps[2] == u'c' and vowel in u'ê':
-        return False
+    # Sadly, this interferes with 'nhếch' :<
+    #if comps[2] == u'c' and vowel in u'ê':
+    #    return False
     
     # Get the first accent
     ac = Accent.NONE
