@@ -54,6 +54,7 @@ IMs = {
         'o':'o^',
         'e':'e^',
         'w':['u*','o*','a+', u'<ư'],
+        'W':u'<Ư',
         'd':'d-',
         'f':'\\',
         's':'/',
@@ -123,8 +124,19 @@ def process_key(string, key, im = 'telex', config = default_config):
     # Apply transformations
     trans_list = get_transformation_list(key, im);
     new_comps = comps
+
+    # Special case: enter w 2 times at the beginning of the string =>
+    # result is w not uw
+    if comps in ([u'', u'ư', u''], 
+                 [u'', u'Ư', u'']) \
+                 and u'<ư' in trans_list:
+                 comps[1] = utils.change_case(u'w', comps[1].islower())
+                 return utils.join(comps)
+
     for trans in trans_list:
         new_comps = transform(new_comps, trans)
+
+
 
     # Double typing an IM key to undo.
     # Eg: process_key(u'à', 'f')
@@ -153,13 +165,13 @@ def get_transformation_list(key, im):
         if entered key is not in im, return u"<key", meaning appending
         the entered key to current text
     """
-
-    lkey = key.lower()
-    if lkey in im:
-        if isinstance(im[lkey], list):
-            return im[lkey]
+    if not key in im:
+        key = key.lower()
+    if key in im:
+        if isinstance(im[key], list):
+            return im[key]
         else:
-            return [im[lkey]]
+            return [im[key]]
     else:
         return [u'+' + unicode(key)]
 
@@ -207,6 +219,10 @@ def transform(comps, trans):
     # Special case for 'ư, ơ'
     if trans[0] == '<' and not trans[1] in (u'ư', u'ơ'):
             trans = '+' + trans[1]
+
+    
+            
+    
     if trans[0] == u'<':
         if not components[2]:
             # Undo operation
