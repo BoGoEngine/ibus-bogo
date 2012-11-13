@@ -85,8 +85,11 @@ class Engine(IBus.Engine):
                 self.old_string = self.new_string
                 self.new_string = self.process_key(self.old_string, keyval, self.__config.input_method)
                 if self.new_string == None:
-                    #self.new_string = self.__raw_string
-                    self.new_string = self.old_string + chr(keyval)
+                    if len(self.__raw_string) > 2 and \
+                        self.__raw_string[-2] == self.__raw_string[-3]:
+                        self.new_string = self.old_string + chr(keyval)
+                    else:
+                        self.new_string = self.__raw_string
                     
                 logging.debug("New string: %s", self.new_string)
                 self.number_fake_backspace, self.string_to_commit = \
@@ -98,7 +101,7 @@ class Engine(IBus.Engine):
                 for i in range(self.number_fake_backspace):
                     self.forward_key_event(keysyms.BackSpace, 14, 0)
 
-                # Sleep to ensure then all fake backspaces are committed.
+                # Sleep to ensure that all fake backspaces are committed.
                 # Adjust time sleep to obtain proper behaviour
                 time.sleep(0.015 * self.number_fake_backspace)
                 self.commit_result(self.string_to_commit)
