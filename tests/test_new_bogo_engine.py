@@ -54,6 +54,11 @@ class TestBoGoEngine(unittest.TestCase):
         #self.assertEqual(separate(u'nn'), None)
         self.assertEqual(separate(u'uo'), [u'',u'uo',u''])
         self.assertEqual(separate(u'uong'), [u'',u'uo',u'ng'])
+        self.assertEqual(separate(u'nhếch'), [u'nh',u'ế',u'ch'])
+        self.assertEqual(separate(u'ếch'), [u'',u'ế',u'ch'])
+
+    def test_valid_vietnamese(self):
+        self.assertEqual(is_valid_combination(['c', 'a', 'se']), False)
 
     def test_add_accent_char(self):
         self.assertEqual(add_accent_char(u'a', Accent.GRAVE), u'à')

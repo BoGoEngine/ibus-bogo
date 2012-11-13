@@ -107,7 +107,7 @@ def is_valid_combination(components):
         return False
     
     # 'ăch'?
-    if comps[2] == u'ch' and ((vowel in u'ăâeêôơuư') or \
+    if comps[2] == u'ch' and ((vowel in u'ăâeôơuư') or \
         (vowel in OPEN_COMPOUND_VOWELS)):
         return False
     
