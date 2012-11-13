@@ -35,3 +35,15 @@ def change_case(string, case):
     desired case case == 0: lower case case == 1: upper case
     """
     return string.lower() if case else string.upper()
+
+def append_comps(comps, key):
+    c = list(comps)
+    if is_vowel(key):
+        if not c[2]: pos = 1
+        else: pos = 2
+    else:
+        if not c[2] and not c[1]: pos = 0
+        else: pos = 2
+    c[pos] += key
+    return c
+        

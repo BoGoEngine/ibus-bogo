@@ -186,7 +186,7 @@ Only the vowel part will be changed after the add_accent take places
         self.assertEqual(process_key(u'đ','x'), u'đx')
         self.assertEqual(process_key(u'hoac','w'), u'hoăc')
         self.assertEqual(process_key(u'cuô','i'), u'cuôi')
-        #self.assertEqual(process_key(u'cá','e'), None)
+        self.assertEqual(process_key(u'cá','e'), None)
         
         # Undo
         self.assertEqual(process_key(u'â','a'), u'aa')

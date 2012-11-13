@@ -102,8 +102,6 @@ def process_key(string, key, im = 'telex', config = default_config):
     if imname == 'telex' and string in (u'ư', u'Ư') and (key in ('w', 'W')):
         return unicode(key)
 
-
-
     # Handle non-alpha string like 'tôi_là_ai' by putting 'tôi_là_' in the `garbage` variable,
     # effectively skipping it then put it back later.
     # TODO Should this be the ibus engine's job?
@@ -135,24 +133,24 @@ def process_key(string, key, im = 'telex', config = default_config):
     for trans in trans_list:
         new_comps = transform(new_comps, trans)
 
-
-
     # Double typing an IM key to undo.
     # Eg: process_key(u'à', 'f')
     #  -> transform(['', u'à', ''], '\\') = ['', 'à', '']
     #  -> reverse(u'à', '\\') = 'a'
-    new_string = utils.join(new_comps)
-    if new_string == string:
+    if new_comps == comps:
         for trans in trans_list:
-            new_string = reverse(new_string, trans)
-            if new_string != string:
-                break
-        new_string += unicode(key)
-
+            new_comps = reverse(new_comps, trans)
+            tmp = list(new_comps)
+            if tmp != comps:
+                new_comps = utils.append_comps(new_comps, unicode(key))
+                return garbage + utils.join(new_comps)
+        new_comps = utils.append_comps(new_comps, unicode(key))
+        
     # One last check to rule out cases like 'ảch' or 'chuyểnl'
     if SKIP_MISSPELLED and not is_valid_combination(new_comps):
+        print(SKIP_MISSPELLED and not is_valid_combination(new_comps))
         return None
-    return garbage + new_string;
+    return garbage + utils.join(new_comps)
 
 
 def get_transformation_list(key, im):
@@ -222,9 +220,6 @@ def transform(comps, trans):
     if trans[0] == '<' and not trans[1] in (u'ư', u'ơ'):
             trans = '+' + trans[1]
 
-    
-            
-    
     if trans[0] == u'<':
         if not components[2]:
             # Undo operation
@@ -328,29 +323,33 @@ def separate(string):
     return comps
     
 
-def reverse(string, trans):
+def reverse(components, trans):
     """
-    Reverse the effect of transformation trans on string
-    If the transformation does not effect the string, return the original string
+    Reverse the effect of transformation 'trans' on 'components'
+    If the transformation does not effect the components, return the original string
     Workflow:
-    - Find the part of string that is effected by the transformation
+    - Find the part of components that is effected by the transformation
     - Transform this part to the original state (remove accent if the trans
     is ADD_ACCENT action, remove mark if the trans is ADD_MARK action)
     """
     action, factor = get_action (trans)
-    components = separate(string)
+    comps = list(components)
+    string = utils.join(comps)
 
     if action == Action.ADD_CHAR and string[-1] == trans[1]:
-        return string[:-1]
+        if comps[2]: i = 2
+        elif comps[1] : i = 1
+        else: i = 0
+        comps[i] = comps[i][:-1]
     elif action == Action.ADD_ACCENT:
-        components = accent.add_accent(components, Accent.NONE)
+        comps = accent.add_accent(comps, Accent.NONE)
     elif action == Action.ADD_MARK:
         if factor == Mark.BAR:
-            components[0] = components[0][:-1] + \
-                mark.add_mark_char(components[0][-1:], Mark.NONE)
+            comps[0] = comps[0][:-1] + \
+                mark.add_mark_char(comps[0][-1:], Mark.NONE)
         else:
-            if mark.is_valid_mark(components, trans):
-                components[1] = u"".join([mark.add_mark_char(c, Mark.NONE)
-                                          for c in components[1]])
-    return utils.join(components)
+            if mark.is_valid_mark(comps, trans):
+                comps[1] = u"".join([mark.add_mark_char(c, Mark.NONE)
+                                          for c in comps[1]])
+    return comps
 
