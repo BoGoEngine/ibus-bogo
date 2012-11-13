@@ -98,7 +98,12 @@ def is_valid_combination(components):
         if not (vowel in OPEN_COMPOUND_VOWELS or \
             vowel in CLOSED_COMPOUND_VOWELS):
             return False
-    
+
+    # Fix oach case. Dirty hack
+    if vowel == u'oa' and comps[2] == 'ch':
+        return True
+        
+    # Wrong here: oach?
     if vowel in CLOSED_COMPOUND_VOWELS and comps[2] != u'':
         return False
     
