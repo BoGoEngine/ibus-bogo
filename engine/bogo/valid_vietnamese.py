@@ -37,7 +37,7 @@ ENDING_CONSONANTS = [
     u't', u'ch', u'ng', u'nh'
 ]
 
-# After a closed compound vowel, there can be no consonants while there
+# After a closed compound vowel, there can be no consonants whilst there
 # can be for an open vowel.
 # NOTE: Actually, we'll include their pre-processed form too.
 CLOSED_COMPOUND_VOWELS = [
@@ -60,7 +60,7 @@ CLOSED_COMPOUND_VOWELS = [
 OPEN_COMPOUND_VOWELS = [
     u'oa', u'oă', u'oe', u'uye', u'uyê', u'uy', u'ua',
     u'uâ', u'oo', u'ươ', u'uo', u'uô', u'ưo',
-    u'ye', u'yê', u'ie', u'iê',
+    u'ye', u'yê', u'ie', u'iê', u'uê', u'ue'
 ]
 
 
@@ -100,10 +100,9 @@ def is_valid_combination(components):
             return False
 
     # Fix oach case. Dirty hack
-    if vowel == u'oa' and comps[2] == 'ch':
+    if vowel in (u'oa', u'uê', u'ue') and comps[2] == 'ch':
         return True
         
-    # Wrong here: oach?
     if vowel in CLOSED_COMPOUND_VOWELS and comps[2] != u'':
         return False
     
