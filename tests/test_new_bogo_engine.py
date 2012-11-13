@@ -3,6 +3,7 @@
 # IBus-BoGo - The Vietnamese IME for IBus
 #
 # Copyright (c) 2012- Long T. Dam <longdt90@gmail.com>,
+#                     Trung Ngo <ndtrung4419@gmail.com>
 #
 # This file is part of IBus-BoGo Project
 # IBus-BoGo is free software: you can redistribute it and/or modify
