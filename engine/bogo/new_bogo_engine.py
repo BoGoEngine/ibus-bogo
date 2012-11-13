@@ -54,7 +54,7 @@ IMs = {
         'o':'o^',
         'e':'e^',
         'w':['u*','o*','a+', u'<ư'],
-        'W':u'<Ư',
+        'W':['u*',u'<Ư'],
         'd':'d-',
         'f':'\\',
         's':'/',
@@ -129,7 +129,8 @@ def process_key(string, key, im = 'telex', config = default_config):
     # result is w not uw
     if comps in ([u'', u'ư', u''], 
                  [u'', u'Ư', u'']) \
-                 and u'<ư' in trans_list:
+                 and (u'<ư' in trans_list or
+                      u'<Ư' in trans_list):
                  comps[1] = utils.change_case(u'w', comps[1].islower())
                  return utils.join(comps)
 
@@ -165,13 +166,16 @@ def get_transformation_list(key, im):
         if entered key is not in im, return u"<key", meaning appending
         the entered key to current text
     """
-    if not key in im:
-        key = key.lower()
     if key in im:
-        if isinstance(im[key], list):
-            return im[key]
+        lkey = key
+    else:
+        lkey = key.lower()
+
+    if lkey in im:
+        if isinstance(im[lkey], list):
+            return im[lkey]
         else:
-            return [im[key]]
+            return [im[lkey]]
     else:
         return [u'+' + unicode(key)]
 
