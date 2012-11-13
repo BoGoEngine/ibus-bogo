@@ -127,12 +127,8 @@ def process_key(string, key, im = 'telex', config = default_config):
 
     # Special case: enter w 2 times at the beginning of the string =>
     # result is w not uw
-    if comps in ([u'', u'ư', u''], 
-                 [u'', u'Ư', u'']) \
-                 and (u'<ư' in trans_list or
-                      u'<Ư' in trans_list):
-                 comps[1] = utils.change_case(u'w', comps[1].islower())
-                 return utils.join(comps)
+    if string in (u'ư', u'Ư') and (key in ('w', 'W')):
+        return unicode(key)
 
     for trans in trans_list:
         new_comps = transform(new_comps, trans)
