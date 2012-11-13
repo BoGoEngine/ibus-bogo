@@ -127,7 +127,7 @@ def process_key(string, key, im = 'telex', config = default_config):
 
     # Special case: enter w 2 times at the beginning of the string =>
     # result is w not uw
-    if string in (u'ư', u'Ư') and (key in ('w', 'W')):
+    if im == 'telex' and string in (u'ư', u'Ư') and (key in ('w', 'W')):
         return unicode(key)
 
     for trans in trans_list:
