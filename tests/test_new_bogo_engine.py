@@ -225,6 +225,7 @@ Only the vowel part will be changed after the add_accent take places
         self.assertEqual(process_seq('', 'ddoonjg'), u'động')
         self.assertEqual(process_seq(u'nhê', 'chs'), u'nhếch')
         self.assertEqual(process_seq(u'hu', 'ww'), u'huw')
+        #self.assertEqual(process_seq(u'h', 'ww'), u'huw')
         self.assertEqual(process_seq(u'u', 'ww'), u'uw')
         #self.assertEqual(process_seq(u'', 'ww'), u'uw')
         
