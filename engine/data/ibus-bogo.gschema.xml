@@ -14,5 +14,11 @@
       <description>Currently there is 'utf-8' only.</description>
     </key>
 
+    <key name="spellchecking" type="b">
+      <default>false</default>
+      <summary>Whether to do spellchecking</summary>
+      <description></description>
+    </key>
+
   </schema>
 </schemalist>

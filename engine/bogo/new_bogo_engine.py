@@ -24,8 +24,6 @@ import utils, accent, mark
 Mark = mark.Mark
 Accent = accent.Accent
 
-SKIP_MISSPELLED = True
-
 # Don't change the following constants or the program will behave
 # unexpectedly
 
@@ -80,11 +78,10 @@ IMs = {
     }
 }
 
-default_config = {
-    'skip-misspelled' : True,
-}
+class DefaultConfig:
+    input_method = 'telex'
 
-def process_key(string, key, case=0, im = 'telex', config = default_config):
+def process_key(string, key, case = 0, config = DefaultConfig()):
     """
     Process the given string and key based on the given input method and
     config.
@@ -99,13 +96,13 @@ def process_key(string, key, case=0, im = 'telex', config = default_config):
         config - a dictionary.
     """
     ## BEGIN TRICKS (scroll down please)
-    imname = im
+    im = config.input_method
     # People can sometimes be really mischievous :<
     if im in IMs:
         im = IMs[im]
     else:
         im = IMs['telex']
-        
+
     # Handle non-alpha string like 'tôi_là_ai' by putting 'tôi_là_' in 
     # the `garbage` variable, effectively skipping it then put it back 
     # later.
@@ -129,7 +126,7 @@ def process_key(string, key, case=0, im = 'telex', config = default_config):
     comps = separate(string)
     
     # Refuse to process things like process('zzam', 'f')
-    if SKIP_MISSPELLED and comps == None:
+    if comps == None:
         return None
     
     # Apply transformations
@@ -143,6 +140,11 @@ def process_key(string, key, case=0, im = 'telex', config = default_config):
     # Eg: process_key(u'à', 'f')
     #  -> transform(['', u'à', ''], '\\') = ['', 'à', '']
     #  -> reverse(u'à', '\\') = 'a'
+    #
+    # Note that when undo 'ư' with 'w', this function will always return
+    # 'uw' because of lack of raw string information. It is up to the
+    # user of this module to change the returned value to 'w' when necessary.
+    # 
     if new_comps == comps:
         for trans in trans_list:
             new_comps = reverse(new_comps, trans)
@@ -153,7 +155,7 @@ def process_key(string, key, case=0, im = 'telex', config = default_config):
         new_comps = utils.append_comps(new_comps, unicode(key))
         
     # One last check to rule out cases like 'ảch' or 'chuyểnl'
-    if config["skip-misspelled"] and not is_valid_combination(new_comps):
+    if not is_valid_combination(new_comps):
         return None
     return garbage + utils.join(new_comps)
 
@@ -328,7 +330,7 @@ def separate(string):
         comps[0] += comps[1][:1]
         comps[1] = comps[1][1:]
     
-    if not is_valid_combination(comps) and SKIP_MISSPELLED:
+    if not is_valid_combination(comps):
         return None
     return comps
     

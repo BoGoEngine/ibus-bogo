@@ -36,12 +36,14 @@ class Config(GObject.GObject):
     # http://python-gtk-3-tutorial.readthedocs.org/en/latest/objects.html#properties
     input_method = GObject.property(type=str)
     output_charset = GObject.property(type=str)
+    spellchecking = GObject.property(type=bool, default=False)
     
     def __init__(self):
         GObject.GObject.__init__(self)
         self.__backend = Gio.Settings('org.kgcd.ibus-bogo')
         self.__backend.bind('input-method', self, 'input-method', Gio.SettingsBindFlags.DEFAULT)
         self.__backend.bind('output-charset', self, 'output-charset', Gio.SettingsBindFlags.DEFAULT)
+        self.__backend.bind('spellchecking', self, 'spellchecking', Gio.SettingsBindFlags.DEFAULT)
         self.__init_props()
 
     # This is horrible. I know. Blame IBus.

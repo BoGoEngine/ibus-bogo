@@ -93,23 +93,27 @@ class Engine(IBus.Engine):
                 self.new_string = core.process_key(self.old_string,
                     chr(keyval),
                     case = case,
-                    im = self.__config.input_method)
+                    config = self.__config)
                     
                 if self.new_string == None:
-                    if len(self.__raw_string) > 2 and \
-                        self.__raw_string[-2] == self.__raw_string[-3]:
+                    if not self.__config.spellchecking:
                         self.new_string = self.old_string + chr(keyval)
                     else:
-                        self.new_string = self.__raw_string
-                        
+                        if len(self.__raw_string) > 2 and \
+                            self.__raw_string[-2] == self.__raw_string[-3]:
+                            self.new_string = self.old_string + chr(keyval)
+                        else:
+                            self.new_string = self.__raw_string
+                    
                 # Dirty hack to distinguish 'uww' and 'ww' in telex
+                # See the note near the end of core.process_key()
                 if self.__config.input_method == 'telex' and \
                     self.__raw_string.lower() == 'ww':
-                        self.new_string = self.__raw_string
+                        self.new_string = self.__raw_string[0]
                 if self.__config.input_method == 'telex' and \
                     len(self.__raw_string) > 2 and \
-                    self.__raw_string[-2:].lower() == 'ww' and\
-                    not self.__raw_string[-3].lower() in 'auw' and\
+                    self.__raw_string[-2:].lower() == 'ww' and \
+                    not self.__raw_string[-3].lower() in 'auw' and \
                     self.new_string[-1].lower() == 'w':
                     self.new_string = self.new_string[:-2] + self.new_string[-1]
 
