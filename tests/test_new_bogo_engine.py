@@ -56,6 +56,9 @@ class TestBoGoEngine(unittest.TestCase):
         self.assertEqual(separate(u'uong'), [u'',u'uo',u'ng'])
         self.assertEqual(separate(u'nhếch'), [u'nh',u'ế',u'ch'])
         self.assertEqual(separate(u'ếch'), [u'',u'ế',u'ch'])
+        self.assertEqual(separate(u'xẻng'), [u'x',u'ẻ',u'ng'])
+        self.assertEqual(separate(u'xoáy'), [u'x',u'oáy',u''])
+        self.assertEqual(separate(u'quây'), [u'qu',u'ây',u''])
 
     def test_valid_vietnamese(self):
         self.assertEqual(is_valid_combination(['c', 'a', 'se']), False)

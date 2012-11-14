@@ -47,20 +47,20 @@ CLOSED_COMPOUND_VOWELS = [
     u'eo',
     u'êu', u'eu',
     u'ia', u'iu', u'iêu',
-    u'oi', u'oai',
+    u'oa', u'oi', u'oai', u'oay', u'oao', u'oeo',
     #u'ô',
     u'ơi', #u'oi'
     u'ôi',
-    u'ua', u'ui',
-    u'ưa', u'ưi', u'ươi', u'ưu', u'uu', u'uoi', u'uôi',
-    u'uya',
+    u'ua', u'ui', u'uây', u'uay',
+    u'ua', u'ưa', u'ưi', u'ươi', u'ưu', u'uu', u'uoi', u'uôi', u'uê', u'ue', u'ươu', u'uou', u'ưou', u'uyu',
+    u'uy', u'uya', u'uơ',
     u'yêu', u'yeu', 
 ]
 
 OPEN_COMPOUND_VOWELS = [
-    u'oa', u'oă', u'oe', u'uye', u'uyê', u'uy', u'ua',
+    u'oa', u'oă', u'oe', u'uye', u'uyê', u'uy', 
     u'uâ', u'oo', u'ươ', u'uo', u'uô', u'ưo',
-    u'ye', u'yê', u'ie', u'iê', u'uê', u'ue'
+    u'ye', u'yê', u'ie', u'iê', u'uê', u'ue', u'uy'
 ]
 
 
@@ -101,20 +101,17 @@ def is_valid_combination(components):
             vowel in CLOSED_COMPOUND_VOWELS):
             return False
 
-    # Fix oach case. Dirty hack
-    if vowel in (u'oa', u'uê', u'ue') and comps[2] == 'ch':
-        return True
-        
-    if vowel in CLOSED_COMPOUND_VOWELS and comps[2] != u'':
+    if vowel in CLOSED_COMPOUND_VOWELS and \
+        not vowel in OPEN_COMPOUND_VOWELS and comps[2] != u'':
         return False
     
     # 'ăch'?
     if comps[2] == u'ch' and ((vowel in u'ăâeôơuư') or \
-        (vowel in OPEN_COMPOUND_VOWELS)):
+        (vowel in OPEN_COMPOUND_VOWELS and not vowel in CLOSED_COMPOUND_VOWELS)):
         return False
     
     # 'ương' is ok but 'ơng' ?
-    if comps[2] == u'ng' and vowel in u'eêơ':
+    if comps[2] == u'ng' and vowel in (u'ơ'):
         return False
     
     # Sadly, this interferes with 'nhếch' :<
