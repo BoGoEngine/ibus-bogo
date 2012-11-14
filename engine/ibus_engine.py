@@ -79,6 +79,7 @@ class Engine(IBus.Engine):
             # Process entered key here
             if state & (modifier.CONTROL_MASK | modifier.MOD1_MASK) == 0:
                 self.__raw_string = self.__raw_string + chr(keyval)
+                logging.debug("\nRaw string: %s" % self.__raw_string)
                 
                 case = 0
                 cap = state & IBus.ModifierType.LOCK_MASK
@@ -103,11 +104,14 @@ class Engine(IBus.Engine):
                         
                 # Dirty hack to distinguish 'uww' and 'ww' in telex
                 if self.__config.input_method == 'telex' and \
+                    self.__raw_string.lower() == 'ww':
+                        self.new_string = self.__raw_string
+                if self.__config.input_method == 'telex' and \
                     len(self.__raw_string) > 2 and \
-                    self.__raw_string[-2:] == 'ww' and\
-                    not self.__raw_string[-3] in ('a', 'u') and\
-                    self.new_string[-1] == 'w':
-                    self.new_string = self.new_string[:-2] + 'w'
+                    self.__raw_string[-2:].lower() == 'ww' and\
+                    not self.__raw_string[-3].lower() in 'auw' and\
+                    self.new_string[-1].lower() == 'w':
+                    self.new_string = self.new_string[:-2] + self.new_string[-1]
 
                 logging.debug("New string: %s", self.new_string)
                 self.number_fake_backspace, self.string_to_commit = \
