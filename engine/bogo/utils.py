@@ -32,10 +32,14 @@ def is_vowel(char):
 def change_case(string, case):
     """
     Helper: Return new string obtained from change the given string to
-    desired case case == 0: lower case case == 1: upper case
+    desired case.
+    
+    Args
+        string
+        case - 0: lower, 1: upper
     """
-    return string.lower() if case else string.upper()
-
+    return string.upper() if case else string.lower()
+    
 def append_comps(comps, key):
     c = list(comps)
     if is_vowel(key):

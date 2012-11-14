@@ -156,6 +156,7 @@ Only the vowel part will be changed after the add_accent take places
         self.assertEqual(transform([u't', u'óa', ''],'+n'), [u't', u'oá', 'n'])
         self.assertEqual(transform([u't', u'óa', ''],'+o'), [u't', u'oáo', ''])
         self.assertEqual(transform([u'', u'u', ''], u'u*'), [u'', u'ư', ''])
+        self.assertEqual(transform(['',u'Ư', ''], u'<Ư'), ['',u'Ư', ''])
         
 
     def test_process_key(self):
@@ -190,6 +191,8 @@ Only the vowel part will be changed after the add_accent take places
         self.assertEqual(process_key(u'hoac','w'), u'hoăc')
         self.assertEqual(process_key(u'cuô','i'), u'cuôi')
         self.assertEqual(process_key(u'cá','e'), None)
+        self.assertEqual(process_key(u'',']', im='telex', case=1), u'Ư')
+        self.assertEqual(process_key(u'','[', im='telex', case=1), u'Ơ')
         
         # Undo
         self.assertEqual(process_key(u'â','a'), u'aa')
@@ -203,7 +206,13 @@ Only the vowel part will be changed after the add_accent take places
         self.assertEqual(process_key(u'ơ','w'), u'ow')
         self.assertEqual(process_key(u'ư',']', im='telex'), u']')
         self.assertEqual(process_key(u'ơ','[', im='telex'), u'[')
-        
+        self.assertEqual(process_key(u'Ư',']', im='telex', case=1), u']')
+        self.assertEqual(process_key(u'Ơ','[', im='telex', case=1), u'[')
+        self.assertEqual(process_key(u'ư','}', im='telex'), u'}') # Programmer Dvorak
+        self.assertEqual(process_key(u'ơ','{', im='telex'), u'{')
+        self.assertEqual(process_key(u'Ư','}', im='telex', case=1), u'}')
+        self.assertEqual(process_key(u'Ơ','{', im='telex', case=1), u'{')
+                
         # Abbreviations
         self.assertEqual(process_key(u'đ','m'), u'đm')
         self.assertEqual(process_key(u'đ','c'), u'đc')

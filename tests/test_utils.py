@@ -36,5 +36,14 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(append_comps(['b','',''], 'b'), ['bb','',''])
         self.assertEqual(append_comps(['b','a','c'], 'd'), ['b','a','cd'])
         
+    def test_change_case(self):
+        self.assertEqual(change_case(u'ơ', 1), u'Ơ')
+        self.assertEqual(change_case(u'ư', 1), u'Ư')
+        self.assertEqual(change_case(u'Ơ', 1), u'Ơ')
+        self.assertEqual(change_case(u'Ư', 1), u'Ư')
+        self.assertEqual(change_case(u'ơ', 0), u'ơ')
+        self.assertEqual(change_case(u'ư', 0), u'ư')
+        self.assertEqual(change_case(u'Ơ', 0), u'ơ')
+        self.assertEqual(change_case(u'Ư', 0), u'ư')
 if __name__ == '__main__':
     unittest.main()

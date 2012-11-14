@@ -71,7 +71,7 @@ def add_accent_char(char, accent):
     """
     if char == u'':
         return u'';
-    case = char.islower()
+    case = char.isupper()
     char = char.lower()
     index = utils.VOWELS.find(char)
     if (index != -1):

@@ -75,7 +75,7 @@ def is_valid_combination(components):
     comps = list(components)
     # We only work with lower case
     for i in range(len(comps)):
-        comps[i] = utils.change_case(comps[i], 1)
+        comps[i] = utils.change_case(comps[i], 0)
     
     # Allow 'đ' to appear in abbreviations like 'đm', 'đc', 'kgcđ', etc.
     #if comps[0] and not comps[1] and not comps[2] and \

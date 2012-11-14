@@ -54,7 +54,6 @@ IMs = {
         'o':'o^',
         'e':'e^',
         'w':['u*','o*','a+', u'<ư'],
-        'W':['u*',u'<Ư'],
         'd':'d-',
         'f':'\\',
         's':'/',
@@ -62,8 +61,10 @@ IMs = {
         'x':'~',
         'j':'.',
         'z':'_',
-        ']':u'<ư', # Lol, how about 'TươNG' ?
-        '[':u'<ơ'
+        ']':u'<ư',
+        '[':u'<ơ',
+        '}':u'<ư',
+        '{':u'<ơ'
     },
     'vni' : {
         '6':['a^', 'o^', 'e^'],
@@ -81,13 +82,21 @@ IMs = {
 
 default_config = {
     'skip-misspelled' : True,
-    
 }
 
-def process_key(string, key, im = 'telex', config = default_config):
+def process_key(string, key, case=0, im = 'telex', config = default_config):
     """
     Process the given string and key based on the given input method and
     config.
+    
+    Args:
+        string -
+        key -
+        case (optional) - Force the output's case. Mostly to determine 
+            the case of TELEX's [, ] keys. 0: lower, 1: upper. Default: 0.
+        im (optional) - one of 'telex', 'simple-telex', 'vni'.
+            Default: 'telex'.
+        config - a dictionary.
     """
     ## BEGIN TRICKS (scroll down please)
     imname = im
@@ -102,8 +111,9 @@ def process_key(string, key, im = 'telex', config = default_config):
     if imname == 'telex' and string in (u'ư', u'Ư') and (key in ('w', 'W')):
         return unicode(key)
 
-    # Handle non-alpha string like 'tôi_là_ai' by putting 'tôi_là_' in the `garbage` variable,
-    # effectively skipping it then put it back later.
+    # Handle non-alpha string like 'tôi_là_ai' by putting 'tôi_là_' in 
+    # the `garbage` variable, effectively skipping it then put it back 
+    # later.
     # TODO Should this be the ibus engine's job?
     garbage = u''
     for i in range(-1, -len(string)-1, -1): # Reverse indices [-1, -2, -3, ...]
@@ -127,7 +137,7 @@ def process_key(string, key, im = 'telex', config = default_config):
         return None
     
     # Apply transformations
-    trans_list = get_transformation_list(key, im);
+    trans_list = get_transformation_list(key, im, case = case);
     new_comps = comps
 
     for trans in trans_list:
@@ -147,19 +157,18 @@ def process_key(string, key, im = 'telex', config = default_config):
         new_comps = utils.append_comps(new_comps, unicode(key))
         
     # One last check to rule out cases like 'ảch' or 'chuyểnl'
-    if SKIP_MISSPELLED and not is_valid_combination(new_comps):
-        print(SKIP_MISSPELLED and not is_valid_combination(new_comps))
+    if config["skip-misspelled"] and not is_valid_combination(new_comps):
         return None
     return garbage + utils.join(new_comps)
 
 
-def get_transformation_list(key, im):
+def get_transformation_list(key, im, case=0):
     """
         Return list of transformations inferred from entered key.  The
         map between transform types and keys is given by module
         bogo_config (if exists) or by variable simple_telex_im
 
-        if entered key is not in im, return u"<key", meaning appending
+        if entered key is not in im, return u"+key", meaning appending
         the entered key to current text
     """
     if key in im:
@@ -169,9 +178,13 @@ def get_transformation_list(key, im):
 
     if lkey in im:
         if isinstance(im[lkey], list):
-            return im[lkey]
+            trans_list = im[lkey]
         else:
-            return [im[lkey]]
+            trans_list = [im[lkey]]
+        for i, trans in enumerate(trans_list):
+            if trans[0] == u'<':
+                trans_list[i] = trans[0] + utils.change_case(trans[1], case)
+        return trans_list
     else:
         return [u'+' + unicode(key)]
 
@@ -217,8 +230,9 @@ def transform(comps, trans):
     components = list(comps)
     
     # Special case for 'ư, ơ'
-    if trans[0] == '<' and not trans[1] in (u'ư', u'ơ'):
-            trans = '+' + trans[1]
+    #if trans[0] == '<' and not trans[1] in (u'ư', u'ơ', u'Ư', u'Ơ'):
+    #        trans = '+' + trans[1]
+    # (Not our job)
 
     if trans[0] == u'<':
         if not components[2]:
@@ -227,7 +241,7 @@ def transform(comps, trans):
                 return components
             # Only allow ư, ơ or ươ sitting alone in the middle part
             elif not components[1] or \
-                (components[1] == u'ư' and trans[1] == u'ơ'):
+                (components[1] in (u'ư', u'Ư') and trans[1] in (u'ơ', u'Ơ')):
                 components[1] += trans[1]
             # Quite a hack. If you want to type gi[f = 'giờ', separate()
             # will create ['g', 'i', '']. Therefore we have to allow

@@ -80,10 +80,19 @@ class Engine(IBus.Engine):
             if state & (modifier.CONTROL_MASK | modifier.MOD1_MASK) == 0:
                 self.__raw_string = self.__raw_string + chr(keyval)
                 
+                case = 0
+                cap = state & IBus.ModifierType.LOCK_MASK
+                shift = state & IBus.ModifierType.SHIFT_MASK
+                if (cap or shift) and not (cap and shift):
+                    case = 1
+                
                 logging.debug("Key pressed: %c", chr(keyval))
                 logging.debug("Old string: %s", self.old_string)
                 self.old_string = self.new_string
-                self.new_string = self.process_key(self.old_string, keyval, self.__config.input_method)
+                self.new_string = core.process_key(self.old_string,
+                    chr(keyval),
+                    case = case,
+                    im = self.__config.input_method)
                 if self.new_string == None:
                     if len(self.__raw_string) > 2 and \
                         self.__raw_string[-2] == self.__raw_string[-3]:
@@ -129,13 +138,6 @@ class Engine(IBus.Engine):
     def commit_tcvn3(self, string):
         tcvn3_string = BoGo.utf8_to_tcvn3(string)
         self.commit_text(IBus.Text.new_from_string(tcvn3_string))
-
-    def process_key(self, string, keyval, im):
-        return core.process_key(string, unichr(keyval), im)
-        # if self.old_string:
-        #     return core.process_key(string, unichr(keyval))
-        # else:
-        #     return unichr(keyval)
 
     def get_nbackspace_and_string_to_commit(self):
         if (self.old_string):

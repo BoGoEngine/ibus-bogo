@@ -79,7 +79,7 @@ def add_mark_char(char, mark):
     """
     if char == u'':
         return u''
-    case = char.islower()
+    case = char.isupper()
     ac = accent.get_accent_char(char)
     char = accent.add_accent_char(char.lower(), Accent.NONE)
     new_char = char
