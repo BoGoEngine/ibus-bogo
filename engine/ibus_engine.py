@@ -93,13 +93,22 @@ class Engine(IBus.Engine):
                     chr(keyval),
                     case = case,
                     im = self.__config.input_method)
+                    
                 if self.new_string == None:
                     if len(self.__raw_string) > 2 and \
                         self.__raw_string[-2] == self.__raw_string[-3]:
                         self.new_string = self.old_string + chr(keyval)
                     else:
                         self.new_string = self.__raw_string
-                    
+                        
+                # Dirty hack to distinguish 'uww' and 'ww' in telex
+                if self.__config.input_method == 'telex' and \
+                    len(self.__raw_string) > 2 and \
+                    self.__raw_string[-2:] == 'ww' and\
+                    not self.__raw_string[-3] in ('a', 'u') and\
+                    self.new_string[-1] == 'w':
+                    self.new_string = self.new_string[:-2] + 'w'
+
                 logging.debug("New string: %s", self.new_string)
                 self.number_fake_backspace, self.string_to_commit = \
                   self.get_nbackspace_and_string_to_commit()

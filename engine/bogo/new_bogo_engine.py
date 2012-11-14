@@ -105,12 +105,7 @@ def process_key(string, key, case=0, im = 'telex', config = default_config):
         im = IMs[im]
     else:
         im = IMs['telex']
-
-    # Special case: enter w 2 times at the beginning of the string =>
-    # result is w not uw
-    if imname == 'telex' and string in (u'ư', u'Ư') and (key in ('w', 'W')):
-        return unicode(key)
-
+        
     # Handle non-alpha string like 'tôi_là_ai' by putting 'tôi_là_' in 
     # the `garbage` variable, effectively skipping it then put it back 
     # later.
@@ -132,7 +127,8 @@ def process_key(string, key, case=0, im = 'telex', config = default_config):
     # Try to break the string down to 3 components
     # separate('chuyen') = ['ch', 'uye', 'n']
     comps = separate(string)
-    # We refuse to process things like process('zzam', 'f')
+    
+    # Refuse to process things like process('zzam', 'f')
     if SKIP_MISSPELLED and comps == None:
         return None
     

@@ -33,7 +33,7 @@ from bogo.utils import *
 def process_seq(orig, seq, im='simple-telex'):
     string = u'' + orig
     for i in range(len(seq)):
-        string = process_key(string, seq[i], im)
+        string = process_key(string, seq[i], im = im)
     return string
 
 class TestBoGoEngine(unittest.TestCase):
@@ -212,6 +212,7 @@ Only the vowel part will be changed after the add_accent take places
         self.assertEqual(process_key(u'ơ','{', im='telex'), u'{')
         self.assertEqual(process_key(u'Ư','}', im='telex', case=1), u'}')
         self.assertEqual(process_key(u'Ơ','{', im='telex', case=1), u'{')
+        self.assertEqual(process_key(u'hư','w', im='telex', case=1), u'huw')
                 
         # Abbreviations
         self.assertEqual(process_key(u'đ','m'), u'đm')
@@ -223,6 +224,9 @@ Only the vowel part will be changed after the add_accent take places
         self.assertEqual(process_seq('', 'chuyeenr'), u'chuyển')
         self.assertEqual(process_seq('', 'ddoonjg'), u'động')
         self.assertEqual(process_seq(u'nhê', 'chs'), u'nhếch')
+        self.assertEqual(process_seq(u'hu', 'ww'), u'huw')
+        self.assertEqual(process_seq(u'u', 'ww'), u'uw')
+        #self.assertEqual(process_seq(u'', 'ww'), u'uw')
         
         # Test fallback IM
         self.assertEqual(process_seq('', 'tooi', 'shut'), u'tôi')
