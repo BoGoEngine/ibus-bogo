@@ -25,15 +25,20 @@ sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir, 'engine')))
 
 import unittest
+import copy
 from bogo.new_bogo_engine import *
 from bogo.accent import *
 from bogo.mark import *
 from bogo.utils import *
 
-def process_seq(orig, seq, im='simple-telex'):
+telex = DefaultConfig()
+vni = copy.deepcopy(telex)
+vni.input_method = 'vni'
+
+def process_seq(orig, seq, config = telex):
     string = u'' + orig
     for i in range(len(seq)):
-        string = process_key(string, seq[i], im = im)
+        string = process_key(string, seq[i], config = telex)
     return string
 
 class TestBoGoEngine(unittest.TestCase):
@@ -167,7 +172,7 @@ Only the vowel part will be changed after the add_accent take places
         self.assertEqual(process_key(u'o','o'), u'ô')
         self.assertEqual(process_key(u'O','o'), u'Ô')
         self.assertEqual(process_key(u'd','d'), u'đ')
-        self.assertEqual(process_key(u'','w', im='telex'), u'ư')
+        self.assertEqual(process_key(u'','w', config = telex), u'ư')
         self.assertEqual(process_key(u'mua','f'), u'mùa')
         self.assertEqual(process_key(u'Dông','d'), u'Đông')
         self.assertEqual(process_key(u'gi','f'), u'gì')
@@ -191,8 +196,8 @@ Only the vowel part will be changed after the add_accent take places
         self.assertEqual(process_key(u'hoac','w'), u'hoăc')
         self.assertEqual(process_key(u'cuô','i'), u'cuôi')
         self.assertEqual(process_key(u'cá','e'), None)
-        self.assertEqual(process_key(u'',']', im='telex', case=1), u'Ư')
-        self.assertEqual(process_key(u'','[', im='telex', case=1), u'Ơ')
+        self.assertEqual(process_key(u'',']', config = telex, case=1), u'Ư')
+        self.assertEqual(process_key(u'','[', config = telex, case=1), u'Ơ')
         
         # Undo
         self.assertEqual(process_key(u'â','a'), u'aa')
@@ -204,15 +209,15 @@ Only the vowel part will be changed after the add_accent take places
         self.assertEqual(process_key(u'ạ','j'), u'aj')
         #self.assertEqual(process_key(u'ư','w'), u'uw')
         self.assertEqual(process_key(u'ơ','w'), u'ow')
-        self.assertEqual(process_key(u'ư',']', im='telex'), u']')
-        self.assertEqual(process_key(u'ơ','[', im='telex'), u'[')
-        self.assertEqual(process_key(u'Ư',']', im='telex', case=1), u']')
-        self.assertEqual(process_key(u'Ơ','[', im='telex', case=1), u'[')
-        self.assertEqual(process_key(u'ư','}', im='telex'), u'}') # Programmer Dvorak
-        self.assertEqual(process_key(u'ơ','{', im='telex'), u'{')
-        self.assertEqual(process_key(u'Ư','}', im='telex', case=1), u'}')
-        self.assertEqual(process_key(u'Ơ','{', im='telex', case=1), u'{')
-        self.assertEqual(process_key(u'hư','w', im='telex', case=1), u'huw')
+        self.assertEqual(process_key(u'ư',']', config = telex), u']')
+        self.assertEqual(process_key(u'ơ','[', config = telex), u'[')
+        self.assertEqual(process_key(u'Ư',']', config = telex, case=1), u']')
+        self.assertEqual(process_key(u'Ơ','[', config = telex, case=1), u'[')
+        self.assertEqual(process_key(u'ư','}', config = telex), u'}') # Programmer Dvorak
+        self.assertEqual(process_key(u'ơ','{', config = telex), u'{')
+        self.assertEqual(process_key(u'Ư','}', config = telex, case=1), u'}')
+        self.assertEqual(process_key(u'Ơ','{', config = telex, case=1), u'{')
+        self.assertEqual(process_key(u'hư','w', config = telex, case=1), u'huw')
                 
         # Abbreviations
         self.assertEqual(process_key(u'đ','m'), u'đm')
