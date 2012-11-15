@@ -72,6 +72,7 @@ class Engine(IBus.Engine):
 
         if keyval == keysyms.BackSpace:
             self.new_string = self.new_string[:-1]
+            # TODO A char in __raw_string doesn't equal a char in new_string
             self.__raw_string = self.__raw_string[:-1]
             return False
 
@@ -114,7 +115,7 @@ class Engine(IBus.Engine):
                     len(self.__raw_string) > 2 and \
                     self.__raw_string[-2:].lower() == 'ww' and \
                     not self.__raw_string[-3].lower() in 'auw' and \
-                    self.new_string[-1].lower() == 'w':
+                    self.new_string[-2:].lower() == 'uw':
                     self.new_string = self.new_string[:-2] + self.new_string[-1]
 
                 logging.debug("New string: %s", self.new_string)

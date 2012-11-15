@@ -239,12 +239,12 @@ def transform(comps, trans):
                 return components
             # Only allow ư, ơ or ươ sitting alone in the middle part
             elif not components[1] or \
-                (components[1] in (u'ư', u'Ư') and trans[1] in (u'ơ', u'Ơ')):
+                (components[1].lower() == u'ư' and trans[1].lower() == u'ơ'):
                 components[1] += trans[1]
             # Quite a hack. If you want to type gi[f = 'giờ', separate()
             # will create ['g', 'i', '']. Therefore we have to allow
             # components[1] == 'i'.
-            elif components[1] == 'i':
+            elif components[1].lower() == 'i' and components[0].lower() == 'g':
                 components[1] += trans[1]
                 components = separate(utils.join(components))
 

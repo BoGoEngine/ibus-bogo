@@ -191,13 +191,14 @@ Only the vowel part will be changed after the add_accent take places
         self.assertEqual(process_key(u'mơi','s'), u'mới')
         self.assertEqual(process_key(u'ư','a'), u'ưa')
         self.assertEqual(process_key(u'ư','o'), u'ưo')
-        #self.assertEqual(process_key(u'ư','w'), u'uw')
+        self.assertEqual(process_key(u'ư','w'), u'uw')
         self.assertEqual(process_key(u'đ','x'), u'đx')
         self.assertEqual(process_key(u'hoac','w'), u'hoăc')
         self.assertEqual(process_key(u'cuô','i'), u'cuôi')
         self.assertEqual(process_key(u'cá','e'), None)
         self.assertEqual(process_key(u'',']', config = telex, case=1), u'Ư')
         self.assertEqual(process_key(u'','[', config = telex, case=1), u'Ơ')
+        self.assertEqual(process_key(u'i','w', config = telex), None)
         
         # Undo
         self.assertEqual(process_key(u'â','a'), u'aa')
@@ -207,7 +208,7 @@ Only the vowel part will be changed after the add_accent take places
         self.assertEqual(process_key(u'ả','r'), u'ar')
         self.assertEqual(process_key(u'ã','x'), u'ax')
         self.assertEqual(process_key(u'ạ','j'), u'aj')
-        #self.assertEqual(process_key(u'ư','w'), u'uw')
+        self.assertEqual(process_key(u'ư','w'), u'uw')
         self.assertEqual(process_key(u'ơ','w'), u'ow')
         self.assertEqual(process_key(u'ư',']', config = telex), u']')
         self.assertEqual(process_key(u'ơ','[', config = telex), u'[')
@@ -230,9 +231,9 @@ Only the vowel part will be changed after the add_accent take places
         self.assertEqual(process_seq('', 'ddoonjg'), u'động')
         self.assertEqual(process_seq(u'nhê', 'chs'), u'nhếch')
         self.assertEqual(process_seq(u'hu', 'ww'), u'huw')
-        #self.assertEqual(process_seq(u'h', 'ww'), u'huw')
+        self.assertEqual(process_seq(u'h', 'ww'), u'huw')
         self.assertEqual(process_seq(u'u', 'ww'), u'uw')
-        #self.assertEqual(process_seq(u'', 'ww'), u'uw')
+        self.assertEqual(process_seq(u'', 'ww'), u'uw')
         
         # Test fallback IM
         self.assertEqual(process_seq('', 'tooi', 'shut'), u'tôi')
