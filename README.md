@@ -1,83 +1,29 @@
-# BoGo Input Method Engine for IBus
+# Bộ gõ tiếng Việt BoGo cho IBus
 
+**IBus BoGo** là một engine xử lý gõ tiếng Việt cho IBus, một phần mềm quản lý các bộ gõ phổ biến trong Linux.
+**IBus BoGo** được viết bằng ngôn ngữ Python và xử dụng engine xử lý
+tiếng Việt **BoGoEngine**.
 
-## Introduction
+## Hướng dẫn nhanh
 
-**IBusBoGoEngine** là một engine xử lý gõ tiếng Việt cho IBus, một chương trình xử lý nhập dữ liệu từ bàn phím phổ biến trong GNU/Linux. **IBusBoGoEngine** được viết bằng ngôn ngữ Python và xử dụng engine xử lý tiếng Việt **BoGoEngine**.
-
-Mailing list của nhóm phát triển: bogoengine-dev@googlegroups.com
-
-## Tài liệu
-
-Tài liệu của dự án sẽ được cung cấp trong thời gian sớm nhất. Mọi trợ giúp về sử dụng và phát triển liên hệ mailing list của nhóm phát triển:
-
-## Yêu cầu
-
-Các gói cần phải cài đặt trên hệ thống Ubuntu. Nếu bạn sử dụng một distro khác, 
-vui lòng tham khảo cách đặt tên trong distro của bạn.
-
-### Cho việc biên dịch
-
-* cmake
-
-### Cho việc sử dụng
-
-* ibus 1.4
-* python 2.7
-* python-support
-* python-gi
-* python-xlib
-* gir1.2-ibus-1.0 (gobject introspection data)
-
-## Hướng dẫn build
-
-### Build bình thường
-
-Cài đặt:
-
-    $ mkdir build && cd build
-    $ cmake .. && make install
-
-Cấu hình hệ thống:
-    
-    Thêm các dòng sau vào ~/.profile:
-        
-        export GTK_IM_MODULE=ibus
-        export XMODIFIERS=@im=ibus
-        export QT_IM_MODULE=ibus
-
-Gỡ cài đặt:
-
-    $ cd build && sudo make uninstall
-
-### Build gói debian
-
-Cần cài gói:
-
-* devscripts
-
-Commands:
-
-    $ git checkout debian
-    $ git checkout -b build
-    $ git merge master
-    $ debuild -us -uc
-   
-(optional - xóa branch build)
-
-    $ git branch -D build
-
-**Ghi chú:** debian là một branch riêng chỉ chứa thư mục debian. Do vậy nên
-không được merge trực tiếp vào đây mà phải copy sang branch build mới được merge.
+1. [Cài đặt](https://github.com/BoGoEngine/ibus-bogo-python/wiki/C%C3%A0i-%C4%91%E1%BA%B7t-(Install\)) và sử dụng
+2. Chia sẻ cho người thân
+3. Nếu có câu hỏi, hãy trò chuyện với chúng tôi ở [mailing list của nhóm](bogoengine-dev@googlegroups.com)
+4. [Thông báo lỗi và đóng góp ý tưởng](https://github.com/BoGoEngine/ibus-bogo-python/issues?state=open)
+5. Fork, vọc code và [tham gia đóng góp](https://github.com/BoGoEngine/ibus-bogo-python/wiki/Tham-gia-d%E1%BB%B1-%C3%A1n-(Contribute\))
 
 ## Giấy phép xuất bản (License)
 
-Toàn bộ mã nguồn của **IBusBoGoEngine** và **BoGoEngine** cùng tất cả các tài nguyên đi kèm đều được phát hành dưới các quy định ghi trong Giấy phép Công cộng GNU, phiên bản 3.0 (GNU General Public License v3.0).  Xem tệp *COPYING* để biết thêm chi tiết.
+**IBus BoGo** là phần mềm tự do nguồn mở.
 
-## Credit
+Toàn bộ mã nguồn của **IBus BoGo** và **BoGoEngine** cùng tất cả các
+tài nguyên đi kèm đều được phát hành dưới các quy định ghi trong 
+Giấy phép Công cộng GNU, phiên bản 3.0 (GNU General Public License v3.0).
+Xem tệp *COPYING* để biết thêm chi tiết.
+
+## Credits
 
 Bản quyền (C) năm 2012 bởi:
 
-* Đàm Tiến Long <longdt90@gmail.com>
-* Trung Ngo <ndtrung4419@gmail.com>
-
+* [Đàm Tiến Long](https://github.com/milkycoffee)
+* [Trung Ngo](https://github.com/lewtds)
