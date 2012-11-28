@@ -46,7 +46,7 @@ CLOSED_COMPOUND_VOWELS = [
     u'âu', u'ây', #u'au',
     u'eo',
     u'êu', u'eu',
-    u'ia', u'iu', u'iêu',
+    u'ia', u'iu', u'iêu', u'ieu',
     u'oa', u'oi', u'oai', u'oay', u'oao', u'oeo',
     #u'ô',
     u'ơi', #u'oi'
