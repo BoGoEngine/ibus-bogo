@@ -60,7 +60,7 @@ CLOSED_COMPOUND_VOWELS = [
 OPEN_COMPOUND_VOWELS = [
     u'oa', u'oă', u'oe', u'uye', u'uyê', u'uy', 
     u'uâ', u'oo', u'ươ', u'uo', u'uô', u'ưo',
-    u'ye', u'yê', u'ie', u'iê', u'uê', u'ue', u'uy'
+    u'ye', u'yê', u'ie', u'iê', u'uê', u'ue', u'uy', u'ua'
 ]
 
 
