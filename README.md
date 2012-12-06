@@ -27,3 +27,9 @@ Bản quyền (C) năm 2012 bởi:
 
 * [Đàm Tiến Long](https://github.com/milkycoffee)
 * [Trung Ngo](https://github.com/lewtds)
+
+Nhóm phát triển xin chân thành gửi lời cảm ơn đặc biệt đến:
+
+* [Ngô Huy](https://github.com/NgoHuy)
+* [Nguyễn Hà Dương](https://github.com/CMPITG)
+* [Hà Quang Dương](https://github.com/haqduong)
