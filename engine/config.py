@@ -83,7 +83,7 @@ class Config(GObject.GObject):
                               tooltip = IBus.Text.new_from_string(Config.methods[method][1]),
                               sensitive = True,
                               visible = True,
-                              state = IBus.PropState.CHECKED if method == self.input_method else IBus.PropState.UNCHECKED,
+                              state = IBus.PropState.CHECKED if Config.methods[method][2] == self.input_method else IBus.PropState.UNCHECKED,
                               sub_props = None))
 
         self.__method_prop_menu = IBus.Property(
