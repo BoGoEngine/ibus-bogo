@@ -1,3 +1,4 @@
+#!/usr/bin/env python3.2
 #
 # IBus-BoGo - The Vietnamese IME for IBus
 #
@@ -24,9 +25,9 @@ from gi.repository import GObject
 
 import os
 import sys
-import getopt
 import locale
 import logging
+import argparse
 
 from ibus_engine import Engine
 from config import Config
@@ -80,43 +81,19 @@ def launch_engine(exec_by_ibus):
     IBus.init()
     IMApp(exec_by_ibus).run()
 
-def print_help(out, v = 0):
-    print >> out, "-i, --ibus             executed by IBus."
-    print >> out, "-h, --help             show this message."
-    print >> out, "-d, --daemonize        daemonize ibus"
-    sys.exit(v)
-
 def main():
     try:
         locale.setlocale(locale.LC_ALL, "")
     except:
         pass
 
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-i", "--ibus", help="executed by IBus",
+        action="store_true")
+    args = parser.parse_args()
     exec_by_ibus = False
-    daemonize = False
-
-    shortopt = "ihd"
-    longopt = ["ibus", "help", "daemonize",]
-
-    try:
-        opts, args = getopt.getopt(sys.argv[1:], shortopt, longopt)
-    except getopt.GetoptError, err:
-        print_help(sys.stderr, 1)
-
-    for o, a in opts:
-        if o in ("-h", "--help"):
-            print_help(sys.stdout)
-        elif o in ("-d", "--daemonize"):
-            daemonize = True
-        elif o in ("-i", "--ibus"):
-            exec_by_ibus = True
-        else:
-            print >> sys.stderr, "Unknown argument: %s" % o
-            print_help(sys.stderr, 1)
-
-    if daemonize:
-        if os.fork():
-            sys.exit()
+    if args.ibus:
+        exec_by_ibus = True
 
     if not exec_by_ibus:
         logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)

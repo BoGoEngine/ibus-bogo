@@ -144,10 +144,10 @@ class Engine(IBus.Engine):
         return False
 
     def reset_engine(self):
-        self.string_to_commit = u""
-        self.new_string = u""
-        self.old_string = u""
-        self.__raw_string = u""
+        self.string_to_commit = ""
+        self.new_string = ""
+        self.old_string = ""
+        self.__raw_string = ""
         self.number_fake_backspace = 0
 
     def commit_utf8(self, string):
@@ -170,10 +170,7 @@ class Engine(IBus.Engine):
              return 0, self.new_string
 
     def is_character(self, keyval):
-        if keyval in xrange(33,126):
-            return True
-        else:
-            return False
+        return keyval in range(33,126)
 
     def do_focus_in(self):
         """Implements IBus.Engine's focus_in's default signal handler.

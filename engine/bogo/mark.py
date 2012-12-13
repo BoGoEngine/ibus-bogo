@@ -19,7 +19,7 @@
 # along with IBus-BoGo. If not, see <http://www.gnu.org/licenses/>.
 
 
-import accent, utils
+from . import accent, utils
 Accent = accent.Accent
 
 class Mark:
@@ -29,11 +29,11 @@ class Mark:
     BAR = 1
     NONE = 0
     
-FAMILY_A = u"aăâ"
-FAMILY_E = u"eê"
-FAMILY_O = u"oơô"
-FAMILY_U = u"uư"
-FAMILY_D = u"dđ"
+FAMILY_A = "aăâ"
+FAMILY_E = "eê"
+FAMILY_O = "oơô"
+FAMILY_U = "uư"
+FAMILY_D = "dđ"
 
 def add_mark(components, mark):
     """
@@ -47,19 +47,19 @@ def add_mark(components, mark):
         raw_vowel = accent.add_accent(comp, Accent.NONE)[1].lower()
         raw_vowel = utils.join([add_mark_char(c, Mark.NONE) for c in raw_vowel])
         if mark == Mark.HAT:
-            pos = max(raw_vowel.find(u"a"), raw_vowel.find(u"o"),
-                      raw_vowel.find(u"e"))
+            pos = max(raw_vowel.find("a"), raw_vowel.find("o"),
+                      raw_vowel.find("e"))
             comp[1] = add_mark_at(comp[1], pos, Mark.HAT)
         elif mark == Mark.BREVE:
-            if raw_vowel != u"ua":
-                comp[1] = add_mark_at(comp[1], raw_vowel.find(u"a"), Mark.BREVE)
+            if raw_vowel != "ua":
+                comp[1] = add_mark_at(comp[1], raw_vowel.find("a"), Mark.BREVE)
         elif mark == Mark.HORN:
-            if raw_vowel in (u"uo", u"uoi", u"uou"):
+            if raw_vowel in ("uo", "uoi", "uo"):
                 comp[1] = utils.join([add_mark_char(c, Mark.HORN) for c in comp[1][:2]]) + comp[1][2:]
-            elif raw_vowel == u"oa":
+            elif raw_vowel == "oa":
                 comp[1] = add_mark_at(comp[1], 1, Mark.HORN)
             else:
-                pos = max(raw_vowel.find(u"u"), raw_vowel.find(u"o"))
+                pos = max(raw_vowel.find(""), raw_vowel.find("o"))
                 comp[1] = add_mark_at(comp[1], pos, Mark.HORN)
     return comp
 
@@ -77,41 +77,41 @@ def add_mark_char(char, mark):
     """
     Add mark to a single char.
     """
-    if char == u'':
-        return u''
+    if char == "":
+        return ""
     case = char.isupper()
     ac = accent.get_accent_char(char)
     char = accent.add_accent_char(char.lower(), Accent.NONE)
     new_char = char
     if mark == Mark.HAT:
         if char in FAMILY_A:
-            new_char = u"â"
+            new_char = "â"
         elif char in FAMILY_O:
-            new_char = u"ô"
+            new_char = "ô"
         elif char in FAMILY_E:
-            new_char = u"ê"
+            new_char = "ê"
     elif mark == Mark.HORN:
         if char in FAMILY_O:
-            new_char = u"ơ"
+            new_char = "ơ"
         elif char in FAMILY_U:
-            new_char = u"ư"
+            new_char = "ư"
     elif mark == Mark.BREVE:
         if char in FAMILY_A:
-            new_char = u"ă"
+            new_char = "ă"
     elif mark == Mark.BAR:
         if char in FAMILY_D:
-            new_char = u"đ"
+            new_char = "đ"
     elif mark == Mark.NONE:
         if char in FAMILY_A:
-            new_char = u"a"
+            new_char = "a"
         elif char in FAMILY_E:
-            new_char = u"e"
+            new_char = "e"
         elif char in FAMILY_O:
-            new_char = u"o"
+            new_char = "o"
         elif char in FAMILY_U:
-            new_char = u"u"
+            new_char = ""
         elif char in FAMILY_D:
-            new_char = u"d"
+            new_char = "d"
 
     new_char = accent.add_accent_char(new_char, ac)
     return utils.change_case(new_char, case)
@@ -121,13 +121,13 @@ def is_valid_mark(comps, mark_trans):
     Check whether the mark given by mark_trans is valid to add to the components
     """
     components = list(comps)
-    if components[1] != u"":
+    if components[1] != "":
         raw_vowel = accent.add_accent(components, Accent.NONE)[1].lower()
         raw_vowel = utils.join([add_mark_char(c, Mark.NONE) for c in raw_vowel])
     if mark_trans[0] == 'd' and components[0] \
-            and components[0][-1].lower() in (u"d", u"đ"):
+            and components[0][-1].lower() in ("d", "đ"):
         return True
-    elif components[1] != u"" and raw_vowel.find(mark_trans[0]) != -1:
+    elif components[1] != "" and raw_vowel.find(mark_trans[0]) != -1:
         return True
     else:
         return False
