@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with IBus-BoGo. If not, see <http://www.gnu.org/licenses/>.
 
-import utils
+from . import utils
 
 class Accent:
     GRAVE = 5
@@ -49,16 +49,16 @@ def add_accent(components, accent):
         vowel = remove_accent_string(vowel)
         return [components[0], vowel, last_consonant]
 
-    if vowel == u"":
+    if vowel == "":
         return components
     #raw_string is a list, not a str object
     raw_string = remove_accent_string(vowel).lower()
-    new_vowel = u""
+    new_vowel = ""
     # Highest priority for ê and ơ
-    index = max(raw_string.find(u"ê"), raw_string.find(u"ơ"))
+    index = max(raw_string.find("ê"), raw_string.find("ơ"))
     if index != -1:
         new_vowel = vowel[:index] + add_accent_char(vowel[index], accent) + vowel[index+1:]
-    elif len(vowel) == 1 or (len(vowel) == 2 and last_consonant == u""):
+    elif len(vowel) == 1 or (len(vowel) == 2 and last_consonant == ""):
         new_vowel = add_accent_char(vowel[0], accent) + vowel[1:]
     else:
         new_vowel = vowel[:1] + add_accent_char(vowel[1], accent) + vowel[2:]
@@ -69,8 +69,8 @@ def add_accent_char(char, accent):
     Add accent to a single char.  Parameter accent is member of class
     Accent
     """
-    if char == u'':
-        return u'';
+    if char == "":
+        return "";
     case = char.isupper()
     char = char.lower()
     index = utils.VOWELS.find(char)

@@ -19,11 +19,11 @@
 # along with IBus-BoGo. If not, see <http://www.gnu.org/licenses/>.
 
 
-VOWELS= u"àáảãạaằắẳẵặăầấẩẫậâèéẻẽẹeềếểễệêìíỉĩịi" \
-        u"òóỏõọoồốổỗộôờớởỡợơùúủũụuừứửữựưỳýỷỹỵy"
+VOWELS= "àáảãạaằắẳẵặăầấẩẫậâèéẻẽẹeềếểễệêìíỉĩịi" \
+        "òóỏõọoồốổỗộôờớởỡợơùúủũụuừứửữựưỳýỷỹỵy"
 
 def join(alist):
-    return u"".join(alist)
+    return "".join(alist)
 
 def is_vowel(char):
     char = char.lower()

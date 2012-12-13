@@ -1,3 +1,4 @@
+#!/usr/bin/env python3.2
 #
 # IBus-BoGo - The Vietnamese IME for IBus
 #
@@ -81,9 +82,9 @@ def launch_engine(exec_by_ibus):
     IMApp(exec_by_ibus).run()
 
 def print_help(out, v = 0):
-    print >> out, "-i, --ibus             executed by IBus."
-    print >> out, "-h, --help             show this message."
-    print >> out, "-d, --daemonize        daemonize ibus"
+    print("-i, --ibus             executed by IBus.", file=out)
+    print("-h, --help             show this message.", file=out)
+    print("-d, --daemonize        daemonize ibus", file=out)
     sys.exit(v)
 
 def main():
@@ -100,7 +101,7 @@ def main():
 
     try:
         opts, args = getopt.getopt(sys.argv[1:], shortopt, longopt)
-    except getopt.GetoptError, err:
+    except getopt.GetoptError:
         print_help(sys.stderr, 1)
 
     for o, a in opts:
@@ -111,7 +112,7 @@ def main():
         elif o in ("-i", "--ibus"):
             exec_by_ibus = True
         else:
-            print >> sys.stderr, "Unknown argument: %s" % o
+            print("Unknown argument: %s" % o, file=sys.stderr)
             print_help(sys.stderr, 1)
 
     if daemonize:

@@ -19,48 +19,48 @@
 # You should have received a copy of the GNU General Public License
 # along with IBus-BoGo. If not, see <http://www.gnu.org/licenses/>.
 
-import utils
-import accent
+from . import utils
+from . import accent
 Accent = accent.Accent
 
 CONSONANTS = [
-    u'b', u'c', u'd', u'đ',
-    u'g', u'h', u'k', u'l', u'm', 
-    u'n', u'p', u'q', u'r', u's', 
-    u't', u'v', u'x', u'ch', u'gh', 
-    u'kh', u'ph', u'th', u'ng',
-    u'ngh', u'gi', u'qu', u'nh', u'tr'
+    'b', 'c', 'd', 'đ',
+    'g', 'h', 'k', 'l', 'm', 
+    'n', 'p', 'q', 'r', 's', 
+    't', 'v', 'x', 'ch', 'gh', 
+    'kh', 'ph', 'th', 'ng',
+    'ngh', 'gi', 'q', 'nh', 'tr'
 ]
 
 ENDING_CONSONANTS = [
-    u'c', u'm', u'n', u'p',
-    u't', u'ch', u'ng', u'nh'
+    'c', 'm', 'n', 'p',
+    't', 'ch', 'ng', 'nh'
 ]
 
 # After a closed compound vowel, there can be no consonants whilst there
 # can be for an open vowel.
 # NOTE: Actually, we'll include their pre-processed form too.
 CLOSED_COMPOUND_VOWELS = [
-    u'ai', u'ao', u'au', u'ay',
-    #u'ă',
-    u'âu', u'ây', #u'au',
-    u'eo',
-    u'êu', u'eu',
-    u'ia', u'iu', u'iêu', u'ieu',
-    u'oa', u'oi', u'oai', u'oay', u'oao', u'oeo',
-    #u'ô',
-    u'ơi', #u'oi'
-    u'ôi',
-    u'ua', u'ui', u'uây', u'uay',
-    u'ua', u'ưa', u'ưi', u'ươi', u'ưu', u'uu', u'uoi', u'uôi', u'uê', u'ue', u'ươu', u'uou', u'ưou', u'uyu',
-    u'uy', u'uya', u'uơ',
-    u'yêu', u'yeu', 
+    'ai', 'ao', 'a', 'ay',
+    #'ă',
+    'â', 'ây', #'a',
+    'eo',
+    'ê', 'e',
+    'ia', 'i', 'iê', 'ie',
+    'oa', 'oi', 'oai', 'oay', 'oao', 'oeo',
+    #'ô',
+    'ơi', #'oi'
+    'ôi',
+    'ua', 'ui', 'uây', 'uay',
+    'ua', 'ưa', 'ưi', 'ươi', 'ư', 'u', 'uoi', 'uôi', 'uê', 'ue', 'ươ', 'uo', 'ưo', 'uy',
+    'uy', 'uya', 'uơ',
+    'yê', 'ye', 
 ]
 
 OPEN_COMPOUND_VOWELS = [
-    u'oa', u'oă', u'oe', u'uye', u'uyê', u'uy', 
-    u'uâ', u'oo', u'ươ', u'uo', u'uô', u'ưo',
-    u'ye', u'yê', u'ie', u'iê', u'uê', u'ue', u'uy', u'ua'
+    'oa', 'oă', 'oe', 'uye', 'uyê', 'uy', 
+    'uâ', 'oo', 'ươ', 'uo', 'uô', 'ưo',
+    'ye', 'yê', 'ie', 'iê', 'uê', 'ue', 'uy', 'ua'
 ]
 
 
@@ -68,7 +68,7 @@ def is_valid_combination(components):
     """Check if a character combination complies to Vietnamese spelling.
     
     Input:
-        components - a list of the form [u'c', u'a', u'm']
+        components - a list of the form ['c', 'a', 'm']
     Output:
         True if OK, False otherwise.
     """
@@ -79,7 +79,7 @@ def is_valid_combination(components):
     
     # Allow 'đ' to appear in abbreviations like 'đm', 'đc', 'kgcđ', etc.
     #if comps[0] and not comps[1] and not comps[2] and \
-        #not comps[0] in ('gi', 'qu'):
+        #not comps[0] in ('gi', 'q'):
         #for c in comps[0]:
             #if not c in CONSONANTS:
                 #return False
@@ -88,11 +88,11 @@ def is_valid_combination(components):
         return True
     
     # Check if our start sound is a proper consonant
-    if (comps[0] != u'') and (not (comps[0] in CONSONANTS)):
+    if (comps[0] != '') and (not (comps[0] in CONSONANTS)):
         return False
     
     # And if our ending sound is a proper ending consonant
-    if (comps[2] != u'') and (not (comps[2] in ENDING_CONSONANTS)):
+    if (comps[2] != '') and (not (comps[2] in ENDING_CONSONANTS)):
         return False
     
     vowel = accent.remove_accent_string(comps[1])
@@ -102,20 +102,20 @@ def is_valid_combination(components):
             return False
 
     if vowel in CLOSED_COMPOUND_VOWELS and \
-        not vowel in OPEN_COMPOUND_VOWELS and comps[2] != u'':
+        not vowel in OPEN_COMPOUND_VOWELS and comps[2] != '':
         return False
     
     # 'ăch'?
-    if comps[2] == u'ch' and ((vowel in u'ăâeôơuư') or \
+    if comps[2] == 'ch' and ((vowel in 'ăâeôơuư') or \
         (vowel in OPEN_COMPOUND_VOWELS and not vowel in CLOSED_COMPOUND_VOWELS)):
         return False
     
     # 'ương' is ok but 'ơng' ?
-    if comps[2] == u'ng' and vowel in (u'ơ'):
+    if comps[2] == 'ng' and vowel in ('ơ'):
         return False
     
     # Sadly, this interferes with 'nhếch' :<
-    #if comps[2] == u'c' and vowel in u'ê':
+    #if comps[2] == 'c' and vowel in 'ê':
     #    return False
     
     # Get the first accent
@@ -127,7 +127,7 @@ def is_valid_combination(components):
             break
     
     # These consonants can only go with ACUTE, DOT or NONE accents
-    if comps[2] in [u'c', u'p', u't', u'ch'] and \
+    if comps[2] in ['c', 'p', 't', 'ch'] and \
         not ac in [Accent.NONE, Accent.ACUTE, Accent.DOT]:
         return False
     

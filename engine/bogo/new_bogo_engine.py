@@ -18,8 +18,8 @@
 # You should have received a copy of the GNU General Public License
 # along with IBus-BoGo. If not, see <http://www.gnu.org/licenses/>.
 
-from valid_vietnamese import is_valid_combination
-import utils, accent, mark
+from .valid_vietnamese import is_valid_combination
+from . import utils, accent, mark
 
 Mark = mark.Mark
 Accent = accent.Accent
@@ -51,7 +51,7 @@ IMs = {
         'a':'a^',
         'o':'o^',
         'e':'e^',
-        'w':['u*','o*','a+', u'<ư'],
+        'w':['u*','o*','a+', '<ư'],
         'd':'d-',
         'f':'\\',
         's':'/',
@@ -59,10 +59,10 @@ IMs = {
         'x':'~',
         'j':'.',
         'z':'_',
-        ']':u'<ư',
-        '[':u'<ơ',
-        '}':u'<ư',
-        '{':u'<ơ'
+        ']':'<ư',
+        '[':'<ơ',
+        '}':'<ư',
+        '{':'<ơ'
     },
     'vni' : {
         '6':['a^', 'o^', 'e^'],
@@ -107,11 +107,11 @@ def process_key(string, key, case = 0, config = DefaultConfig()):
     # the `garbage` variable, effectively skipping it then put it back 
     # later.
     # TODO Should this be the ibus engine's job?
-    garbage = u''
+    garbage = ''
     for i in range(-1, -len(string)-1, -1): # Reverse indices [-1, -2, -3, ...]
         if not string[i].isalpha():
             garbage += string[:i] + string[i]
-            string = u'' + string[i+1:] if i != -1 else u''
+            string = '' + string[i+1:] if i != -1 else ''
             break
     
     # Handle process_key('â', '_')
@@ -137,9 +137,9 @@ def process_key(string, key, case = 0, config = DefaultConfig()):
         new_comps = transform(new_comps, trans)
 
     # Double typing an IM key to undo.
-    # Eg: process_key(u'à', 'f')
-    #  -> transform(['', u'à', ''], '\\') = ['', 'à', '']
-    #  -> reverse(u'à', '\\') = 'a'
+    # Eg: process_key('à', 'f')
+    #  -> transform(['', 'à', ''], '\\') = ['', 'à', '']
+    #  -> reverse('à', '\\') = 'a'
     #
     # Note that when undo 'ư' with 'w', this function will always return
     # 'uw' because of lack of raw string information. It is up to the
@@ -150,9 +150,9 @@ def process_key(string, key, case = 0, config = DefaultConfig()):
             new_comps = reverse(new_comps, trans)
             tmp = list(new_comps)
             if tmp != comps:
-                new_comps = utils.append_comps(new_comps, unicode(key))
+                new_comps = utils.append_comps(new_comps, key)
                 return garbage + utils.join(new_comps)
-        new_comps = utils.append_comps(new_comps, unicode(key))
+        new_comps = utils.append_comps(new_comps, key)
         
     # One last check to rule out cases like 'ảch' or 'chuyểnl'
     if not is_valid_combination(new_comps):
@@ -166,7 +166,7 @@ def get_transformation_list(key, im, case=0):
         map between transform types and keys is given by module
         bogo_config (if exists) or by variable simple_telex_im
 
-        if entered key is not in im, return u"+key", meaning appending
+        if entered key is not in im, return "+key", meaning appending
         the entered key to current text
     """
     if key in im:
@@ -180,11 +180,11 @@ def get_transformation_list(key, im, case=0):
         else:
             trans_list = [im[lkey]]
         for i, trans in enumerate(trans_list):
-            if trans[0] == u'<':
+            if trans[0] == '<':
                 trans_list[i] = trans[0] + utils.change_case(trans[1], case)
         return trans_list
     else:
-        return [u'+' + unicode(key)]
+        return ['+' + key]
 
 
 def get_action(trans):
@@ -194,7 +194,7 @@ def get_action(trans):
     An Action.ADD_MARK goes with a Mark
     while an Action.ADD_ACCENT goes with an Accent
     """
-    if trans[0] in (u'<', u'+'):
+    if trans[0] in ('<', '+'):
         return Action.ADD_CHAR, 0
     if len(trans) == 2:
         if trans[1] == '^':
@@ -228,18 +228,18 @@ def transform(comps, trans):
     components = list(comps)
     
     # Special case for 'ư, ơ'
-    #if trans[0] == '<' and not trans[1] in (u'ư', u'ơ', u'Ư', u'Ơ'):
+    #if trans[0] == '<' and not trans[1] in ('ư', 'ơ', 'Ư', 'Ơ'):
     #        trans = '+' + trans[1]
     # (Not our job)
 
-    if trans[0] == u'<':
+    if trans[0] == '<':
         if not components[2]:
             # Undo operation
             if components[1][-1:] == trans[1]:
                 return components
             # Only allow ư, ơ or ươ sitting alone in the middle part
             elif not components[1] or \
-                (components[1].lower() == u'ư' and trans[1].lower() == u'ơ'):
+                (components[1].lower() == 'ư' and trans[1].lower() == 'ơ'):
                 components[1] += trans[1]
             # Quite a hack. If you want to type gi[f = 'giờ', separate()
             # will create ['g', 'i', '']. Therefore we have to allow
@@ -248,19 +248,19 @@ def transform(comps, trans):
                 components[1] += trans[1]
                 components = separate(utils.join(components))
 
-    if trans[0] == u'+':
-        # See this and you'll understand:
-        #   transform([u'nn', '', ''],'+n') = [u'nnn', '', '']
-        #   transform([u'c', '', ''],'+o') = [u'c', 'o', '']
-        #   transform([u'c', 'o', ''],'+o') = [u'c', 'oo', '']
-        #   transform([u'c', 'o', ''],'+n') = [u'c', 'o', 'n']
-        if components[1] == u'':
+    if trans[0] == '+':
+        # See this and yo'll understand:
+        #   transform(['nn', '', ''],'+n') = ['nnn', '', '']
+        #   transform(['c', '', ''],'+o') = ['c', 'o', '']
+        #   transform(['c', 'o', ''],'+o') = ['c', 'oo', '']
+        #   transform(['c', 'o', ''],'+n') = ['c', 'o', 'n']
+        if components[1] == '':
             if utils.is_vowel(trans[1]):
                 components[1] += trans[1]
             else:
                 components[0] += trans[1]
         else:
-            if components[2] == u'' and utils.is_vowel(trans[1]):
+            if components[2] == '' and utils.is_vowel(trans[1]):
                 components[1] += trans[1]
             else:
                 components[2] += trans[1]
@@ -291,24 +291,24 @@ def separate(string):
     """
         Separates a valid Vietnamese word into 3 components:
         the start sound, the middle sound and the end sound.
-        Eg: toán -> [u't', u'oá', u't']
+        Eg: toán -> ['t', 'oá', 't']
         Otherwise returns None (not a valid Vietnamese word).
     """
-    comps = [u'', u'', u'']
-    if string == u'':
+    comps = ['', '', '']
+    if string == '':
         return comps
     
     # Search for the first vowel
     for i in range(len(string)):
         if utils.is_vowel(string[i]):
-            comps[0] = u'' + string[:i]
-            string = u'' + string[i:]
+            comps[0] = '' + string[:i]
+            string = '' + string[i:]
             break
 
     # No vowel?
-    if comps[0] == u'' and not utils.is_vowel(string[0]):
+    if comps[0] == '' and not utils.is_vowel(string[0]):
         comps[0] = string
-        string = u''
+        string = ''
     
     # Search for the first consonant after the first vowel
     for i in range(len(string)):
@@ -318,15 +318,15 @@ def separate(string):
             break
        
     # No ending consonant? Then the rest of the string must be the vowel part
-    if comps[1] == u'':
+    if comps[1] == '':
         comps[1] = string
     
-    # 'gi' and 'qu' need some special treatments
+    # 'gi' and 'q' need some special treatments
     # We want something like this:
     #     ['g', 'ia', ''] -> ['gi', 'a', '']
-    if (comps[0] != u'' and comps[1] != u'') and \
-    ((comps[0] in u'gG' and comps[1][0] in 'iI' and len(comps[1]) > 1) or \
-    (comps[0] in u'qQ' and comps[1][0] in 'uU')):
+    if (comps[0] != '' and comps[1] != '') and \
+    ((comps[0] in 'gG' and comps[1][0] in 'iI' and len(comps[1]) > 1) or \
+    (comps[0] in 'qQ' and comps[1][0] in 'u')):
         comps[0] += comps[1][:1]
         comps[1] = comps[1][1:]
     
@@ -361,7 +361,7 @@ def reverse(components, trans):
                 mark.add_mark_char(comps[0][-1:], Mark.NONE)
         else:
             if mark.is_valid_mark(comps, trans):
-                comps[1] = u"".join([mark.add_mark_char(c, Mark.NONE)
+                comps[1] = "".join([mark.add_mark_char(c, Mark.NONE)
                                           for c in comps[1]])
     return comps
 
