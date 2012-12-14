@@ -1,4 +1,3 @@
-#-*- coding: utf-8
 # New BoGo Engine - Vietnamese Text processing engine
 #
 # Copyright (c) 2012- Long T. Dam <longdt90@gmail.com>,
@@ -102,6 +101,8 @@ def process_key(string, key, case = 0, config = DefaultConfig()):
         im = IMs[im]
     else:
         im = IMs['telex']
+
+    string = "" if string == None else string
 
     # Handle non-alpha string like 'tôi_là_ai' by putting 'tôi_là_' in 
     # the `garbage` variable, effectively skipping it then put it back 

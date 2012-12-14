@@ -3,16 +3,14 @@
 echo "#"
 echo "# Testing utils functions"
 echo "#"
-/usr/bin/env python2.7 test_utils.py
+/usr/bin/env python3.2 test_utils.py
 
 echo "#"
 echo "# Testing separate() function"
 echo "#"
-/usr/bin/env python2.7 test_separate_with_dict.py
+/usr/bin/env python3.2 test_separate_with_dict.py
 
 echo "#"
 echo "# Testing main engine"
 echo "#"
-/usr/bin/env python2.7 test_new_bogo_engine.py
-
-
+/usr/bin/env python3.2 test_new_bogo_engine.py

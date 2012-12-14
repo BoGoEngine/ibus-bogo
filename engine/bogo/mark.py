@@ -109,7 +109,7 @@ def add_mark_char(char, mark):
         elif char in FAMILY_O:
             new_char = "o"
         elif char in FAMILY_U:
-            new_char = ""
+            new_char = "u"
         elif char in FAMILY_D:
             new_char = "d"
 
