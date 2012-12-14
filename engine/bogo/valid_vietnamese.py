@@ -29,7 +29,7 @@ CONSONANTS = [
     'n', 'p', 'q', 'r', 's', 
     't', 'v', 'x', 'ch', 'gh', 
     'kh', 'ph', 'th', 'ng',
-    'ngh', 'gi', 'q', 'nh', 'tr'
+    'ngh', 'gi', 'qu', 'nh', 'tr'
 ]
 
 ENDING_CONSONANTS = [
@@ -41,20 +41,20 @@ ENDING_CONSONANTS = [
 # can be for an open vowel.
 # NOTE: Actually, we'll include their pre-processed form too.
 CLOSED_COMPOUND_VOWELS = [
-    'ai', 'ao', 'a', 'ay',
-    #'ă',
-    'â', 'ây', #'a',
+    'ai', 'ao', 'au', 'ay',
+    #u'ă',
+    'âu', 'ây', #u'au',
     'eo',
-    'ê', 'e',
-    'ia', 'i', 'iê', 'ie',
+    'êu', 'eu',
+    'ia', 'iu', 'iêu', 'ieu',
     'oa', 'oi', 'oai', 'oay', 'oao', 'oeo',
-    #'ô',
-    'ơi', #'oi'
+    #u'ô',
+    'ơi', #u'oi'
     'ôi',
     'ua', 'ui', 'uây', 'uay',
-    'ua', 'ưa', 'ưi', 'ươi', 'ư', 'u', 'uoi', 'uôi', 'uê', 'ue', 'ươ', 'uo', 'ưo', 'uy',
+    'ua', 'ưa', 'ưi', 'ươi', 'ưu', 'uu', 'uoi', 'uôi', 'uê', 'ue', 'ươu', 'uou', 'ưou', 'uyu',
     'uy', 'uya', 'uơ',
-    'yê', 'ye', 
+    'yêu', 'yeu', 
 ]
 
 OPEN_COMPOUND_VOWELS = [

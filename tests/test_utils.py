@@ -1,3 +1,4 @@
+#!/usr/bin/env python3.2
 #-*- coding: utf-8
 #
 # IBus-BoGo - The Vietnamese IME for IBus
@@ -37,13 +38,13 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(append_comps(['b','a','c'], 'd'), ['b','a','cd'])
         
     def test_change_case(self):
-        self.assertEqual(change_case(u'ơ', 1), u'Ơ')
-        self.assertEqual(change_case(u'ư', 1), u'Ư')
-        self.assertEqual(change_case(u'Ơ', 1), u'Ơ')
-        self.assertEqual(change_case(u'Ư', 1), u'Ư')
-        self.assertEqual(change_case(u'ơ', 0), u'ơ')
-        self.assertEqual(change_case(u'ư', 0), u'ư')
-        self.assertEqual(change_case(u'Ơ', 0), u'ơ')
-        self.assertEqual(change_case(u'Ư', 0), u'ư')
+        self.assertEqual(change_case('ơ', 1), 'Ơ')
+        self.assertEqual(change_case('ư', 1), 'Ư')
+        self.assertEqual(change_case('Ơ', 1), 'Ơ')
+        self.assertEqual(change_case('Ư', 1), 'Ư')
+        self.assertEqual(change_case('ơ', 0), 'ơ')
+        self.assertEqual(change_case('ư', 0), 'ư')
+        self.assertEqual(change_case('Ơ', 0), 'ơ')
+        self.assertEqual(change_case('Ư', 0), 'ư')
 if __name__ == '__main__':
     unittest.main()

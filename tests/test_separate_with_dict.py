@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python3.2
 #-*- coding: utf-8
 
 import sys
@@ -24,7 +24,7 @@ known_bad = ('ABC',
 'gram',
 'internet',
 'intranet',
-u'palăng',
+'palăng',
 'tivi',
 'tout',
 'web'
@@ -34,7 +34,7 @@ from bogo.new_bogo_engine import *
 
 lines = 0
 errors = 0
-with codecs.open(dictionary, encoding='utf-8') as f:
+with open(dictionary) as f:
     for line in f:
         lines += 1
         string = line.rstrip()
