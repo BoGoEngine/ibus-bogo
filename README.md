@@ -1,5 +1,9 @@
 # Bộ gõ tiếng Việt BoGo cho IBus
 
+`master:` [![Build Status](https://travis-ci.org/BoGoEngine/ibus-bogo-python.png)](https://travis-ci.org/BoGoEngine/ibus-bogo-python) | 
+`develop:` [![Build Status](https://travis-ci.org/BoGoEngine/ibus-bogo-python.png?branch=develop)](https://travis-ci.org/BoGoEngine/ibus-bogo-python)
+
+
 **IBus BoGo** là một engine xử lý gõ tiếng Việt cho IBus, một phần mềm quản lý các bộ gõ phổ biến trong Linux.
 **IBus BoGo** được viết bằng ngôn ngữ Python và xử dụng engine xử lý
 tiếng Việt **BoGoEngine**.
