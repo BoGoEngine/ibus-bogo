@@ -7,7 +7,7 @@ import codecs
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir, 'engine')))
     
-dictionary = 'vi.dic'
+dictionary = os.path.join(os.path.dirname(__file__), 'vi.dic')
 known_bad = ('ABC',
 'ASCII',
 'GIF',

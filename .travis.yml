@@ -1,0 +1,7 @@
+language: python
+python:
+  - "3.2"
+# command to install dependencies
+#install: "pip install -r requirements.txt --use-mirrors"
+# command to run tests
+script: mkdir build && cd build && cmake .. && make test

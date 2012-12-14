@@ -29,6 +29,8 @@ configure_file(
 add_custom_target(uninstall
     COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
 
+ENABLE_TESTING()
+
 # Directories with CMakeLists.txt
 add_subdirectory (engine)
-
+add_subdirectory (tests)
