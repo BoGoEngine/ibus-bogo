@@ -79,6 +79,10 @@ IMs = {
 
 class DefaultConfig:
     input_method = 'telex'
+    spellchecking = False
+
+def is_processable(string):
+    return is_valid_combination(separate(string), final_form = False)
 
 def process_key(string, key, case = 0, config = DefaultConfig()):
     """
@@ -94,7 +98,7 @@ def process_key(string, key, case = 0, config = DefaultConfig()):
             Default: 'telex'.
         config - a dictionary.
     """
-    ## BEGIN TRICKS (scroll down please)
+## SANITY CHECK (scroll down please)
     im = config.input_method
     # People can sometimes be really mischievous :<
     if im in IMs:
@@ -120,7 +124,7 @@ def process_key(string, key, case = 0, config = DefaultConfig()):
         string += key
         return garbage + string
     
-    ## END TRICKS (here comes real code)
+## END SANITY CHECK (here comes real code)
     
     # Try to break the string down to 3 components
     # separate('chuyen') = ['ch', 'uye', 'n']
@@ -128,7 +132,7 @@ def process_key(string, key, case = 0, config = DefaultConfig()):
     
     # Refuse to process things like process('zzam', 'f')
     if comps == None:
-        return None
+        return string + key
     
     # Apply transformations
     trans_list = get_transformation_list(key, im, case = case);
@@ -156,8 +160,8 @@ def process_key(string, key, case = 0, config = DefaultConfig()):
         new_comps = utils.append_comps(new_comps, key)
         
     # One last check to rule out cases like 'ảch' or 'chuyểnl'
-    if not is_valid_combination(new_comps):
-        return None
+    if not is_valid_combination(new_comps, final_form = False):
+        return string + key
     return garbage + utils.join(new_comps)
 
 
@@ -292,8 +296,8 @@ def separate(string):
     """
         Separates a valid Vietnamese word into 3 components:
         the start sound, the middle sound and the end sound.
-        Eg: toán -> ['t', 'oá', 't']
-        Otherwise returns None (not a valid Vietnamese word).
+        Eg: toán -> [u't', u'oá', u't']
+        Otherwise returns [string, '', '']
     """
     comps = ['', '', '']
     if string == '':
@@ -306,10 +310,10 @@ def separate(string):
             string = '' + string[i:]
             break
 
-    # No vowel?
-    if comps[0] == '' and not utils.is_vowel(string[0]):
-        comps[0] = string
-        string = ''
+    # # No vowel?
+    # if comps[0] == '' and not utils.is_vowel(string[0]):
+    #     comps[0] = string
+    #     string = ''
     
     # Search for the first consonant after the first vowel
     for i in range(len(string)):
@@ -331,8 +335,9 @@ def separate(string):
         comps[0] += comps[1][:1]
         comps[1] = comps[1][1:]
     
-    if not is_valid_combination(comps):
-        return None
+    if not is_valid_combination(comps, final_form = False):
+        return [string, '', '']
+    
     return comps
     
 
@@ -365,4 +370,3 @@ def reverse(components, trans):
                 comps[1] = "".join([mark.add_mark_char(c, Mark.NONE)
                                           for c in comps[1]])
     return comps
-

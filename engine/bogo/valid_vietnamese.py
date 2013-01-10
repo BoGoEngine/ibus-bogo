@@ -21,50 +21,128 @@
 
 from . import utils
 from . import accent
+from . import mark
 Accent = accent.Accent
 
-CONSONANTS = [
-    'b', 'c', 'd', 'đ',
-    'g', 'h', 'k', 'l', 'm', 
-    'n', 'p', 'q', 'r', 's', 
-    't', 'v', 'x', 'ch', 'gh', 
-    'kh', 'ph', 'th', 'ng',
-    'ngh', 'gi', 'qu', 'nh', 'tr'
-]
+# Auto-generated list from dictionary
 
-ENDING_CONSONANTS = [
-    'c', 'm', 'n', 'p',
-    't', 'ch', 'ng', 'nh'
-]
+CONSONANTS = (
+'b',
+'c',
+'ch',
+'d',
+'g',
+'gh',
+'gi',
+'h',
+'k',
+'kh',
+'l',
+'m',
+'n',
+'ng',
+'ngh',
+'nh',
+'p',
+'ph',
+'qu',
+'r',
+'s',
+'t',
+'th',
+'tr',
+'v',
+'x',
+'đ',
+)
 
-# After a closed compound vowel, there can be no consonants whilst there
-# can be for an open vowel.
-# NOTE: Actually, we'll include their pre-processed form too.
-CLOSED_COMPOUND_VOWELS = [
-    'ai', 'ao', 'au', 'ay',
-    #u'ă',
-    'âu', 'ây', #u'au',
-    'eo',
-    'êu', 'eu',
-    'ia', 'iu', 'iêu', 'ieu',
-    'oa', 'oi', 'oai', 'oay', 'oao', 'oeo',
-    #u'ô',
-    'ơi', #u'oi'
-    'ôi',
-    'ua', 'ui', 'uây', 'uay',
-    'ua', 'ưa', 'ưi', 'ươi', 'ưu', 'uu', 'uoi', 'uôi', 'uê', 'ue', 'ươu', 'uou', 'ưou', 'uyu',
-    'uy', 'uya', 'uơ',
-    'yêu', 'yeu', 
-]
+ENDING_CONSONANTS = (
+'c',
+'ch',
+'m',
+'n',
+'ng',
+'nh',
+'p',
+'t',
+)
 
-OPEN_COMPOUND_VOWELS = [
-    'oa', 'oă', 'oe', 'uye', 'uyê', 'uy', 
-    'uâ', 'oo', 'ươ', 'uo', 'uô', 'ưo',
-    'ye', 'yê', 'ie', 'iê', 'uê', 'ue', 'uy', 'ua'
-]
+OPEN_COMPOUND_VOWELS = (
+'a',
+'e',
+'i',
+'iê',
+'o',
+'oa',
+'oe',
+'oo',
+'oă',
+'u',
+'uy',
+'uyê',
+'uâ',
+'uê',
+'uô',
+'y',
+'yê',
+'â',
+'ê',
+'ô',
+'ă',
+'ơ',
+'ư',
+'ươ',
+)
 
+CLOSED_COMPOUND_VOWELS = (
+'a',
+'ai',
+'ao',
+'au',
+'ay',
+'e',
+'eo',
+'i',
+'ia',
+'iu',
+'iêu',
+'o',
+'oa',
+'oai',
+'oao',
+'oay',
+'oe',
+'oeo',
+'oi',
+'u',
+'ua',
+'ui',
+'uy',
+'uya',
+'uyu',
+'uây',
+'uê',
+'uôi',
+'uơ',
+'y',
+'yêu',
+'âu',
+'ây',
+'ê',
+'êu',
+'ô',
+'ôi',
+'ơ',
+'ơi',
+'ư',
+'ưa',
+'ưi',
+'ưu',
+'ươi',
+'ươu',
+)
 
-def is_valid_combination(components):
+def is_valid_combination(components, final_form = True):
     """Check if a character combination complies to Vietnamese spelling.
     
     Input:
@@ -76,17 +154,7 @@ def is_valid_combination(components):
     # We only work with lower case
     for i in range(len(comps)):
         comps[i] = utils.change_case(comps[i], 0)
-    
-    # Allow 'đ' to appear in abbreviations like 'đm', 'đc', 'kgcđ', etc.
-    #if comps[0] and not comps[1] and not comps[2] and \
-        #not comps[0] in ('gi', 'q'):
-        #for c in comps[0]:
-            #if not c in CONSONANTS:
-                #return False
-        #return True
-    if comps[0] and not comps[1] and not comps[2]:
-        return True
-    
+        
     # Check if our start sound is a proper consonant
     if (comps[0] != '') and (not (comps[0] in CONSONANTS)):
         return False
@@ -94,16 +162,35 @@ def is_valid_combination(components):
     # And if our ending sound is a proper ending consonant
     if (comps[2] != '') and (not (comps[2] in ENDING_CONSONANTS)):
         return False
-    
-    vowel = accent.remove_accent_string(comps[1])
-    if len(vowel) > 1:
-        if not (vowel in OPEN_COMPOUND_VOWELS or \
-            vowel in CLOSED_COMPOUND_VOWELS):
-            return False
 
-    if vowel in CLOSED_COMPOUND_VOWELS and \
-        not vowel in OPEN_COMPOUND_VOWELS and comps[2] != '':
-        return False
+    # Check our vowel.
+    # First remove all accents
+    vowel = accent.remove_accent_string(comps[1])
+
+    # u"chuyển" is the final form whilst "chuyen" is not
+    if final_form:
+        if len(vowel) > 1:
+            if not (vowel in OPEN_COMPOUND_VOWELS or \
+                vowel in CLOSED_COMPOUND_VOWELS):
+                return False
+
+        if vowel in CLOSED_COMPOUND_VOWELS and \
+            not vowel in OPEN_COMPOUND_VOWELS and comps[2] != '':
+            return False
+    else:
+        good_vowel = False
+        if comps[2]:
+            vowel_list = OPEN_COMPOUND_VOWELS
+            test = lambda a, b: a == b or mark.remove_mark_string(a) == b
+        else:
+            vowel_list = CLOSED_COMPOUND_VOWELS + OPEN_COMPOUND_VOWELS
+            test = lambda a, b: a == b or a.startswith(b) or mark.remove_mark_string(a).startswith(b)
+        for v in vowel_list:
+            if test(v, vowel):
+                good_vowel = True
+                break
+        if not good_vowel:
+            return False
     
     # 'ăch'?
     if comps[2] == 'ch' and ((vowel in 'ăâeôơuư') or \
@@ -114,9 +201,8 @@ def is_valid_combination(components):
     if comps[2] == 'ng' and vowel in ('ơ'):
         return False
     
-    # Sadly, this interferes with 'nhếch' :<
-    #if comps[2] == 'c' and vowel in 'ê':
-    #    return False
+    if final_form and comps[2] == 'c' and vowel in 'ê':
+        return False
     
     # Get the first accent
     ac = Accent.NONE

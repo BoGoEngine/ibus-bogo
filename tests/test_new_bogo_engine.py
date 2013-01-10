@@ -56,7 +56,7 @@ class TestBoGoEngine(unittest.TestCase):
         self.assertEqual(separate('q'), ['q','',''])
         self.assertEqual(separate('d'), ['d','',''])
         self.assertEqual(separate('a'), ['','a',''])
-        self.assertEqual(separate('aoe'), None)
+        self.assertEqual(separate('aoe'), ['aoe', '', ''])
         #self.assertEqual(separate('nn'), None)
         self.assertEqual(separate('uo'), ['','uo',''])
         self.assertEqual(separate('uong'), ['','uo','ng'])
@@ -196,10 +196,10 @@ Only the vowel part will be changed after the add_accent take places
         self.assertEqual(process_key('đ','x'), 'đx')
         self.assertEqual(process_key('hoac','w'), 'hoăc')
         self.assertEqual(process_key('cuô','i'), 'cuôi')
-        self.assertEqual(process_key('cá','e'), None)
+        self.assertEqual(process_key('cá','e'), 'cáe')
         self.assertEqual(process_key('',']', config = telex, case=1), 'Ư')
         self.assertEqual(process_key('','[', config = telex, case=1), 'Ơ')
-        self.assertEqual(process_key('i','w', config = telex), None)
+        self.assertEqual(process_key('i','w', config = telex), 'iw')
         
         # Undo
         self.assertEqual(process_key('â','a'), 'aa')
@@ -222,9 +222,9 @@ Only the vowel part will be changed after the add_accent take places
         self.assertEqual(process_key('hư','w', config = telex, case=1), 'huw')
                 
         # Abbreviations
-        self.assertEqual(process_key('đ','m'), 'đm')
-        self.assertEqual(process_key('đ','c'), 'đc')
-        self.assertEqual(process_key('kgcd','d'), 'kgcđ')
+        #self.assertEqual(process_key('đ','m'), 'đm')
+        #self.assertEqual(process_key('đ','c'), 'đc')
+        #self.assertEqual(process_key('kgcd','d'), 'kgcđ')
 
     def test_process_seq(self):
         self.assertEqual(process_seq('', 'tooi'), 'tôi')
