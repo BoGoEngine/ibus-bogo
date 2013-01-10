@@ -131,3 +131,16 @@ def is_valid_mark(comps, mark_trans):
         return True
     else:
         return False
+
+def remove_mark_char(char):
+    """Remove mark from a single character, if any."""
+    # TODO: This looks ugly
+    if char in FAMILY_A: return "a"
+    if char in FAMILY_E: return "e"
+    if char in FAMILY_O: return "o"
+    if char in FAMILY_U: return "u"
+    if char in FAMILY_D: return "d"
+    return char
+
+def remove_mark_string(string):
+    return utils.join([remove_mark_char(c) for c in string])
