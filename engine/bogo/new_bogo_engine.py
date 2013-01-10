@@ -19,6 +19,7 @@
 
 from .valid_vietnamese import is_valid_combination
 from . import utils, accent, mark
+import logging
 
 Mark = mark.Mark
 Accent = accent.Accent
@@ -84,7 +85,7 @@ class DefaultConfig:
 def is_processable(string):
     return is_valid_combination(separate(string), final_form = False)
 
-def process_key(string, key, case = 0, config = DefaultConfig()):
+def process_key(string, key, case = 0, raw_string = "", config = DefaultConfig()):
     """
     Process the given string and key based on the given input method and
     config.
@@ -145,23 +146,30 @@ def process_key(string, key, case = 0, config = DefaultConfig()):
     # Eg: process_key('à', 'f')
     #  -> transform(['', 'à', ''], '\\') = ['', 'à', '']
     #  -> reverse('à', '\\') = 'a'
-    #
-    # Note that when undo 'ư' with 'w', this function will always return
-    # 'uw' because of lack of raw string information. It is up to the
-    # user of this module to change the returned value to 'w' when necessary.
-    # 
     if new_comps == comps:
         for trans in trans_list:
+            # TODO: it seems dangerous to do direct reverse here
             new_comps = reverse(new_comps, trans)
-            tmp = list(new_comps)
-            if tmp != comps:
-                new_comps = utils.append_comps(new_comps, key)
+            if new_comps != comps:
+                # Telex specific undo:
+                # uww -> uw
+                # ww -> w
+                if config.input_method == 'telex' and \
+                    new_comps[1] and new_comps[1][-1] == 'u' and \
+                    raw_string[-2:].lower() == 'ww' and \
+                    not (len(raw_string) > 2 and raw_string[-3].lower() in 'aouw'):
+                    new_comps[1] = new_comps[1][:-1] + 'w'
+                else:
+                    new_comps = utils.append_comps(new_comps, key)
                 return garbage + utils.join(new_comps)
         new_comps = utils.append_comps(new_comps, key)
-        
+
     # One last check to rule out cases like 'ảch' or 'chuyểnl'
     if not is_valid_combination(new_comps, final_form = False):
-        return string + key
+        if config.spellchecking and raw_string != "":
+            return raw_string
+        else:
+            return string + key
     return garbage + utils.join(new_comps)
 
 

@@ -74,6 +74,8 @@ class Engine(IBus.Engine):
             self.new_string = self.new_string[:-1]
             # TODO A char in __raw_string doesn't equal a char in new_string
             self.__raw_string = self.__raw_string[:-1]
+            if len(self.new_string) == 0:
+                self.reset_engine()
             return False
 
         if self.is_character(keyval):
@@ -94,30 +96,9 @@ class Engine(IBus.Engine):
                 self.new_string = core.process_key(self.old_string,
                     chr(keyval),
                     case = case,
+                    raw_string = self.__raw_string,
                     config = self.__config)
-                    
-                if self.new_string == None:
-                    if not self.__config.spellchecking:
-                        self.new_string = self.old_string + chr(keyval)
-                    else:
-                        if len(self.__raw_string) > 2 and \
-                            self.__raw_string[-2] == self.__raw_string[-3]:
-                            self.new_string = self.old_string + chr(keyval)
-                        else:
-                            self.new_string = self.__raw_string
-                    
-                # Dirty hack to distinguish 'uww' and 'ww' in telex
-                # See the note near the end of core.process_key()
-                if self.__config.input_method == 'telex' and \
-                    self.__raw_string.lower() == 'ww':
-                        self.new_string = self.__raw_string[0]
-                if self.__config.input_method == 'telex' and \
-                    len(self.__raw_string) > 2 and \
-                    self.__raw_string[-2:].lower() == 'ww' and \
-                    not self.__raw_string[-3].lower() in 'auw' and \
-                    self.new_string[-2:].lower() == 'uw':
-                    self.new_string = self.new_string[:-2] + self.new_string[-1]
-
+                
                 logging.debug("New string: %s", self.new_string)
                 self.number_fake_backspace, self.string_to_commit = \
                   self.get_nbackspace_and_string_to_commit()

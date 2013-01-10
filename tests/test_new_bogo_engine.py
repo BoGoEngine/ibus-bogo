@@ -38,8 +38,10 @@ vni.input_method = 'vni'
 
 def process_seq(orig, seq, config = telex):
     string = orig
-    for i in range(len(seq)):
-        string = process_key(string, seq[i], config = telex)
+    raw = string
+    for i in seq:
+        raw = raw + i
+        string = process_key(string, i, raw_string = raw, config = telex)
     return string
 
 class TestBoGoEngine(unittest.TestCase):
@@ -231,15 +233,17 @@ Only the vowel part will be changed after the add_accent take places
         self.assertEqual(process_seq('', 'chuyeenr'), 'chuyển')
         self.assertEqual(process_seq('', 'ddoonjg'), 'động')
         self.assertEqual(process_seq('nhê', 'chs'), 'nhếch')
-        self.assertEqual(process_seq('h', 'ww'), 'huw')
-        self.assertEqual(process_seq('h', 'ww'), 'huw')
-        self.assertEqual(process_seq('', 'ww'), 'uw')
-        self.assertEqual(process_seq('', 'ww'), 'uw')
         
         # Test fallback IM
         self.assertEqual(process_seq('', 'tooi', 'shut'), 'tôi')
         self.assertEqual(process_seq('', 'chuyeenr', 'down'), 'chuyển')
         self.assertEqual(process_seq('', 'ddoonjg', 'blah'), 'động')
+
+        # Test Undo
+        self.assertEqual(process_seq('h', 'uww'), 'huw')
+        self.assertEqual(process_seq('h', 'ww'), 'hw')
+        self.assertEqual(process_seq('', 'ww'), 'w')
+        self.assertEqual(process_seq('', 'uww'), 'uw')
         
 if __name__ == '__main__':
     unittest.main()
