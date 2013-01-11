@@ -35,10 +35,8 @@ FAMILY_O = "oơô"
 FAMILY_U = "uư"
 FAMILY_D = "dđ"
 
+# TODO: needs refactoring
 def add_mark(components, mark):
-    """
-    Case Mark.NONE will be deal with separately by user
-    """
     comp = list(components)
     if mark == Mark.BAR and comp[0] and comp[0][-1].lower() in FAMILY_D:
         comp[0] = add_mark_at(comp[0], len(comp[0])-1, Mark.BAR)
@@ -61,6 +59,11 @@ def add_mark(components, mark):
             else:
                 pos = max(raw_vowel.find(""), raw_vowel.find("o"))
                 comp[1] = add_mark_at(comp[1], pos, Mark.HORN)
+    if mark == Mark.NONE:
+        if not raw_vowel == comp[1].lower():
+            comp[1] = raw_vowel
+        elif comp[0][-1] == "đ":
+            comp[0][-1] = "d"
     return comp
 
 def add_mark_at(string, index, mark):
@@ -120,6 +123,8 @@ def is_valid_mark(comps, mark_trans):
     """
     Check whether the mark given by mark_trans is valid to add to the components
     """
+    if mark_trans == "*_":
+        return True
     components = list(comps)
     if components[1] != "":
         raw_vowel = accent.add_accent(components, Accent.NONE)[1].lower()

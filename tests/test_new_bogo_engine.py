@@ -222,6 +222,19 @@ Only the vowel part will be changed after the add_accent take places
         self.assertEqual(process_key('Ư','}', config = telex, case=1), '}')
         self.assertEqual(process_key('Ơ','{', config = telex, case=1), '{')
         self.assertEqual(process_key('hư','w', config = telex, case=1), 'huw')
+        
+        # Undo with 'z'
+        self.assertEqual(process_key('â','z'), 'a')
+        self.assertEqual(process_key('ă','z'), 'a')
+        self.assertEqual(process_key('ê','z'), 'e')
+        self.assertEqual(process_key('ơ','z'), 'o')
+        self.assertEqual(process_key('ô','z'), 'o')
+        self.assertEqual(process_key('ư','z'), 'u')
+        
+        self.assertEqual(process_key('ấ','z'), 'â')
+        self.assertEqual(process_key('ẩ','z'), 'â')
+        self.assertEqual(process_key('ậ','z'), 'â')
+        
                 
         # Abbreviations
         #self.assertEqual(process_key('đ','m'), 'đm')

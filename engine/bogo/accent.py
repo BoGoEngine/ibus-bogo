@@ -18,6 +18,9 @@
 # You should have received a copy of the GNU General Public License
 # along with IBus-BoGo. If not, see <http://www.gnu.org/licenses/>.
 
+# TODO: add is_valid_accent() to be on par with mark.py and use it
+# at the end of new_bogo_engine.transform()
+
 from . import utils
 
 class Accent:

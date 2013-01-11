@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # New BoGo Engine - Vietnamese Text processing engine
 #
 # Copyright (c) 2012- Long T. Dam <longdt90@gmail.com>,
@@ -45,7 +46,7 @@ IMs = {
         'r':'?',
         'x':'~',
         'j':'.',
-        'z':'_'
+        'z':['_', '*_']
     },
     'telex' : {
         'a':'a^',
@@ -58,7 +59,7 @@ IMs = {
         'r':'?',
         'x':'~',
         'j':'.',
-        'z':'_',
+        'z':['_', '*_'],
         ']':'<ư',
         '[':'<ơ',
         '}':'<ư',
@@ -74,7 +75,7 @@ IMs = {
         '3':'?',
         '4':'~',
         '5':'.',
-        '0':'_'
+        '0':['_', '*_']
     }
 }
 
@@ -140,6 +141,10 @@ def process_key(string, key, case = 0, raw_string = "", config = DefaultConfig()
     new_comps = comps
 
     for trans in trans_list:
+        if trans == "*_" and new_comps != comps:
+            # When undoing vowels with both a mark and an accent, we only want
+            # to undo the accent
+            break
         new_comps = transform(new_comps, trans)
 
     # Double typing an IM key to undo.
@@ -164,12 +169,12 @@ def process_key(string, key, case = 0, raw_string = "", config = DefaultConfig()
                 return garbage + utils.join(new_comps)
         new_comps = utils.append_comps(new_comps, key)
 
-    # One last check to rule out cases like 'ảch' or 'chuyểnl'
+    # One last check to rule out cases like 'ảch' or 'chuyển'
     if not is_valid_combination(new_comps, final_form = False):
         if config.spellchecking and raw_string != "":
             return raw_string
         else:
-            return string + key
+            return garbage + string + key
     return garbage + utils.join(new_comps)
 
 
@@ -213,11 +218,13 @@ def get_action(trans):
         if trans[1] == '^':
             return Action.ADD_MARK, Mark.HAT
         if trans[1] == '+':
-            return Action.ADD_MARK, Mark.BREVE,
+            return Action.ADD_MARK, Mark.BREVE
         if trans[1] == '*':
             return Action.ADD_MARK, Mark.HORN
         if trans[1] == "-":
             return Action.ADD_MARK, Mark.BAR
+        if trans[1] == "_":
+            return Action.ADD_MARK, Mark.NONE
     else:
         if trans[0] == "\\":
             return Action.ADD_ACCENT, Accent.GRAVE
