@@ -1,6 +1,6 @@
 # Bộ gõ tiếng Việt BoGo cho IBus
 
-`last commit:` [![Build Status](https://travis-ci.org/BoGoEngine/ibus-bogo-python.png)](https://travis-ci.org/BoGoEngine/ibus-bogo-python)
+_last commit:_ [![Build Status](https://travis-ci.org/BoGoEngine/ibus-bogo-python.png)](https://travis-ci.org/BoGoEngine/ibus-bogo-python)
 
 `master:` [![Build Status](https://travis-ci.org/BoGoEngine/ibus-bogo-python.png?branch=master)](https://travis-ci.org/BoGoEngine/ibus-bogo-python)
 
