@@ -79,14 +79,16 @@ IMs = {
     }
 }
 
-class DefaultConfig:
-    input_method = 'telex'
-    spellchecking = False
+default_config = {
+    "input-method" : "telex",
+    "output-charset" : "utf-8",
+    "skip-non-vietnamese" : True
+}
 
 def is_processable(string):
     return is_valid_combination(separate(string), final_form = False)
 
-def process_key(string, key, case = 0, raw_string = "", config = DefaultConfig()):
+def process_key(string, key, case = 0, raw_string = "", config = None):
     """
     Process the given string and key based on the given input method and
     config.
@@ -101,12 +103,11 @@ def process_key(string, key, case = 0, raw_string = "", config = DefaultConfig()
         config - a dictionary.
     """
 ## SANITY CHECK (scroll down please)
-    im = config.input_method
-    # People can sometimes be really mischievous :<
-    if im in IMs:
-        im = IMs[im]
-    else:
-        im = IMs['telex']
+
+    if not config:
+        config = default_config
+
+    im = IMs[config["input-method"]]
 
     string = "" if string == None else string
 
@@ -159,7 +160,7 @@ def process_key(string, key, case = 0, raw_string = "", config = DefaultConfig()
                 # Telex specific undo:
                 # uww -> uw
                 # ww -> w
-                if config.input_method == 'telex' and \
+                if config["input-method"] == 'telex' and \
                     new_comps[1] and new_comps[1][-1] == 'u' and \
                     raw_string[-2:].lower() == 'ww' and \
                     not (len(raw_string) > 2 and raw_string[-3].lower() in 'aouw'):
@@ -171,7 +172,7 @@ def process_key(string, key, case = 0, raw_string = "", config = DefaultConfig()
 
     # One last check to rule out cases like 'ảch' or 'chuyển'
     if not is_valid_combination(new_comps, final_form = False):
-        if config.spellchecking and raw_string != "":
+        if config["skip-non-vietnamese"] and raw_string != "":
             return raw_string
         else:
             return garbage + string + key

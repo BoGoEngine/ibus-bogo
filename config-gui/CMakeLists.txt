@@ -16,43 +16,31 @@
 #
 
 install (PROGRAMS
-  data/ibus-engine-bogo
+  ibus-bogo-settings
   DESTINATION
   lib/ibus-bogo
   )
 
 install (FILES
-  data/bogo.xml
+  controller.py
+  controller.ui
   DESTINATION
-  ${IBUS_COMPONENT_DIR}
+  ${BOGO_INSTALL_DIR}/config-gui
   )
 
 install (FILES
-  data/ibus-bogo.svg
+  ibus-bogo-settings.desktop
   DESTINATION
-  share/icons/hicolor/scalable/
-  )
-
-install (FILES
-  main.py
-  ibus_engine.py
-  config.py
-  DESTINATION
-  ${BOGO_INSTALL_DIR}/engine
-  )
-
-install (FILES
-  data/default_config.json
-  DESTINATION
-  ${BOGO_INSTALL_DIR}/engine/data
+  share/applications
 )
 
 FILE (GLOB
- bogo "bogo/*.py"
+ locales "locales/*.qm"
+ flags "locales/*.png"
  )
 
 install (FILES
-  ${bogo}
+  ${locales}
   DESTINATION
-  ${BOGO_INSTALL_DIR}/engine/bogo
+  ${BOGO_INSTALL_DIR}/config-gui/locales
   )

@@ -18,109 +18,62 @@
 # You should have received a copy of the GNU General Public License
 # along with IBus-BoGo.  If not, see <http://www.gnu.org/licenses/>.
 
-from gi.repository import IBus, GLib, GObject, Gio
+from gi.repository import Gio, GObject
+import logging
+import json
+import os
+
+_dirname = os.path.expanduser("~/.config/ibus-bogo/")
+if not os.path.exists(_dirname):
+    os.makedirs(_dirname)
+config_path = os.path.join(_dirname, "config.json")
 
 class Config(GObject.GObject):
-    charsets = {
-        'charset.utf-8' : ('UTF-8', 'UTF-8 Unicode (Times New Roman)', 'utf-8'),
-        #'tcvn3' : ('TCVN3', 'Vietnamese Standard No.3 (.VnTimes)'),
-        #'vni' : ('VNI', 'VNI Encoding (VNI-Times)')
-    }
-    methods = {
-        'im.telex' : ('Telex', 'Telex with [, ], and w.', 'telex'),
-        'im.simple-telex' : ('STelex', 'Minimal Telex', 'simple-telex'),
-        'im.vni' : ('VNI', 'VNI Input Method', 'vni')
-    }
-    
-    # Read this:
-    # http://python-gtk-3-tutorial.readthedocs.org/en/latest/objects.html#properties
-    input_method = GObject.property(type=str)
-    output_charset = GObject.property(type=str)
-    spellchecking = GObject.property(type=bool, default=False)
-    
+    """Config object, designed to behave like a dictionary. It will auto reload when
+    the config file is changed.
+    """
+
     def __init__(self):
         GObject.GObject.__init__(self)
-        self.__backend = Gio.Settings('org.kgcd.ibus-bogo')
-        self.__backend.bind('input-method', self, 'input-method', Gio.SettingsBindFlags.DEFAULT)
-        self.__backend.bind('output-charset', self, 'output-charset', Gio.SettingsBindFlags.DEFAULT)
-        self.__backend.bind('spellchecking', self, 'spellchecking', Gio.SettingsBindFlags.DEFAULT)
-        self.__init_props()
 
-    # This is horrible. I know. Blame IBus.
-    def __init_charset_prop_menu(self):
-        charset_prop_list = IBus.PropList()
-        for charset in Config.charsets:
-            charset_prop_list.append(
-                IBus.Property(key = charset,
-                              prop_type = IBus.PropType.RADIO,
-                              label = IBus.Text.new_from_string(Config.charsets[charset][0]),
-                              tooltip = IBus.Text.new_from_string(Config.charsets[charset][1]),
-                              sensitive = True,
-                              visible = True,
-                              state = IBus.PropState.CHECKED if Config.charsets[charset][2] == self.output_charset else IBus.PropState.UNCHECKED,
-                              sub_props = None))
+        path = config_path
+        self.path = path
 
-        self.__charset_prop_menu = IBus.Property(
-            key = "charset",
-            prop_type = IBus.PropType.MENU,
-            label = IBus.Text.new_from_string(Config.charsets['charset.' + self.output_charset][0]),
-            icon = None,
-            tooltip = IBus.Text.new_from_string("Choose charset"),
-            sensitive = True,
-            visible = True,
-            state = IBus.PropState.UNCHECKED,
-            sub_props = charset_prop_list)
-        return self.__charset_prop_menu
+        self.hash = {}
+        self.read_config()
 
-    def __init_method_prop_menu(self):
-        method_prop_list = IBus.PropList()
-        for method in Config.methods:
-            method_prop_list.append(
-                IBus.Property(key = method,
-                              prop_type = IBus.PropType.RADIO,
-                              label = IBus.Text.new_from_string(Config.methods[method][0]),
-                              icon = None,
-                              tooltip = IBus.Text.new_from_string(Config.methods[method][1]),
-                              sensitive = True,
-                              visible = True,
-                              state = IBus.PropState.CHECKED if Config.methods[method][2] == self.input_method else IBus.PropState.UNCHECKED,
-                              sub_props = None))
+        # TODO: Gio's monitoring is a bit slow
+        f = Gio.File.new_for_path(path)
+        self.monitor = f.monitor_file(0, None)
+        self.monitor.connect("changed", self.on_settings_changed)
 
-        self.__method_prop_menu = IBus.Property(
-            key = "method",
-            prop_type = IBus.PropType.MENU,
-            label = IBus.Text.new_from_string(Config.methods['im.' + self.input_method][0]),
-            icon = None,
-            tooltip = IBus.Text.new_from_string("Choose typing method"),
-            sensitive = True,
-            visible = True,
-            state = IBus.PropState.UNCHECKED,
-            sub_props = method_prop_list)
-        return self.__method_prop_menu
+    def on_settings_changed(self, monitor, file, other_file, event_type):
+        if event_type == Gio.FileMonitorEvent.CHANGES_DONE_HINT:
+            logging.debug("Setting file changed")
+            self.read_config()
 
-    def __init_props(self):
-        self.prop_list = IBus.PropList()
-        self.__charset_prop_menu = self.__init_charset_prop_menu()
-        self.prop_list.append(self.__charset_prop_menu)
-        self.__method_prop_menu = self.__init_method_prop_menu()
-        self.prop_list.append(self.__method_prop_menu)
+    def read_config(self):
+        f = open(self.path, "r")
+        data = json.loads(f.read())
+        if self.sanity_check(data):
+            for key in data:
+                self.hash[key] = data[key]
+            f.close()
+        else:
+            # Default to something pre-configured
+            pass
 
-    def do_property_activate(self, prop_name, state):
-        """Called when the user press a button on the panel (activate a property)
-        """
+    # def write_config(self):
+    #     f = open(self.path, "w")
+    #     f.write(json.dumps(self.hash, indent=4))
+    #     f.close()
 
-        if prop_name in Config.methods and state == IBus.PropState.CHECKED:         
-            #self.input_method = prop_name
-            # For some unknown reason, GSettings property binding
-            # won't work for write operation so we have to do this.            
-            self.__backend.set_string('input-method', Config.methods[prop_name][2])
-            t = IBus.Text.new_from_string(Config.methods[prop_name][0])
-            self.__method_prop_menu.set_label(t)
-            return self.__method_prop_menu
+    # def __setitem__(self, key, value):
+    #     self.hash[key] = value
+    #     self.write_config()
 
-        if prop_name in Config.charsets and state == IBus.PropState.CHECKED:
-            #self.output_charset = prop_name
-            self.__backend.set_string('output-charset', charsets[prop_name][2])
-            t = IBus.Text.new_from_string(Config.charsets[prop_name][0])
-            self.__charset_prop_menu.set_label(t)
-            return self.__charset_prop_menu
+    def __getitem__(self, key):
+        return self.hash[key]
+
+    def sanity_check(self, config_object):
+        return True

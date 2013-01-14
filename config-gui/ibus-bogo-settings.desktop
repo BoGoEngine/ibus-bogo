@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=0.1
+Name=IBus BoGo Settings
+Comment=Settings for the Vietnamese input method
+Exec=/usr/lib/ibus-bogo/ibus-bogo-settings
+Icon=ibus-bogo
+Type=Application
+Categories=Utility;
+StartupNotify=false

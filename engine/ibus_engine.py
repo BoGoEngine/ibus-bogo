@@ -34,7 +34,13 @@ modifier = IBus.ModifierType
 # I know, I know. Singleton/global objects are horrible but
 # right now there is no known way to pass more args to Engine
 # because of how python-gobject works.
+# TODO: We should be able to subclass
+# IBusFactory and pre-apply the config object as an argument to 
+# our engine's constructor.
 config = Config()
+last_engine = None
+engines = []
+active_engines = []
 
 class Engine(IBus.Engine):
     __gtype_name__ = 'EngineBoGo'
@@ -44,6 +50,8 @@ class Engine(IBus.Engine):
         self.__config = config
         self.commit_result = self.commit_utf8
         self.reset_engine()
+        self.engine_id = len(engines)
+        engines.append(self)
         logging.info("You are running BoGo IBus Engine")
 
     # The "do_" part is PyGObject's way of overriding base's functions
@@ -150,12 +158,24 @@ class Engine(IBus.Engine):
     def is_character(self, keyval):
         return keyval in range(33,126)
 
+    def do_enable(self):
+        global last_engine
+        global engines
+        last_engine = self
+        active_engines.append(self)
+        logging.debug("Engine #%d enabled", self.engine_id)
+
+    def do_disable(self):
+        global engines
+        active_engines.remove(self)
+        logging.debug("Engine #%d disabled", self.engine_id)
+
     def do_focus_in(self):
         """Implements IBus.Engine's focus_in's default signal handler.
 
         Called when the input client widget gets focus.
         """
-        self.register_properties(self.__config.prop_list)
+        # self.register_properties(self.__config.prop_list)
 
     def do_focus_out(self):
         """Implements IBus.Engine's focus_out's default signal handler.
@@ -165,6 +185,5 @@ class Engine(IBus.Engine):
         self.reset_engine()
 
     def do_property_activate(self, prop_name, state):
-        prop = self.__config.do_property_activate(prop_name, state)
-        self.update_property(prop)
+        self.__config.do_property_activate(self, prop_name, state)
         self.reset_engine()

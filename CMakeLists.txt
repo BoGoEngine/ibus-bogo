@@ -33,4 +33,5 @@ ENABLE_TESTING()
 
 # Directories with CMakeLists.txt
 add_subdirectory (engine)
+add_subdirectory (config-gui)
 add_subdirectory (tests)

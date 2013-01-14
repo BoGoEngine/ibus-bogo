@@ -30,7 +30,6 @@ import logging
 import argparse
 
 from ibus_engine import Engine
-from config import Config
 
 current_path = os.path.dirname(os.path.abspath(__file__))
 
@@ -48,18 +47,18 @@ class IMApp:
                              "/usr/bin/exec",
                              "ibus-bogo")
         engine = IBus.EngineDesc(name = "bogo-python",
-                                  longname = engine_name,
-                                  description = "BoGo Engine for IBus",
-                                  language = "vi",
-                                  license = "GPLv3",
-                                  author = "Long T. Dam <longdt90@gmail.com>",
-                                  icon = current_path + "/data/ibus-bogo.svg",
-                                  layout = "us")
+                                longname = engine_name,
+                                description = "BoGo Engine for IBus",
+                                language = "vi",
+                                license = "GPLv3",
+                                author = "Long T. Dam <longdt90@gmail.com>",
+                                icon = current_path + "/data/___ibus-bogo.svg",
+                                #icon = "ibus-bogo",
+                                layout = "us")
         self.__component.add_engine(engine)
         self.__mainloop = GObject.MainLoop()
         self.__bus = IBus.Bus()
         self.__bus.connect("disconnected", self.__bus_disconnected_cb)
-        self.__config = Config()
         self.__factory = IBus.Factory.new(self.__bus.get_connection())
         self.__factory.add_engine("bogo-python",
                 GObject.type_from_name("EngineBoGo"))
