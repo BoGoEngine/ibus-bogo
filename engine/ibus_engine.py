@@ -62,7 +62,8 @@ class Engine(IBus.Engine):
         This function gets called whenever a key is pressed.
         """
         # ignore key release events
-        is_press = ((state & IBus.ModifierType.RELEASE_MASK) == 0)
+        # is_press = ((state & IBus.ModifierType.RELEASE_MASK) == 0)
+        is_press = (state & (1 << 30)) == 0  # There's a strange overflow bug with Python3-gi and IBus
         if not is_press:
             return False
 
@@ -101,19 +102,15 @@ class Engine(IBus.Engine):
                 
                 logging.debug("New string: %s", self.new_string)
                 self.number_fake_backspace, self.string_to_commit = \
-                  self.get_nbackspace_and_string_to_commit()
-                self.is_faking_backspace = True
+                    self.get_nbackspace_and_string_to_commit()
+
                 logging.debug("Number of fake backspace: %d", self.number_fake_backspace)
                 logging.debug("String to commit: %s", self.string_to_commit)
 
                 for i in range(self.number_fake_backspace):
                     self.forward_key_event(keysyms.BackSpace, 14, 0)
 
-                # Sleep to ensure that all fake backspaces are committed.
-                # Adjust time sleep to obtain proper behaviour
-                time.sleep(0.015 * self.number_fake_backspace)
                 self.commit_result(self.string_to_commit)
-                time.sleep(0.003)
                 return True
 
         if keyval == keysyms.space:
