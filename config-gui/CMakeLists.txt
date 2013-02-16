@@ -34,10 +34,16 @@ install (FILES
   share/applications
 )
 
+add_custom_target (translations ALL
+  COMMAND pyside-lupdate controller.pro
+  COMMAND lrelease controller.pro
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/config-gui
+)
+
 FILE (GLOB
  locales "locales/*.qm"
  flags "locales/*.png"
- )
+)
 
 install (FILES
   ${locales}

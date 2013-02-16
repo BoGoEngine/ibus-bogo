@@ -2,8 +2,6 @@
 
 import sys
 import os
-import shutil
-import json
 import logging
 from PySide.QtCore import *
 from PySide.QtGui import *
@@ -33,17 +31,17 @@ config_path = os.path.join(_dirname, "config.json")
 current_dir = os.path.dirname(os.path.abspath(__file__))
 engine_dir = os.path.abspath(os.path.join(current_dir, "..", "engine"))
 
-class Settings(QObject):
+sys.path.append(engine_dir)
+from config import BaseConfig
+
+
+class Settings(BaseConfig, QObject):
 
     changed = Signal()
 
     def __init__(self, path):
-        super(Settings, self).__init__()
-        self.hash = {}
-
-        self.path = path
-        f = open(path, "a")
-        f.close()
+        BaseConfig.__init__(self, config_path)
+        # QObject.__init__()
 
         self.read_config()
         self.watcher = QFileSystemWatcher([path])
@@ -53,33 +51,6 @@ class Settings(QObject):
         logging.debug("File changed")
         self.read_config()
         self.changed.emit()
-
-    def read_config(self):
-        try:
-            f = open(self.path, "r")
-            data = json.loads(f.read())
-            for key in data:
-                self.hash[key] = data[key]
-            f.close()
-        except:
-            logging.debug("Config file corrupted or not exists.")
-            self.reset()
-            self.read_config()
-
-    def write_config(self):
-        f = open(self.path, "w")
-        f.write(json.dumps(self.hash, indent=4))
-        f.close()
-
-    def __setitem__(self, key, value):
-        self.hash[key] = value
-        self.write_config()
-
-    def __getitem__(self, key):
-        return self.hash[key]
-
-    def reset(self):
-        shutil.copy(os.path.join(engine_dir, "data/default_config.json"), config_path)
 
 
 class Window(QWidget):
@@ -149,7 +120,7 @@ class Window(QWidget):
             self.app.removeTranslator(self.translator)
         else:
             self.app.removeTranslator(self.translator)
-            self.translator.load("locales/" + self.guiLanguages[index][0])
+            self.translator.load(os.path.join(current_dir, "locales/") + self.guiLanguages[index][0])
             self.app.installTranslator(self.translator)
 
     def setupLanguages(self):
@@ -171,11 +142,12 @@ class Window(QWidget):
         if event.type() == QEvent.LanguageChange:
             self.setupLanguages()
 
+
 def main():
     app = QApplication(sys.argv)
 
     translator = QTranslator()
-    translator.load("locales/vi_VN")
+    translator.load(os.path.join(current_dir, "locales/vi_VN"))
     app.installTranslator(translator)
 
     settings = Settings(config_path)
