@@ -22,7 +22,7 @@ from gi.repository import Gio, GObject
 import logging
 import json
 import os
-import shutil
+
 
 _dirname = os.path.expanduser("~/.config/ibus-bogo/")
 if not os.path.exists(_dirname):
@@ -37,38 +37,41 @@ class BaseConfig(object):
 
     def __init__(self, path):
         super(BaseConfig, self).__init__()
-        self.hash = {}
+        self.keys = {}
         self.path = path
         f = open(path, "a")
         f.close()
-        self.read_config()
+        self.read_config(path)
 
-    def read_config(self):
+    def read_config(self, path):
         try:
-            f = open(self.path, "r")
+            f = open(path, "r")
             data = json.loads(f.read())
-            for key in data:
-                self.hash[key] = data[key]
+            self.keys.update(data)
             f.close()
         except:
             logging.debug("Config file corrupted or not exists.")
             self.reset()
-            self.read_config()
 
     def write_config(self):
         f = open(self.path, "w")
-        f.write(json.dumps(self.hash, indent=4))
+        f.write(json.dumps(self.keys, indent=4))
         f.close()
 
     def __setitem__(self, key, value):
-        self.hash[key] = value
+        self.keys[key] = value
         self.write_config()
 
     def __getitem__(self, key):
-        return self.hash[key]
+        return self.keys[key]
+
+    def __contains__(self, key):
+        return self.keys.__contains__(key)
 
     def reset(self):
-        shutil.copy(os.path.join(engine_dir, "data/default_config.json"), self.path)
+        # Only reset what's needed
+        self.read_config(os.path.join(engine_dir, "data", "default_config.json"))
+        self.write_config()
 
 
 class Config(BaseConfig, GObject.GObject):
@@ -86,4 +89,4 @@ class Config(BaseConfig, GObject.GObject):
     def _on_file_changed(self, monitor, file, other_file, event_type):
         if event_type == Gio.FileMonitorEvent.CHANGES_DONE_HINT:
             logging.debug("Setting file changed")
-            self.read_config()
+            self.read_config(self.path)

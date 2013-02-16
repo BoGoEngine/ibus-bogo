@@ -3,10 +3,12 @@
 import sys
 import os
 import logging
+import hashlib
 from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide.QtUiTools import QUiLoader
 
+DEFAULT_LOCALE = "vi_VN"
 
 # TODO: Read these lists from a config file
 inputMethodList = [
@@ -21,7 +23,7 @@ charsetList = [
     "vni"
 ]
 
-logging.basicConfig(level=logging.DEBUG)
+# logging.basicConfig(level=logging.DEBUG)
 
 _dirname = os.path.expanduser("~/.config/ibus-bogo/")
 if not os.path.exists(_dirname):
@@ -36,6 +38,7 @@ from config import BaseConfig
 
 
 class Settings(BaseConfig, QObject):
+    # TODO: Make this thing reactive
 
     changed = Signal()
 
@@ -43,14 +46,17 @@ class Settings(BaseConfig, QObject):
         BaseConfig.__init__(self, config_path)
         # QObject.__init__()
 
-        self.read_config()
+        self.fileHash = hashlib.md5(str(self.keys)).hexdigest()
         self.watcher = QFileSystemWatcher([path])
         self.watcher.fileChanged.connect(self._on_file_changed)
 
     def _on_file_changed(self, path):
-        logging.debug("File changed")
-        self.read_config()
-        self.changed.emit()
+        self.read_config(path)
+        h = hashlib.md5(str(self.keys)).hexdigest()
+        if h != self.fileHash:
+            self.changed.emit()
+            self.fileHash = h
+            logging.debug("File changed")
 
 
 class Window(QWidget):
@@ -60,7 +66,16 @@ class Window(QWidget):
 
         self.app = app
         self.settings = settings
-        self.settings.changed.connect(self.refresh_gui)
+        self.settings.changed.connect(self.refreshGui)
+
+        if "gui-language" in settings:
+            locale = settings["gui-language"]
+        else:
+            locale = DEFAULT_LOCALE
+
+        self.translator = QTranslator()
+        self.translator.load(os.path.join(current_dir, "locales", locale))
+        app.installTranslator(self.translator)
 
         loader = QUiLoader()
         loader.setLanguageChangeEnabled(True)
@@ -81,7 +96,7 @@ class Window(QWidget):
             self.charsetCombo.insertItem(i, charsetList[i])
 
         self.setupLanguages()
-        self.refresh_gui()
+        self.refreshGui()
 
         box = QVBoxLayout()
         box.addWidget(self.win)
@@ -93,7 +108,7 @@ class Window(QWidget):
 
     @Slot()
     def on_helpButton_clicked(self):
-        print("help")
+        logging.debug("help")
 
     @Slot()
     def on_resetButton_clicked(self):
@@ -109,50 +124,59 @@ class Window(QWidget):
         logging.debug("charsetComboChanged: %s", index)
         self.settings["output-charset"] = index
 
-    @Slot(int)
-    def on_skipNonVNCheckBox_stateChanged(self, state):
-        logging.debug("skipNonVNCheckBoxChanged: %d", state)
-        self.settings["skip-non-vietnamese"] = (False, None, True)[state]
+    @Slot(bool)
+    def on_skipNonVNCheckBox_clicked(self, state):
+        logging.debug("skipNonVNCheckBoxChanged: %s", str(state))
+        self.settings["skip-non-vietnamese"] = state
 
     @Slot(int)
     def on_guiLanguageComboBox_activated(self, index):
-        if self.guiLanguages[index][0] == "en_US":
+        self.switchLanguage(self.guiLanguages[index][0])
+        self.settings["gui-language"] = self.guiLanguages[index][0]
+
+    def switchLanguage(self, locale):
+        logging.debug("switchLanguage: %s", locale)
+        if locale == "en_US":
             self.app.removeTranslator(self.translator)
         else:
             self.app.removeTranslator(self.translator)
-            self.translator.load(os.path.join(current_dir, "locales/") + self.guiLanguages[index][0])
+            self.translator.load(os.path.join(current_dir, "locales", locale))
             self.app.installTranslator(self.translator)
 
     def setupLanguages(self):
         self.guiLanguages = [
-            ("vi_VN", self.tr("Vietnamese")),
-            ("en_US", self.tr("US English"))
+            ("en_US", "English (US)"),
+            ("vi_VN", "Vietnamese")
         ]
 
         self.guiLanguageComboBox.clear()
         for index, lang in enumerate(self.guiLanguages):
-            self.guiLanguageComboBox.insertItem(index, QIcon(os.path.join(current_dir, "locales/") + lang[0] + ".png"), lang[1])
+            self.guiLanguageComboBox.insertItem(index, QIcon(os.path.join(current_dir, "locales", lang[0] + ".png")), lang[1])
+        if "gui-language" in self.settings:
+            index = [y[0] for y in self.guiLanguages].index(self.settings["gui-language"])
+        else:
+            index = [y[0] for y in self.guiLanguages].index(DEFAULT_LOCALE)
+        self.guiLanguageComboBox.setCurrentIndex(index)
 
-    def refresh_gui(self):
+    def refreshGui(self):
         self.inputCombo.setCurrentIndex(inputMethodList.index(self.settings["input-method"]))
         self.charsetCombo.setCurrentIndex(charsetList.index(self.settings["output-charset"]))
         self.skipNonVNCheckBox.setChecked(self.settings["skip-non-vietnamese"])
+        if "gui-language" in self.settings:
+            self.switchLanguage(self.settings["gui-language"])
 
     def changeEvent(self, event):
-        if event.type() == QEvent.LanguageChange:
-            self.setupLanguages()
+        # if event.type() == QEvent.LanguageChange:
+        #     self.setupLanguages()
+        pass
 
 
 def main():
     app = QApplication(sys.argv)
 
-    translator = QTranslator()
-    translator.load(os.path.join(current_dir, "locales/vi_VN"))
-    app.installTranslator(translator)
-
     settings = Settings(config_path)
+
     win = Window(app, settings)
-    win.translator = translator
     win.show()
 
     app.exec_()
