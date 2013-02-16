@@ -32,9 +32,7 @@ from bogo.accent import *
 from bogo.mark import *
 from bogo.utils import *
 
-telex = DefaultConfig()
-vni = copy.deepcopy(telex)
-vni.input_method = 'vni'
+telex = default_config.copy()
 
 def process_seq(orig, seq, config = telex):
     string = orig
