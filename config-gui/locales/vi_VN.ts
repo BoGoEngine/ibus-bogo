@@ -83,12 +83,17 @@
     <message>
         <location filename="controller.py" line="128"/>
         <source>Vietnamese</source>
-        <translation>Tiếng Việt</translation>
+        <translation type="obsolete">Tiếng Việt</translation>
     </message>
     <message>
         <location filename="controller.py" line="129"/>
         <source>US English</source>
-        <translation>Tiếng Anh Mỹ</translation>
+        <translation type="obsolete">Tiếng Anh Mỹ</translation>
+    </message>
+    <message>
+        <location filename="controller.py" line="67"/>
+        <source>IBus BoGo Settings</source>
+        <translation>Thiết lập IBus BoGo </translation>
     </message>
 </context>
 </TS>

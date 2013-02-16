@@ -166,9 +166,8 @@ class Window(QWidget):
             self.switchLanguage(self.settings["gui-language"])
 
     def changeEvent(self, event):
-        # if event.type() == QEvent.LanguageChange:
-        #     self.setupLanguages()
-        pass
+        if event.type() == QEvent.LanguageChange:
+            self.setWindowTitle(self.tr("IBus BoGo Settings"))
 
 
 def main():
