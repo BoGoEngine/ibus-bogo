@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.7
+#!/usr/bin/env python3.2
 
 import sys
 import os
@@ -46,13 +46,13 @@ class Settings(BaseConfig, QObject):
         BaseConfig.__init__(self, config_path)
         # QObject.__init__()
 
-        self.fileHash = hashlib.md5(str(self.keys)).hexdigest()
+        self.fileHash = hashlib.md5(str(self.keys).encode('utf-8')).hexdigest()
         self.watcher = QFileSystemWatcher([path])
         self.watcher.fileChanged.connect(self._on_file_changed)
 
     def _on_file_changed(self, path):
         self.read_config(path)
-        h = hashlib.md5(str(self.keys)).hexdigest()
+        h = hashlib.md5(str(self.keys).encode('utf-8')).hexdigest()
         if h != self.fileHash:
             self.changed.emit()
             self.fileHash = h
@@ -114,12 +114,12 @@ class Window(QWidget):
     def on_resetButton_clicked(self):
         self.settings.reset()
 
-    @Slot(unicode)
+    @Slot(str)
     def on_inputMethodComboBox_activated(self, index):
         logging.debug("inputComboChanged: %s", index)
         self.settings["input-method"] = index
 
-    @Slot(unicode)
+    @Slot(str)
     def on_charsetComboBox_activated(self, index):
         logging.debug("charsetComboChanged: %s", index)
         self.settings["output-charset"] = index
