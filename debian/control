@@ -3,17 +3,18 @@ Section: misc
 Priority: optional
 Maintainer: Trung Ngo <ndtrung4419@gmail.com>
 Build-Depends: debhelper (>= 8.0.0),
- python (>= 2.7),
+ python (>= 3.2),
  python-support (>= 0.90.0),
- cmake
+ cmake,
+ pyside-tools
 Standards-Version: 3.9.3
 Homepage: https://github.com/BoGoEngine/ibus-bogo-python
 Vcs-Git: git://github.com/BoGoEngine/ibus-bogo-python.git
 
 Package: ibus-bogo
 Architecture: all
-Depends: ${python:Depends}, ${shlibs:Depends}, ${misc:Depends}, python-gi,
- gir1.2-ibus-1.0
+Depends: ${python3:Depends}, ${shlibs:Depends}, ${misc:Depends}, python3-gi,
+ gir1.2-ibus-1.0, python3-pyside
 Conflicts: python-bogo, ibus-bogo-python, libbogo0
 Replaces: python-bogo, ibus-bogo-python, libbogo0
 Description: BoGo engine for IBus
