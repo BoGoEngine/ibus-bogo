@@ -26,6 +26,7 @@ import logging
 
 from bogo import new_bogo_engine as core
 from config import Config
+from keysyms_mapping import mapping
 
 # Syntactic sugar
 keysyms = IBus
@@ -51,6 +52,7 @@ class Engine(IBus.Engine):
         self.commit_result = self.commit_utf8
         self.reset_engine()
         self.engine_id = len(engines)
+        self.caps = 0
         engines.append(self)
         logging.info("You are running BoGo IBus Engine")
 
@@ -118,7 +120,26 @@ class Engine(IBus.Engine):
                 for i in range(self.number_fake_backspace):
                     self.forward_key_event(keysyms.BackSpace, 14, 0)
 
-                self.commit_result(self.string_to_commit)
+                    
+                # This is a very very veryyyy CRUDE way to detect
+                # if the current input context is from a GTK app
+                # as currently (2013/02/22, IBus 1.4.1), only the IBus Gtk client can
+                # do surrounding text.
+                #
+                # We have to forward each character instead of committing them
+                # because of a synchronization issue in Gtk/IBus
+                # that sometimes committed text comes before forwarded
+                # backspaces, resulting in undesirable output.
+                if self.caps & IBus.Capabilite.SURROUNDING_TEXT:
+                    for ch in self.string_to_commit:
+                        if ch in mapping:
+                            ch = mapping[ch]
+                        else:
+                            ch = ord(ch)
+                        self.forward_key_event(ch, 0, 0)
+                else:
+                    self.commit_result(self.string_to_commit)
+
                 return True
 
         if keyval == keysyms.space:
@@ -187,3 +208,6 @@ class Engine(IBus.Engine):
     def do_property_activate(self, prop_name, state):
         self.__config.do_property_activate(self, prop_name, state)
         self.reset_engine()
+
+    def do_set_capabilities(self, caps):
+        self.caps = caps
