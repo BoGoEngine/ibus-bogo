@@ -150,9 +150,10 @@ class Engine(IBus.Engine):
         self.reset_engine()
         return False
 
-    def do_reset(self):
-        logging.debug("Reset signal")
-        self.reset_engine()
+    # This messes up Pidgin
+    # def do_reset(self):
+    #     logging.debug("Reset signal")
+    #     self.reset_engine()
 
     def reset_engine(self):
         self.string_to_commit = ""
