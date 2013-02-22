@@ -52,7 +52,7 @@ class IMApp:
                                 language = "vi",
                                 license = "GPLv3",
                                 author = "Long T. Dam <longdt90@gmail.com>",
-                                icon = current_path + "/data/___ibus-bogo.svg",
+                                icon = current_path + "/data/ibus-bogo.svg",
                                 #icon = "ibus-bogo",
                                 layout = "us")
         self.__component.add_engine(engine)

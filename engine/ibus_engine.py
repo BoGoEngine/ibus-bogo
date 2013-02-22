@@ -128,7 +128,7 @@ class Engine(IBus.Engine):
                 #
                 # We have to forward each character instead of committing them
                 # because of a synchronization issue in Gtk/IBus
-                # that sometimes committed text comes before forwarded
+                # where sometimes committed text comes before forwarded
                 # backspaces, resulting in undesirable output.
                 if self.caps & IBus.Capabilite.SURROUNDING_TEXT:
                     for ch in self.string_to_commit:
@@ -149,6 +149,10 @@ class Engine(IBus.Engine):
 
         self.reset_engine()
         return False
+
+    def do_reset(self):
+        logging.debug("Reset signal")
+        self.reset_engine()
 
     def reset_engine(self):
         self.string_to_commit = ""

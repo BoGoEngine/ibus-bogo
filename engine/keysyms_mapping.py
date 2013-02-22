@@ -19,8 +19,8 @@
 # along with IBus-BoGo.  If not, see <http://www.gnu.org/licenses/>.
 
 
-# This is ridiculous
-# TODO: some form of more automatic transforming
+# Taken from X11's keysymsdef.h
+# TODO: This is ridiculous. We need some form of more automatic transforming.
 
 mapping = {
 	"Ạ" : 0x1001ea0,  # U+1EA0 LATIN CAPITAL LETTER A WITH DOT BELOW
