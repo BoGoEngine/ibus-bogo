@@ -1,10 +1,9 @@
-#!/usr/bin/env xdg-open
 [Desktop Entry]
-Version=0.1
+Encoding=UTF-8
 Name=IBus BoGo Settings
 Comment=Settings for the Vietnamese input method
 Exec=/usr/lib/ibus-bogo/ibus-bogo-settings
-Icon=ibus-bogo
+Icon=/usr/share/icons/hicolor/scalable/ibus-bogo.svg
 Type=Application
 Categories=Utility;
 StartupNotify=false
