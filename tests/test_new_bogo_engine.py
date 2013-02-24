@@ -55,7 +55,7 @@ class TestBoGoEngine(unittest.TestCase):
         self.assertEqual(separate('q'), ['q','',''])
         self.assertEqual(separate('d'), ['d','',''])
         self.assertEqual(separate('a'), ['','a',''])
-        self.assertEqual(separate('aoe'), ['aoe', '', ''])
+        self.assertEqual(separate('aoe'), ['', 'aoe', ''])
         #self.assertEqual(separate('nn'), None)
         self.assertEqual(separate('uo'), ['','uo',''])
         self.assertEqual(separate('uong'), ['','uo','ng'])
@@ -64,6 +64,31 @@ class TestBoGoEngine(unittest.TestCase):
         self.assertEqual(separate('xẻng'), ['x','ẻ','ng'])
         self.assertEqual(separate('xoáy'), ['x','oáy',''])
         self.assertEqual(separate('quây'), ['qu','ây',''])
+
+        self.assertEqual(separate('a'), ['','a',''])
+        self.assertEqual(separate('b'), ['b','',''])
+        
+        self.assertEqual(separate('aa'), ['','aa',''])
+        self.assertEqual(separate('ae'), ['','ae',''])
+
+        self.assertEqual(separate('bb'), ['bb','',''])
+        self.assertEqual(separate('bc'), ['bc','',''])
+
+        self.assertEqual(separate('ba'), ['b','a',''])
+        self.assertEqual(separate('baa'), ['b','aa',''])
+        self.assertEqual(separate('bba'), ['bb','a',''])
+        self.assertEqual(separate('bbaa'), ['bb','aa',''])
+
+        self.assertEqual(separate('bac'), ['b','a','c'])
+        self.assertEqual(separate('baac'), ['b','aa','c'])
+        self.assertEqual(separate('bbac'), ['bb','a','c'])
+        self.assertEqual(separate('bbaacc'), ['bb','aa','cc'])
+
+        self.assertEqual(separate('baca'), ['bac','a',''])
+        self.assertEqual(separate('bacaa'), ['bac','aa',''])
+        self.assertEqual(separate('bacaacaeb'), ['bacaac','ae','b'])
+
+
 
     def test_valid_vietnamese(self):
         self.assertEqual(is_valid_combination(['c', 'a', 'se']), False)

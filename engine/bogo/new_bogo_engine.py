@@ -116,8 +116,8 @@ def process_key(string, key, case = 0, raw_string = "", config = None):
     # later.
     # TODO Should this be the ibus engine's job?
     garbage = ''
-    for i in range(-1, -len(string)-1, -1): # Reverse indices [-1, -2, -3, ...]
-        if not string[i].isalpha():
+    for i, char in enumerate(reversed(string)):
+        if not char.isalpha():
             garbage += string[:i] + string[i]
             string = '' + string[i+1:] if i != -1 else ''
             break
@@ -132,13 +132,17 @@ def process_key(string, key, case = 0, raw_string = "", config = None):
     # Try to break the string down to 3 components
     # separate('chuyen') = ['ch', 'uye', 'n']
     comps = separate(string)
+
+    if not is_valid_combination(comps, final_form = False):
+        return [string, '', '']
     
     # Refuse to process things like process('zzam', 'f')
-    if comps == None:
-        return string + key
+    # if comps == ["", "", ""]:
+        # return string + key
     
     # Apply transformations
     trans_list = get_transformation_list(key, im, case = case);
+    logging.debug(trans_list)
     new_comps = comps
 
     for trans in trans_list:
@@ -188,10 +192,11 @@ def get_transformation_list(key, im, case=0):
         if entered key is not in im, return "+key", meaning appending
         the entered key to current text
     """
-    if key in im:
-        lkey = key
-    else:
-        lkey = key.lower()
+    # if key in im:
+    #     lkey = key
+    # else:
+    #     lkey = key.lower()
+    lkey = key.lower()
 
     if lkey in im:
         if isinstance(im[lkey], list):
@@ -262,7 +267,7 @@ def transform(comps, trans):
             elif not components[1] or \
                 (components[1].lower() == 'ư' and trans[1].lower() == 'ơ'):
                 components[1] += trans[1]
-            # Quite a hack. If you want to type gi[f = 'giờ', separate()
+            # Quite a hack. If you want to type giowf = 'giờ', separate()
             # will create ['g', 'i', '']. Therefore we have to allow
             # components[1] == 'i'.
             elif components[1].lower() == 'i' and components[0].lower() == 'g':
@@ -270,7 +275,7 @@ def transform(comps, trans):
                 components = separate(utils.join(components))
 
     if trans[0] == '+':
-        # See this and yo'll understand:
+        # See this and you'll understand:
         #   transform(['nn', '', ''],'+n') = ['nnn', '', '']
         #   transform(['c', '', ''],'+o') = ['c', 'o', '']
         #   transform(['c', 'o', ''],'+o') = ['c', 'oo', '']
@@ -308,40 +313,70 @@ def transform(comps, trans):
     return components
 
 
-def separate(string):
-    """
-        Separates a valid Vietnamese word into 3 components:
-        the start sound, the middle sound and the end sound.
-        Eg: toán -> [u't', u'oá', u't']
-        Otherwise returns [string, '', '']
-    """
-    comps = ['', '', '']
-    if string == '':
-        return comps
+# def old_separate(string):
+#     """
+#         Separates a valid Vietnamese word into 3 components:
+#         the start sound, the middle sound and the end sound.
+#         Eg: toán -> [u't', u'oá', u'n']
+#         Otherwise returns [string, '', '']
+#     """
+#     comps = ['', '', '']
+#     if string == '':
+#         return comps
     
-    # Search for the first vowel
-    for i in range(len(string)):
-        if utils.is_vowel(string[i]):
-            comps[0] = '' + string[:i]
-            string = '' + string[i:]
-            break
+#     # Search for the first vowel
+#     for i in range(len(string)):
+#         if utils.is_vowel(string[i]):
+#             comps[0] = '' + string[:i]
+#             string = '' + string[i:]
+#             break
 
-    # # No vowel?
-    # if comps[0] == '' and not utils.is_vowel(string[0]):
-    #     comps[0] = string
-    #     string = ''
+#     # # No vowel?
+#     # if comps[0] == '' and not utils.is_vowel(string[0]):
+#     #     comps[0] = string
+#     #     string = ''
     
-    # Search for the first consonant after the first vowel
-    for i in range(len(string)):
-        if not utils.is_vowel(string[i]):
-            comps[1] = string[:i]
-            comps[2] = string[i:]
-            break
+#     # Search for the first consonant after the first vowel
+#     for i in range(len(string)):
+#         if not utils.is_vowel(string[i]):
+#             comps[1] = string[:i]
+#             comps[2] = string[i:]
+#             break
        
-    # No ending consonant? Then the rest of the string must be the vowel part
-    if comps[1] == '':
-        comps[1] = string
+#     # No ending consonant? Then the rest of the string must be the vowel part
+#     if comps[1] == '':
+#         comps[1] = string
     
+#     # 'gi' and 'q' need some special treatments
+#     # We want something like this:
+#     #     ['g', 'ia', ''] -> ['gi', 'a', '']
+#     if (comps[0] != '' and comps[1] != '') and \
+#     ((comps[0] in 'gG' and comps[1][0] in 'iI' and len(comps[1]) > 1) or \
+#     (comps[0] in 'qQ' and comps[1][0] in 'u')):
+#         comps[0] += comps[1][:1]
+#         comps[1] = comps[1][1:]
+    
+#     if not is_valid_combination(comps, final_form = False):
+#         return [string, '', '']
+    
+#     return comps
+
+def separate(string):
+    def atomic_separate(string, last_chars, last_is_vowel):
+        if string == "" or (last_is_vowel != utils.is_vowel(string[-1])):
+            return (string, last_chars)
+        else:
+            return atomic_separate(string[:-1],
+                string[-1] + last_chars, last_is_vowel)
+
+    a = atomic_separate(string, "", False)
+    b = atomic_separate(a[0], "", True)
+
+    comps = [b[0], b[1], a[1]]
+
+    if a[1] and not b[0] and not b[1]:
+        comps.reverse()
+
     # 'gi' and 'q' need some special treatments
     # We want something like this:
     #     ['g', 'ia', ''] -> ['gi', 'a', '']
@@ -350,12 +385,9 @@ def separate(string):
     (comps[0] in 'qQ' and comps[1][0] in 'u')):
         comps[0] += comps[1][:1]
         comps[1] = comps[1][1:]
-    
-    if not is_valid_combination(comps, final_form = False):
-        return [string, '', '']
-    
+
     return comps
-    
+
 
 def reverse(components, trans):
     """
