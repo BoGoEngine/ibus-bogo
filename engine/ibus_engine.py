@@ -131,6 +131,7 @@ class Engine(IBus.Engine):
                 # where sometimes committed text comes before forwarded
                 # backspaces, resulting in undesirable output.
                 if self.caps & IBus.Capabilite.SURROUNDING_TEXT:
+                    logging.debug("forwarding as commit")
                     for ch in self.string_to_commit:
                         if ch in mapping:
                             ch = mapping[ch]
@@ -138,6 +139,7 @@ class Engine(IBus.Engine):
                             ch = ord(ch)
                         self.forward_key_event(ch, 0, 0)
                 else:
+                    logging.debug("Committing")
                     self.commit_result(self.string_to_commit)
 
                 return True
