@@ -35,6 +35,25 @@ FAMILY_O = "oơô"
 FAMILY_U = "uư"
 FAMILY_D = "dđ"
 
+
+def get_mark_char(char):
+    """
+    Get the mark of a single char, if any.
+    """
+    char = accent.remove_accent_char(char.lower())
+    if char == "":
+        return Mark.NONE
+    if char == "đ":
+        return Mark.BAR
+    if char in "ă":
+        return Mark.BREVE
+    if char in "ơư":
+        return Mark.HORN
+    if char in "âêô":
+        return Mark.HAT
+    return Mark.NONE
+
+
 # TODO: needs refactoring
 def add_mark(components, mark):
     comp = list(components)
@@ -142,7 +161,6 @@ def remove_mark_char(char):
     # TODO: This looks ugly
     ac = accent.get_accent_char(char)
     char = accent.remove_accent_char(char)
-    print(char, ac)
     if char in FAMILY_A: char = "a"
     if char in FAMILY_E: char = "e"
     if char in FAMILY_O: char = "o"

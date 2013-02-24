@@ -35,157 +35,108 @@ class Action:
     ADD_CHAR = 0
 
 IMs = {
-    'simple-telex' : {
-        'a':'a^',
-        'o':'o^',
-        'e':'e^',
-        'w':['u*','o*','a+'],
-        'd':'d-',
-        'f':'\\',
-        's':'/',
-        'r':'?',
-        'x':'~',
-        'j':'.',
-        'z':['_', '*_']
+    'simple-telex': {
+        'a': 'a^',
+        'o': 'o^',
+        'e': 'e^',
+        'w': ['u*','o*','a+'],
+        'd': 'd-',
+        'f': '\\',
+        's': '/',
+        'r': '?',
+        'x': '~',
+        'j': '.',
+        # 'z': ['_']
     },
-    'telex' : {
-        'a':'a^',
-        'o':'o^',
-        'e':'e^',
-        'w':['u*','o*','a+', '<ư'],
-        'd':'d-',
-        'f':'\\',
-        's':'/',
-        'r':'?',
-        'x':'~',
-        'j':'.',
-        'z':['_', '*_'],
-        ']':'<ư',
-        '[':'<ơ',
-        '}':'<ư',
-        '{':'<ơ'
+    'telex': {
+        'a': 'a^',
+        'o': 'o^',
+        'e': 'e^',
+        'w': ['u*','o*','a+', '<ư'],
+        'd': 'd-',
+        'f': '\\',
+        's': '/',
+        'r': '?',
+        'x': '~',
+        'j': '.',
+        # 'z': ['_'],
+        ']': '<ư',
+        '[': '<ơ',
+        '}': '<Ư',
+        '{': '<Ơ'
     },
-    'vni' : {
-        '6':['a^', 'o^', 'e^'],
-        '7':['u*','o*'],
-        '8':'a+',
-        '9':'d-',
-        '2':'\\',
-        '1':'/',
-        '3':'?',
-        '4':'~',
-        '5':'.',
-        '0':['_', '*_']
+    'vni': {
+        '6': ['a^', 'o^', 'e^'],
+        '7': ['u*','o*'],
+        '8': 'a+',
+        '9': 'd-',
+        '2': '\\',
+        '1': '/',
+        '3': '?',
+        '4': '~',
+        '5': '.',
+        # '0': ['_']
     }
 }
 
 default_config = {
-    "input-method" : "telex",
-    "output-charset" : "utf-8",
-    "skip-non-vietnamese" : True
+    "input-method": "telex",
+    "output-charset": "utf-8",
+    "skip-non-vietnamese": True
 }
 
+
 def is_processable(string):
-    return is_valid_combination(separate(string), final_form = False)
+    return is_valid_combination(separate(string), final_form=False)
 
-def process_key(string, key, case = 0, raw_string = "", config = None):
-    """
-    Process the given string and key based on the given input method and
-    config.
-    
-    Args:
-        string -
-        key -
-        case (optional) - Force the output's case. Mostly to determine 
-            the case of TELEX's [, ] keys. 0: lower, 1: upper. Default: 0.
-        im (optional) - one of 'telex', 'simple-telex', 'vni'.
-            Default: 'telex'.
-        config - a dictionary.
-    """
-## SANITY CHECK (scroll down please)
 
-    if not config:
+def process_key(string, key, raw_string="", config=None):
+    logging.debug("== In process_key() ==")
+    logging.debug("key = %s", key)
+
+    if config == None:
         config = default_config
 
     im = IMs[config["input-method"]]
 
-    string = "" if string == None else string
-
-    # Handle non-alpha string like 'tôi_là_ai' by putting 'tôi_là_' in 
-    # the `garbage` variable, effectively skipping it then put it back 
-    # later.
-    # TODO Should this be the ibus engine's job?
-    garbage = ''
-    for i, char in enumerate(reversed(string)):
-        if not char.isalpha():
-            garbage += string[:i] + string[i]
-            string = '' + string[i+1:] if i != -1 else ''
-            break
-    
-    # Handle process_key('â', '_')
-    if not key in im and not key.isalpha():
-        string += key
-        return garbage + string
-    
-## END SANITY CHECK (here comes real code)
-    
-    # Try to break the string down to 3 components
-    # separate('chuyen') = ['ch', 'uye', 'n']
     comps = separate(string)
+    logging.debug("separate(string) = %s", str(comps))
 
     if not is_valid_combination(comps, final_form = False):
-        return [string, '', '']
-    
-    # Refuse to process things like process('zzam', 'f')
-    # if comps == ["", "", ""]:
-        # return string + key
-    
-    # Apply transformations
-    trans_list = get_transformation_list(key, im, case = case);
-    logging.debug(trans_list)
-    new_comps = comps
+        return string + key
 
+    trans_list = get_transformation_list(key, im, raw_string)
+    logging.debug("trans_list = %s", str(trans_list))
+
+    new_comps = list(comps)
     for trans in trans_list:
-        if trans == "*_" and new_comps != comps:
-            # When undoing vowels with both a mark and an accent, we only want
-            # to undo the accent
-            break
         new_comps = transform(new_comps, trans)
 
-    # Double typing an IM key to undo.
-    # Eg: process_key('à', 'f')
-    #  -> transform(['', 'à', ''], '\\') = ['', 'à', '']
-    #  -> reverse('à', '\\') = 'a'
+    logging.debug("new_comps: %s", str(new_comps))
     if new_comps == comps:
-        for trans in trans_list:
-            # TODO: it seems dangerous to do direct reverse here
-            new_comps = reverse(new_comps, trans)
-            if new_comps != comps:
-                # Telex specific undo:
-                # uww -> uw
-                # ww -> w
-                if config["input-method"] == 'telex' and \
-                    new_comps[1] and new_comps[1][-1] == 'u' and \
-                    raw_string[-2:].lower() == 'ww' and \
-                    not (len(raw_string) > 2 and raw_string[-3].lower() in 'aouw'):
-                    new_comps[1] = new_comps[1][:-1] + 'w'
-                else:
-                    new_comps = utils.append_comps(new_comps, key)
-                return garbage + utils.join(new_comps)
+        # if len(raw_string) >= 2 and raw_string[-1] == raw_string[-2]:
+        if can_undo(new_comps, trans_list):
+            # The prefix "_" means undo.
+            for trans in map(lambda x: "_" + x, trans_list):
+                new_comps = transform(new_comps, trans)
+
+        if config["input-method"] == "telex" and \
+            len(raw_string) >= 2 and \
+            new_comps[1] and new_comps[1][-1].lower() == "u" and \
+            raw_string[-2:].lower() == "ww" and \
+            not (len(raw_string) >= 3 and raw_string[-3].lower() == "u"):
+            new_comps[1] = new_comps[1][:-1]
+
+        # If none of the transformations (if any) work
+        # then just append the key
         new_comps = utils.append_comps(new_comps, key)
 
-    # One last check to rule out cases like 'ảch' or 'chuyển'
-    if not is_valid_combination(new_comps, final_form = False):
-        if config["skip-non-vietnamese"] and raw_string != "":
-            return raw_string
-        else:
-            return garbage + string + key
-    return garbage + utils.join(new_comps)
+    return utils.join(new_comps)
 
 
-def get_transformation_list(key, im, case=0):
+def get_transformation_list(key, im, raw_string):
     """
-        Return list of transformations inferred from entered key.  The
+        Return the list of transformations inferred from the entered key. The
         map between transform types and keys is given by module
         bogo_config (if exists) or by variable simple_telex_im
 
@@ -203,9 +154,20 @@ def get_transformation_list(key, im, case=0):
             trans_list = im[lkey]
         else:
             trans_list = [im[lkey]]
+
         for i, trans in enumerate(trans_list):
-            if trans[0] == '<':
-                trans_list[i] = trans[0] + utils.change_case(trans[1], case)
+            if trans[0] == '<' and key.isalpha():
+                trans_list[i] = trans[0] + utils.change_case(trans[1], int(key.isupper()))
+
+        if trans_list == ['_']:
+            if  len(raw_string) >= 2:
+                t =  list(map(lambda x: "_" + x,
+                    get_transformation_list(raw_string[-2], im, raw_string[:-1])))
+                # print(t)
+                trans_list = t
+            else:
+                trans_list = ['+' + key]
+
         return trans_list
     else:
         return ['+' + key]
@@ -213,7 +175,7 @@ def get_transformation_list(key, im, case=0):
 
 def get_action(trans):
     """
-    Return the action inferred from the transformation trans.
+    Return the action inferred from the transformation `trans`.
     and the factor going with this action
     An Action.ADD_MARK goes with a Mark
     while an Action.ADD_ACCENT goes with an Accent
@@ -229,8 +191,8 @@ def get_action(trans):
             return Action.ADD_MARK, Mark.HORN
         if trans[1] == "-":
             return Action.ADD_MARK, Mark.BAR
-        if trans[1] == "_":
-            return Action.ADD_MARK, Mark.NONE
+        # if trans[1] == "_":
+        #     return Action.ADD_MARK, Mark.NONE
     else:
         if trans[0] == "\\":
             return Action.ADD_ACCENT, Accent.GRAVE
@@ -242,17 +204,17 @@ def get_action(trans):
             return Action.ADD_ACCENT, Accent.TIDLE
         if trans[0] == ".":
             return Action.ADD_ACCENT, Accent.DOT
-        if trans[0] == "_":
-            return Action.ADD_ACCENT, Accent.NONE
+        # if trans[0] == "_":
+        #     return Action.ADD_ACCENT, Accent.NONE
 
 
 def transform(comps, trans):
     """
     Transform the given string with transform type trans
     """
-    
+    logging.debug("== In transform() ==")
     components = list(comps)
-    
+
     # Special case for 'ư, ơ'
     #if trans[0] == '<' and not trans[1] in ('ư', 'ơ', 'Ư', 'Ơ'):
     #        trans = '+' + trans[1]
@@ -303,6 +265,10 @@ def transform(comps, trans):
             components = accent.add_accent(components, Accent.NONE)
             components = accent.add_accent(components, ac)
         return components
+
+    if trans[0] == '_':
+        # Undoing
+        return reverse(components, trans[1:])
             
     action, factor = get_action (trans)
     if action == Action.ADD_ACCENT:
@@ -312,54 +278,6 @@ def transform(comps, trans):
             components = mark.add_mark(components, factor)
     return components
 
-
-# def old_separate(string):
-#     """
-#         Separates a valid Vietnamese word into 3 components:
-#         the start sound, the middle sound and the end sound.
-#         Eg: toán -> [u't', u'oá', u'n']
-#         Otherwise returns [string, '', '']
-#     """
-#     comps = ['', '', '']
-#     if string == '':
-#         return comps
-    
-#     # Search for the first vowel
-#     for i in range(len(string)):
-#         if utils.is_vowel(string[i]):
-#             comps[0] = '' + string[:i]
-#             string = '' + string[i:]
-#             break
-
-#     # # No vowel?
-#     # if comps[0] == '' and not utils.is_vowel(string[0]):
-#     #     comps[0] = string
-#     #     string = ''
-    
-#     # Search for the first consonant after the first vowel
-#     for i in range(len(string)):
-#         if not utils.is_vowel(string[i]):
-#             comps[1] = string[:i]
-#             comps[2] = string[i:]
-#             break
-       
-#     # No ending consonant? Then the rest of the string must be the vowel part
-#     if comps[1] == '':
-#         comps[1] = string
-    
-#     # 'gi' and 'q' need some special treatments
-#     # We want something like this:
-#     #     ['g', 'ia', ''] -> ['gi', 'a', '']
-#     if (comps[0] != '' and comps[1] != '') and \
-#     ((comps[0] in 'gG' and comps[1][0] in 'iI' and len(comps[1]) > 1) or \
-#     (comps[0] in 'qQ' and comps[1][0] in 'u')):
-#         comps[0] += comps[1][:1]
-#         comps[1] = comps[1][1:]
-    
-#     if not is_valid_combination(comps, final_form = False):
-#         return [string, '', '']
-    
-#     return comps
 
 def separate(string):
     def atomic_separate(string, last_chars, last_is_vowel):
@@ -418,3 +336,20 @@ def reverse(components, trans):
                 comps[1] = "".join([mark.add_mark_char(c, Mark.NONE)
                                           for c in comps[1]])
     return comps
+
+
+def can_undo(comps, trans_list):
+    comps = list(comps)
+    accent_list = list(map(accent.get_accent_char, comps[1]))
+    mark_list = list(map(mark.get_mark_char, utils.join(comps)))
+    action_list = list(map(lambda x: get_action(x), trans_list))
+
+    a = [action for action in action_list if action[0] == Action.ADD_ACCENT and action[1] in accent_list]
+    b = [action for action in action_list if action[0] == Action.ADD_MARK and action[1] in mark_list]
+    c = [trans for trans in trans_list if \
+        trans[0] == "<" and trans[1] in accent.remove_accent_string(comps[1]).lower()]
+
+    if a != [] or b != [] or c != []:
+        return True
+    else:
+        return False

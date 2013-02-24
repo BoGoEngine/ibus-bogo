@@ -82,6 +82,7 @@ class Engine(IBus.Engine):
             return False
 
         if keyval == keysyms.BackSpace:
+            logging.debug("Getting a backspace")
             self.new_string = self.new_string[:-1]
             # TODO A char in __raw_string doesn't equal a char in new_string
             self.__raw_string = self.__raw_string[:-1]
@@ -94,22 +95,39 @@ class Engine(IBus.Engine):
             if state & (modifier.CONTROL_MASK | modifier.MOD1_MASK) == 0:
                 self.__raw_string = self.__raw_string + chr(keyval)
                 logging.debug("\nRaw string: %s" % self.__raw_string)
-                
+
                 case = 0
                 cap = state & IBus.ModifierType.LOCK_MASK
                 shift = state & IBus.ModifierType.SHIFT_MASK
                 if (cap or shift) and not (cap and shift):
                     case = 1
-                
+                logging.debug("case: %d", case)
+                # logging.debug("keyval: %s", chr(keyval))
+
+                brace_shift = False
+                if chr(keyval) in '[]' and case == 1:
+                    # This is for TELEX's ][ keys.
+                    # When typing with capslock on, ][ won't get shifted to }{
+                    # so we have to shift them manually
+                    keyval = keyval + 0x20
+                    brace_shift = True
+
                 logging.debug("Key pressed: %c", chr(keyval))
-                logging.debug("Old string: %s", self.old_string)
+
                 self.old_string = self.new_string
+                logging.debug("Old string: %s", self.old_string)
+
                 self.new_string = core.process_key(self.old_string,
                     chr(keyval),
-                    case = case,
-                    raw_string = self.__raw_string,
-                    config = self.__config)
-                
+                    # case = case,
+                    raw_string=self.__raw_string,
+                    config=self.__config)
+
+                if brace_shift and self.new_string and self.new_string[-1] in "{}":
+                    logging.debug("Reverting brace shift")
+                    self.new_string = self.new_string[:-1] + \
+                        chr(ord(self.new_string[-1]) - 0x20)
+
                 logging.debug("New string: %s", self.new_string)
                 self.number_fake_backspace, self.string_to_commit = \
                     self.get_nbackspace_and_string_to_commit()
@@ -181,7 +199,7 @@ class Engine(IBus.Engine):
                     return _nbackspace, _stringtocommit
             return 0, self.new_string[length:]
         else:
-             return 0, self.new_string
+            return 0, self.new_string
 
     def is_character(self, keyval):
         return keyval in range(33,126)
