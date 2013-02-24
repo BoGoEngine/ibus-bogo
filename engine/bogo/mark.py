@@ -63,7 +63,7 @@ def add_mark(components, mark):
         if not raw_vowel == comp[1].lower():
             comp[1] = raw_vowel
         elif comp[0] and comp[0][-1] == "đ":
-            comp[0][-1] = "d"
+            comp[0] = comp[0][:-1] + "d"
     return comp
 
 def add_mark_at(string, index, mark):
@@ -140,11 +140,15 @@ def is_valid_mark(comps, mark_trans):
 def remove_mark_char(char):
     """Remove mark from a single character, if any."""
     # TODO: This looks ugly
-    if char in FAMILY_A: return "a"
-    if char in FAMILY_E: return "e"
-    if char in FAMILY_O: return "o"
-    if char in FAMILY_U: return "u"
-    if char in FAMILY_D: return "d"
+    ac = accent.get_accent_char(char)
+    char = accent.remove_accent_char(char)
+    print(char, ac)
+    if char in FAMILY_A: char = "a"
+    if char in FAMILY_E: char = "e"
+    if char in FAMILY_O: char = "o"
+    if char in FAMILY_U: char = "u"
+    if char in FAMILY_D: char = "d"
+    char = accent.add_accent_char(char, ac)
     return char
 
 def remove_mark_string(string):
