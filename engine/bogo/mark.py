@@ -62,7 +62,7 @@ def add_mark(components, mark):
     if mark == Mark.NONE:
         if not raw_vowel == comp[1].lower():
             comp[1] = raw_vowel
-        elif comp[0][-1] == "đ":
+        elif comp[0] and comp[0][-1] == "đ":
             comp[0][-1] = "d"
     return comp
 
