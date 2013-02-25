@@ -41,6 +41,12 @@ def change_case(string, case):
     return string.upper() if case else string.lower()
     
 def append_comps(comps, key):
+    
+    # See this and you'll understand:
+    #   transform(['nn', '', ''],'+n') = ['nnn', '', '']
+    #   transform(['c', '', ''],'+o') = ['c', 'o', '']
+    #   transform(['c', 'o', ''],'+o') = ['c', 'oo', '']
+    #   transform(['c', 'o', ''],'+n') = ['c', 'o', 'n']
     c = list(comps)
     if is_vowel(key):
         if not c[2]: pos = 1

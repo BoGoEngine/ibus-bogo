@@ -25,102 +25,57 @@ import logging
 Mark = mark.Mark
 Accent = accent.Accent
 
-# Don't change the following constants or the program will behave
-# unexpectedly
-
 
 class Action:
+    UNDO = 3
     ADD_MARK = 2
     ADD_ACCENT = 1
     ADD_CHAR = 0
 
 
-default_config = {
-    "input-method": "telex",
-    "output-charset": "utf-8",
-    "skip-non-vietnamese": True,
-    "available-input-method": {
-        'simple-telex': {
-            'a': 'a^',
-            'o': 'o^',
-            'e': 'e^',
-            'w': ['u*', 'o*', 'a+'],
-            'd': 'd-',
-            'f': '\\',
-            's': '/',
-            'r': '?',
-            'x': '~',
-            'j': '.',
-            # 'z': ['_']
-        },
-        'telex': {
-            'a': 'a^',
-            'o': 'o^',
-            'e': 'e^',
-            'w': ['u*', 'o*', 'a+', '<ư'],
-            'd': 'd-',
-            'f': '\\',
-            's': '/',
-            'r': '?',
-            'x': '~',
-            'j': '.',
-            # 'z': ['_'],
-            ']': '<ư',
-            '[': '<ơ',
-            '}': '<Ư',
-            '{': '<Ơ'
-        },
-        'vni': {
-            '6': ['a^', 'o^', 'e^'],
-            '7': ['u*', 'o*'],
-            '8': 'a+',
-            '9': 'd-',
-            '2': '\\',
-            '1': '/',
-            '3': '?',
-            '4': '~',
-            '5': '.',
-            # '0': ['_']
-        }
-    }
-}
-
-
-def is_processable(string):
-    return is_valid_combination(separate(string), final_form=False)
+def is_processable(comps):
+    # For now only check the last 2 components
+    return is_valid_combination(('', comps[1], comps[2]), final_form=False)
 
 
 def process_key(string, key, raw_string="", config=None):
     logging.debug("== In process_key() ==")
     logging.debug("key = %s", key)
 
-    if config == None:
-        config = default_config
+    def default_return():
+        return string + key
 
-    if config["input-method"] in default_config['available-input-method']:
-        im = default_config['available-input-method'][config["input-method"]]
-    elif 'custom-input-method' in config and \
-            config["input-method"] in config['custom-input-method']:
-        im = config['custom-input-method'][config["input-method"]]
-    else:
-        im = default_config['available-input-method'][default_config["input-method"]]
+    if config == None:
+        return default_return()
+
+    # NOTE to whoever reading this:
+    # config.py is on our back here. If this module is ever used outside
+    # this project, remember to port config.py as well.
+    if config["input-method"] in config["default-input-methods"]:
+        im = config["default-input-methods"][config["input-method"]]
+    elif "custom-input-methods" in config and \
+            config["input-method"] in config["custom-input-methods"]:
+        im = config["custom-input-methods"][config["input-method"]]
 
     comps = separate(string)
     logging.debug("separate(string) = %s", str(comps))
 
-    if not is_valid_combination(comps, final_form=False):
-        return string + key
+    if not is_processable(comps):
+        return default_return()
 
+    # Find all possible transformations this keypress can generate
     trans_list = get_transformation_list(key, im, raw_string)
-    logging.debug("trans_list = %s", str(trans_list))
+    logging.debug("trans_list = %s", trans_list)
 
+    # Then apply them one by one
     new_comps = list(comps)
     for trans in trans_list:
         new_comps = transform(new_comps, trans)
 
     logging.debug("new_comps: %s", str(new_comps))
     if new_comps == comps:
-        # if len(raw_string) >= 2 and raw_string[-1] == raw_string[-2]:
+        # If none of the transformations (if any) work
+        # then this keystroke is probably an undo key.
         if can_undo(new_comps, trans_list):
             # The prefix "_" means undo.
             for trans in map(lambda x: "_" + x, trans_list):
@@ -133,8 +88,6 @@ def process_key(string, key, raw_string="", config=None):
                 not (len(raw_string) >= 3 and raw_string[-3].lower() == "u"):
             new_comps[1] = new_comps[1][:-1]
 
-        # If none of the transformations (if any) work
-        # then just append the key
         new_comps = utils.append_comps(new_comps, key)
 
     return utils.join(new_comps)
@@ -187,7 +140,9 @@ def get_action(trans):
     while an Action.ADD_ACCENT goes with an Accent
     """
     if trans[0] in ('<', '+'):
-        return Action.ADD_CHAR, 0
+        return Action.ADD_CHAR, trans[1]
+    if trans[0] == "_":
+        return Action.UNDO, trans[1:]
     if len(trans) == 2:
         if trans[1] == '^':
             return Action.ADD_MARK, Mark.HAT
@@ -221,44 +176,41 @@ def transform(comps, trans):
     logging.debug("== In transform() ==")
     components = list(comps)
 
-    # Special case for 'ư, ơ'
-    # if trans[0] == '<' and not trans[1] in ('ư', 'ơ', 'Ư', 'Ơ'):
-    #        trans = '+' + trans[1]
-    # (Not our job)
+    action, factor = get_action(trans)
 
-    if trans[0] == '<':
-        if not components[2]:
-            # Undo operation
-            if components[1][-1:] == trans[1]:
-                return components
-            # Only allow ư, ơ or ươ sitting alone in the middle part
-            elif not components[1] or \
-                    (components[1].lower() == 'ư' and trans[1].lower() == 'ơ'):
-                components[1] += trans[1]
-            # Quite a hack. If you want to type giowf = 'giờ', separate()
-            # will create ['g', 'i', '']. Therefore we have to allow
-            # components[1] == 'i'.
-            elif components[1].lower() == 'i' and components[0].lower() == 'g':
-                components[1] += trans[1]
-                components = separate(utils.join(components))
+    if action == Action.ADD_ACCENT:
+        components = accent.add_accent(components, factor)
+    elif action == Action.ADD_MARK and mark.is_valid_mark(components, trans):
+        components = mark.add_mark(components, factor)
+        if accent.remove_accent_string(components[1]).lower() == "ươ" and \
+                not components[2]:
+            components[1] = ('u', 'U')[components[1][0].isupper()] + components[1][1]
 
-    if trans[0] == '+':
-        # See this and you'll understand:
-        #   transform(['nn', '', ''],'+n') = ['nnn', '', '']
-        #   transform(['c', '', ''],'+o') = ['c', 'o', '']
-        #   transform(['c', 'o', ''],'+o') = ['c', 'oo', '']
-        #   transform(['c', 'o', ''],'+n') = ['c', 'o', 'n']
-        if components[1] == '':
-            if utils.is_vowel(trans[1]):
-                components[1] += trans[1]
-            else:
-                components[0] += trans[1]
+    elif action == Action.ADD_CHAR:
+        if trans[0] == "<":
+            if not components[2]:
+                # Only allow ư, ơ or ươ sitting alone in the middle part
+                # and ['g', 'i', '']. If we want to type giowf = 'giờ', separate()
+                # will create ['g', 'i', '']. Therefore we have to allow
+                # components[1] == 'i'.
+                if not components[1] or \
+                        (components[1].lower(), trans[1].lower()) == ('ư', 'ơ') or \
+                        (components[1].lower(), components[0].lower()) == ('i', 'g'):
+                    components[1] += trans[1]
         else:
-            if components[2] == '' and utils.is_vowel(trans[1]):
-                components[1] += trans[1]
-            else:
-                components[2] += trans[1]
+            components = utils.append_comps(components, factor)
+            if not utils.is_vowel(factor) and \
+                    accent.remove_accent_string(components[1]).lower() == "uơ":
+                accent_list = map(accent.get_accent_char, components[1])
+                components[1] = ('ư', 'Ư')[components[1][0].isupper()] + \
+                    ('ơ', 'Ơ')[components[1][1].isupper()]
+                for ac in accent_list:
+                    accent.add_accent(components, ac)
+    elif action == Action.UNDO:
+        components = reverse(components, trans[1:])
 
+    if action in [Action.ADD_CHAR, Action.ADD_MARK]:
+        # TODO: rewrite this part in functional style
         # If there is any accent, remove and reapply it
         # because it is likely to be misplaced in previous transformations
         ac = accent.Accent.NONE
@@ -270,18 +222,7 @@ def transform(comps, trans):
             # Remove accent
             components = accent.add_accent(components, Accent.NONE)
             components = accent.add_accent(components, ac)
-        return components
 
-    if trans[0] == '_':
-        # Undoing
-        return reverse(components, trans[1:])
-
-    action, factor = get_action(trans)
-    if action == Action.ADD_ACCENT:
-        components = accent.add_accent(components, factor)
-    elif action == Action.ADD_MARK:
-        if (mark.is_valid_mark(components, trans)):
-            components = mark.add_mark(components, factor)
     return components
 
 

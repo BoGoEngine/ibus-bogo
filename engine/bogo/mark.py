@@ -54,7 +54,7 @@ def get_mark_char(char):
     return Mark.NONE
 
 
-# TODO: needs refactoring
+# TODO: Monstrous code. Needs refactoring.
 def add_mark(components, mark):
     comp = list(components)
     if mark == Mark.BAR and comp[0] and comp[0][-1].lower() in FAMILY_D:
