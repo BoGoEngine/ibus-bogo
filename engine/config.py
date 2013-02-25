@@ -24,6 +24,9 @@ import json
 import os
 
 
+# TODO: This module needs some tests
+
+
 _dirname = os.path.expanduser("~/.config/ibus-bogo/")
 if not os.path.exists(_dirname):
     os.makedirs(_dirname)
@@ -31,6 +34,7 @@ config_path = os.path.join(_dirname, "config.json")
 engine_dir = os.path.dirname(__file__)
 
 
+# TODO: It's best if we can preserve comments and line order
 class BaseConfig(object):
     """Base config object, designed to behave like a dictionary.
     """
@@ -49,13 +53,14 @@ class BaseConfig(object):
             data = json.loads(f.read())
             self.keys.update(data)
             f.close()
+            self.sanity_check()
         except:
             logging.debug("Config file corrupted or not exists.")
             self.reset()
 
     def write_config(self):
         f = open(self.path, "w")
-        f.write(json.dumps(self.keys, indent=4))
+        f.write(json.dumps(self.keys, indent=4, ensure_ascii=False))
         f.close()
 
     def __setitem__(self, key, value):
@@ -72,6 +77,13 @@ class BaseConfig(object):
         # Only reset what's needed
         self.read_config(os.path.join(engine_dir, "data", "default_config.json"))
         self.write_config()
+
+    def sanity_check(self):
+        # Should check something here
+        if self.keys["input-method"] not in self.keys["default-input-methods"] and \
+                "custom-input-methods" in self.keys and \
+                self.keys["input-method"] not in self.keys["custom-input-methods"]:
+            raise ValueError
 
 
 class Config(BaseConfig, GObject.GObject):
