@@ -34,7 +34,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 engine_dir = os.path.abspath(os.path.join(current_dir, "..", "engine"))
 
 sys.path.append(engine_dir)
-from config import BaseConfig
+from base_config import BaseConfig
 
 
 class Settings(BaseConfig, QObject):

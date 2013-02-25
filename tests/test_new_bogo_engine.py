@@ -32,9 +32,9 @@ from bogo.new_bogo_engine import *
 from bogo.accent import *
 from bogo.mark import *
 from bogo.utils import *
-from config import Config
+from base_config import BaseConfig
 
-c = Config()
+c = BaseConfig("/tmp/ibus-bogo.json")
 
 process_key_dfl = partial(process_key, config=c)
 
