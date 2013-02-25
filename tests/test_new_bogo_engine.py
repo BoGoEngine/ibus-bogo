@@ -41,11 +41,9 @@ process_key_dfl = partial(process_key, config=c)
 def process_seq(orig, seq, config = c):
     string = orig
     raw = string
-    all_trans = []
     for i in seq:
         raw = raw + i
         string = process_key(string, i, raw_string = raw,
-            all_trans_list=all_trans,
             config = config)
     return string
 
@@ -192,9 +190,10 @@ Only the vowel part will be changed after the add_accent take places
         self.assertEqual(transform(['c', 'o', ''],'+n'), ['c', 'o', 'n'])
         self.assertEqual(transform(['c', 'o', ''],'+o'), ['c', 'oo', ''])
 
+        # Re-ordering accents
         self.assertEqual(transform(['t', 'óa', ''],'+n'), ['t', 'oá', 'n'])
         self.assertEqual(transform(['t', 'óa', ''],'+o'), ['t', 'oáo', ''])
-        self.assertEqual(transform(['t', 'uỷe', ''],'+n'), ['t', 'oáo', ''])
+        self.assertEqual(transform(['t', 'uỷe', ''],'e^'), ['t', 'uyể', ''])
 
         self.assertEqual(transform(['', 'u', ''], 'u*'), ['', 'ư', ''])
         self.assertEqual(transform(['','Ư', ''], '<Ư'), ['','Ư', ''])
