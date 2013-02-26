@@ -37,6 +37,7 @@ install (FILES
   main.py
   ibus_engine.py
   config.py
+  base_config.py
   keysyms_mapping.py
   DESTINATION
   ${BOGO_INSTALL_DIR}/engine

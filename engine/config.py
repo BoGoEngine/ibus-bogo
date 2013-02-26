@@ -20,6 +20,12 @@
 
 from gi.repository import Gio, GObject
 from base_config import BaseConfig
+import os
+
+_dirname = os.path.expanduser("~/.config/ibus-bogo/")
+if not os.path.exists(_dirname):
+    os.makedirs(_dirname)
+config_path = os.path.join(_dirname, "config.json")
 
 
 class Config(BaseConfig, GObject.GObject):
