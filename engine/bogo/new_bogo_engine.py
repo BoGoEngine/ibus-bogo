@@ -267,7 +267,7 @@ def reverse(components, trans):
     comps = list(components)
     string = utils.join(comps)
 
-    if action == Action.ADD_CHAR and string[-1] == trans[1]:
+    if action == Action.ADD_CHAR and string[-1].lower() == factor.lower():
         if comps[2]:
             i = 2
         elif comps[1]:
@@ -297,7 +297,7 @@ def can_undo(comps, trans_list):
     a = [action for action in action_list if action[0] == Action.ADD_ACCENT and action[1] in accent_list]
     b = [action for action in action_list if action[0] == Action.ADD_MARK and action[1] in mark_list]
     c = [trans for trans in trans_list if
-         trans[0] == "<" and trans[1] in accent.remove_accent_string(comps[1]).lower()]
+         trans[0] == "<" and trans[1].lower() in accent.remove_accent_string(comps[1]).lower()]
 
     if a != [] or b != [] or c != []:
         return True
