@@ -82,9 +82,9 @@ def process_key(string, key, raw_string="", config=None):
                 new_comps = transform(new_comps, trans)
 
         if config["input-method"] == "telex" and \
-            len(raw_string) >= 2 and \
-            new_comps[1] and new_comps[1][-1].lower() == "u" and \
-            raw_string[-2:].lower() == "ww" and \
+                len(raw_string) >= 2 and \
+                new_comps[1] and new_comps[1][-1].lower() == "u" and \
+                raw_string[-2:].lower() == "ww" and \
                 not (len(raw_string) >= 3 and raw_string[-3].lower() == "u"):
             new_comps[1] = new_comps[1][:-1]
 
@@ -120,12 +120,14 @@ def get_transformation_list(key, im, raw_string):
 
         if trans_list == ['_']:
             if len(raw_string) >= 2:
+                # TODO Use takewhile()/dropwhile() to process the last IM keypress
+                # instead of assuming it's the last key in raw_string.
                 t = list(map(lambda x: "_" + x,
                              get_transformation_list(raw_string[-2], im, raw_string[:-1])))
                 # print(t)
                 trans_list = t
-            else:
-                trans_list = ['+' + key]
+            # else:
+            #     trans_list = ['+' + key]
 
         return trans_list
     else:
