@@ -4,18 +4,25 @@ import sys
 import os
 import logging
 import hashlib
+import json
 from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide.QtUiTools import QUiLoader
 
 DEFAULT_LOCALE = "vi_VN"
 
-# TODO: Read these lists from a config file
-inputMethodList = [
-    "telex",
-    "simple-telex",
-    "vni"
-]
+_dirname = os.path.expanduser("~/.config/ibus-bogo/")
+if not os.path.exists(_dirname):
+    os.makedirs(_dirname)
+config_path = os.path.join(_dirname, "config.json")
+
+jsonData = open(config_path)
+data = json.load(jsonData)
+inputMethodList = list(data["default-input-methods"].keys())
+
+if "custom-input-methods" in data:
+    inputMethodList += list(data["custom-input-methods"].keys())
+
 
 charsetList = [
     "utf-8",
@@ -24,11 +31,6 @@ charsetList = [
 ]
 
 # logging.basicConfig(level=logging.DEBUG)
-
-_dirname = os.path.expanduser("~/.config/ibus-bogo/")
-if not os.path.exists(_dirname):
-    os.makedirs(_dirname)
-config_path = os.path.join(_dirname, "config.json")
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 engine_dir = os.path.abspath(os.path.join(current_dir, "..", "engine"))
