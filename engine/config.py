@@ -21,6 +21,7 @@
 from gi.repository import Gio, GObject
 from base_config import BaseConfig
 import os
+import logging
 
 _dirname = os.path.expanduser("~/.config/ibus-bogo/")
 if not os.path.exists(_dirname):
