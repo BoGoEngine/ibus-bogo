@@ -38,7 +38,7 @@ def is_processable(comps):
     return is_valid_combination(('', comps[1], comps[2]), final_form=False)
 
 
-def process_key(string, key, raw_string="", config=None):
+def process_key(string, key, raw_key_sequence=[], config=None):
     logging.debug("== In process_key() ==")
     logging.debug("key = %s", key)
 
@@ -64,7 +64,7 @@ def process_key(string, key, raw_string="", config=None):
         return default_return()
 
     # Find all possible transformations this keypress can generate
-    trans_list = get_transformation_list(key, im, raw_string)
+    trans_list = get_transformation_list(key, im, raw_key_sequence)
     logging.debug("trans_list = %s", trans_list)
 
     # Then apply them one by one
@@ -81,19 +81,21 @@ def process_key(string, key, raw_string="", config=None):
             for trans in map(lambda x: "_" + x, trans_list):
                 new_comps = transform(new_comps, trans)
 
-        if config["input-method"] == "telex" and \
-                len(raw_string) >= 2 and \
-                new_comps[1] and new_comps[1][-1].lower() == "u" and \
-                raw_string[-2:].lower() == "ww" and \
-                not (len(raw_string) >= 3 and raw_string[-3].lower() == "u"):
-            new_comps[1] = new_comps[1][:-1]
+            # TODO refactor
+            if config["input-method"] == "telex" and \
+                    len(raw_key_sequence) >= 2 and \
+                    new_comps[1] and new_comps[1][-1].lower() == "u" and \
+                    raw_key_sequence[-2:].lower() == "ww" and \
+                    not (len(raw_key_sequence) >= 3 and
+                         raw_key_sequence[-3].lower() == "u"):
+                new_comps[1] = new_comps[1][:-1]
 
         new_comps = utils.append_comps(new_comps, key)
 
     return utils.join(new_comps)
 
 
-def get_transformation_list(key, im, raw_string):
+def get_transformation_list(key, im, raw_key_sequence):
     """
         Return the list of transformations inferred from the entered key. The
         map between transform types and keys is given by module
@@ -116,14 +118,16 @@ def get_transformation_list(key, im, raw_string):
 
         for i, trans in enumerate(trans_list):
             if trans[0] == '<' and key.isalpha():
-                trans_list[i] = trans[0] + utils.change_case(trans[1], int(key.isupper()))
+                trans_list[i] = trans[0] + utils.change_case(trans[1], 
+                                                             int(key.isupper()))
 
         if trans_list == ['_']:
-            if len(raw_string) >= 2:
+            if len(raw_key_sequence) >= 2:
                 # TODO Use takewhile()/dropwhile() to process the last IM keypress
-                # instead of assuming it's the last key in raw_string.
+                # instead of assuming it's the last key in raw_key_sequence.
                 t = list(map(lambda x: "_" + x,
-                             get_transformation_list(raw_string[-2], im, raw_string[:-1])))
+                             get_transformation_list(raw_key_sequence[-2], im,
+                                                     raw_key_sequence[:-1])))
                 # print(t)
                 trans_list = t
             # else:
@@ -141,6 +145,7 @@ def get_action(trans):
     An Action.ADD_MARK goes with a Mark
     while an Action.ADD_ACCENT goes with an Accent
     """
+    # TODO: VIQR-like convention
     if trans[0] in ('<', '+'):
         return Action.ADD_CHAR, trans[1]
     if trans[0] == "_":
@@ -259,12 +264,10 @@ def separate(string):
 def reverse(components, trans):
     """
     Reverse the effect of transformation 'trans' on 'components'
-    If the transformation does not effect the components, return the original string
-    Workflow:
-    - Find the part of components that is effected by the transformation
-    - Transform this part to the original state (remove accent if the trans
-    is ADD_ACCENT action, remove mark if the trans is ADD_MARK action)
+    If the transformation does not affect the components, return the original
+    string.
     """
+
     action, factor = get_action(trans)
     comps = list(components)
     string = utils.join(comps)

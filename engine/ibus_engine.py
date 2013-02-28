@@ -120,7 +120,7 @@ class Engine(IBus.Engine):
                 self.new_string = core.process_key(self.old_string,
                     chr(keyval),
                     # case = case,
-                    raw_string=self.__raw_string,
+                    raw_key_sequence=self.__raw_string,
                     config=self.__config)
 
                 if brace_shift and self.new_string and self.new_string[-1] in "{}":
