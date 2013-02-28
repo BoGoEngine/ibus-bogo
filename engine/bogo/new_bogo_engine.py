@@ -189,8 +189,17 @@ def transform(comps, trans):
         components = accent.add_accent(components, factor)
     elif action == Action.ADD_MARK and mark.is_valid_mark(components, trans):
         components = mark.add_mark(components, factor)
+
+        # Handle uơ in "huơ", "thuở", "quở"
+        # If the current word has no last consonant and the first consonant
+        # is one of "h", "th" and the vowel is "ươ" then change the vowel into
+        # "uơ", keeping case and accent. If an alphabet character is then added
+        # into the word then change back to "ươ".
+        #
+        # NOTE: In the dictionary, these are the only words having this strange
+        # vowel so we don't need to worry about other cases.
         if accent.remove_accent_string(components[1]).lower() == "ươ" and \
-                not components[2]:
+                not components[2] and components[0].lower() in ["h", "th"]:
             components[1] = ('u', 'U')[components[1][0].isupper()] + components[1][1]
 
     elif action == Action.ADD_CHAR:
@@ -206,11 +215,11 @@ def transform(comps, trans):
                     components[1] += trans[1]
         else:
             components = utils.append_comps(components, factor)
-            if not utils.is_vowel(factor) and \
-                    accent.remove_accent_string(components[1]).lower() == "uơ":
+            if factor.isalpha() and \
+                    accent.remove_accent_string(components[1]).lower().startswith("uơ"):
                 accent_list = map(accent.get_accent_char, components[1])
                 components[1] = ('ư', 'Ư')[components[1][0].isupper()] + \
-                    ('ơ', 'Ơ')[components[1][1].isupper()]
+                    ('ơ', 'Ơ')[components[1][1].isupper()] + components[1][2:]
                 for ac in accent_list:
                     accent.add_accent(components, ac)
     elif action == Action.UNDO:
@@ -254,7 +263,7 @@ def separate(string):
     #     ['g', 'ia', ''] -> ['gi', 'a', '']
     if (comps[0] != '' and comps[1] != '') and \
         ((comps[0] in 'gG' and comps[1][0] in 'iI' and len(comps[1]) > 1) or
-         (comps[0] in 'qQ' and comps[1][0] in 'u')):
+         (comps[0] in 'qQ' and comps[1][0] in 'uU')):
         comps[0] += comps[1][:1]
         comps[1] = comps[1][1:]
 

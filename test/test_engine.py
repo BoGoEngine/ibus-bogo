@@ -115,6 +115,14 @@ class TestProcessSeq():
         eq_(process_seq('ddoonjg'), 'động')
         eq_(process_seq('nheechs'), 'nhếch')
 
+        # uơ related
+        eq_(process_seq('quowr'), 'quở')
+        eq_(process_seq('huow'), 'huơ')
+        eq_(process_seq('thuowr'), 'thuở')
+        eq_(process_seq('QUOWR'), 'QUỞ')
+        eq_(process_seq('HUOW'), 'HUƠ')
+        eq_(process_seq('THUOWR'), 'THUỞ')
+
         # English words
         eq_(process_seq('case'), 'cáe')
         eq_(process_seq('reset'), 'rết')
@@ -122,6 +130,13 @@ class TestProcessSeq():
     def test_bugs_related(self):
         # naỳ.
         eq_(process_seq('nayf.'), 'này.')
+
+        # nguời
+        eq_(process_seq('nguowif'), 'người')
+        eq_(process_seq('nguwowif'), 'người')
+
+        # thươ.
+        eq_(process_seq("thuowr."), "thuở.")
 
     def test_free_key_position(self):
         eq_(process_seq('toios'), 'tối')
