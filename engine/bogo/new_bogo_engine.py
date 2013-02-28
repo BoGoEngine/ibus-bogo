@@ -45,7 +45,7 @@ def process_key(string, key, raw_key_sequence=[], config=None):
     def default_return():
         return string + key
 
-    if config == None:
+    if config is None:
         return default_return()
 
     # NOTE to whoever reading this:
@@ -118,7 +118,7 @@ def get_transformation_list(key, im, raw_key_sequence):
 
         for i, trans in enumerate(trans_list):
             if trans[0] == '<' and key.isalpha():
-                trans_list[i] = trans[0] + utils.change_case(trans[1], 
+                trans_list[i] = trans[0] + utils.change_case(trans[1],
                                                              int(key.isupper()))
 
         if trans_list == ['_']:

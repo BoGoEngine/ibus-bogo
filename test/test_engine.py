@@ -68,6 +68,9 @@ class TestHelpers():
     def test_get_action(self):
         # Add mark
         eq_(get_action('a^'), (Action.ADD_MARK, Mark.HAT))
+        eq_(get_action('a+'), (Action.ADD_MARK, Mark.BREVE))
+        eq_(get_action('o*'), (Action.ADD_MARK, Mark.HORN))
+        eq_(get_action('d-'), (Action.ADD_MARK, Mark.BAR))
 
     def test_get_transformation_list(self):
         pass
@@ -149,6 +152,8 @@ class TestProcessSeq():
         eq_(process_seq('tuyerne'), 'tuyển')
         eq_(process_seq('tuyeern'), 'tuyển')
         eq_(process_seq('tuyeenr'), 'tuyển')
+
+        eq_(process_seq('tuwrowng'), 'tưởng')
 
     def test_undo(self):
         eq_(process_seq('aaa'), 'aa')
