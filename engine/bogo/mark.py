@@ -158,16 +158,7 @@ def is_valid_mark(comps, mark_trans):
 
 def remove_mark_char(char):
     """Remove mark from a single character, if any."""
-    # TODO: This looks ugly
-    ac = accent.get_accent_char(char)
-    char = accent.remove_accent_char(char)
-    if char in FAMILY_A: char = "a"
-    if char in FAMILY_E: char = "e"
-    if char in FAMILY_O: char = "o"
-    if char in FAMILY_U: char = "u"
-    if char in FAMILY_D: char = "d"
-    char = accent.add_accent_char(char, ac)
-    return char
+    return add_mark_char(char, Mark.NONE)
 
 def remove_mark_string(string):
     return utils.join([remove_mark_char(c) for c in string])
