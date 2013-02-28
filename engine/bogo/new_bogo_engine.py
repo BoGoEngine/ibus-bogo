@@ -216,7 +216,7 @@ def transform(comps, trans):
     elif action == Action.UNDO:
         components = reverse(components, trans[1:])
 
-    if action in [Action.ADD_CHAR, Action.ADD_MARK]:
+    if action == Action.ADD_MARK or (action == Action.ADD_CHAR and factor.isalpha()):
         # TODO: rewrite this part in functional style
         # If there is any accent, remove and reapply it
         # because it is likely to be misplaced in previous transformations

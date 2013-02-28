@@ -119,6 +119,10 @@ class TestProcessSeq():
         eq_(process_seq('case'), 'cáe')
         eq_(process_seq('reset'), 'rết')
 
+    def test_bugs_related(self):
+        # naỳ.
+        eq_(process_seq('nayf.'), 'này.')
+
     def test_free_key_position(self):
         eq_(process_seq('toios'), 'tối')
         eq_(process_seq('toois'), 'tối')
