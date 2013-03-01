@@ -243,6 +243,15 @@ def transform(comps, trans):
 
 
 def separate(string):
+    """
+    Separate a string into smaller parts: first consonant (or garbage), vowel,
+    last consonant (if any).
+
+    >>> separate('tuong')
+    ['t','uo','ng']
+    >>> separate('ohmyfkinggod')
+    ['ohmyfkingg','o','d']
+    """
     def atomic_separate(string, last_chars, last_is_vowel):
         if string == "" or (last_is_vowel != utils.is_vowel(string[-1])):
             return (string, last_chars)
@@ -303,6 +312,10 @@ def reverse(components, trans):
 
 
 def can_undo(comps, trans_list):
+    """
+    Return whether a components can be undone with one of the transformation in
+    trans_list.
+    """
     comps = list(comps)
     accent_list = list(map(accent.get_accent_char, comps[1]))
     mark_list = list(map(mark.get_mark_char, utils.join(comps)))

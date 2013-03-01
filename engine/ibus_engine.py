@@ -158,6 +158,10 @@ class Engine(IBus.Engine):
                         self.forward_key_event(ch, 0, 0)
                 else:
                     logging.debug("Committing")
+                    # Delaying to partially solve a synchronization
+                    # issue where committed text comes before forwarded
+                    # backspaces. Mostly for wine apps and for Gtk apps
+                    # when the above check doesn't work.
                     time.sleep(0.005)
                     self.commit_result(self.string_to_commit)
 
