@@ -158,6 +158,7 @@ class Engine(IBus.Engine):
                         self.forward_key_event(ch, 0, 0)
                 else:
                     logging.debug("Committing")
+                    time.sleep(0.005)
                     self.commit_result(self.string_to_commit)
 
                 return True
