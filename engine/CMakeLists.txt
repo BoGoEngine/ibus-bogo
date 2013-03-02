@@ -30,7 +30,7 @@ install (FILES
 install (FILES
   data/ibus-bogo.svg
   DESTINATION
-  share/icons/hicolor/scalable/
+  share/icons/hicolor/scalable/apps
   )
 
 install (FILES
