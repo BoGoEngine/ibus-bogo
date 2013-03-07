@@ -102,11 +102,11 @@ def process_key(string, key, raw_key_sequence="", config=None):
     
             # TODO refactor
             if config["input-method"] == "telex" and \
-                    len(raw_key_sequence) >= 2 and \
+                    len(raw_key_sequence) >= 1 and \
                     new_comps[1] and new_comps[1][-1].lower() == "u" and \
-                    raw_key_sequence[-2:].lower() == "ww" and \
-                    not (len(raw_key_sequence) >= 3 and
-                         raw_key_sequence[-3].lower() == "u"):
+                    (raw_key_sequence[-1:]+key).lower() == "ww" and \
+                    not (len(raw_key_sequence) >= 2 and
+                         raw_key_sequence[-2].lower() == "u"):
                 new_comps[1] = new_comps[1][:-1]
 
         if tmp == new_comps:

@@ -6,16 +6,21 @@ from bogo.mark import Mark
 from bogo.accent import Accent
 
 c = BaseConfig("/tmp/ibus-bogo.json")
+c_non_vn = BaseConfig("/tmp/ibus-bogo-non-vn.json")
+c_non_vn["skip-non-vietnamese"] = True
+
 process_key_dfl = partial(process_key, config=c)
+process_key_non_vn = partial(process_key, config=c_non_vn)
 
 def process_seq(seq, config=c):
     string = ""
     raw = string
     for i in seq:
-        raw = raw + i
-        string = process_key(string, i, raw_key_sequence=raw,
+        string, raw = process_key(string, i, raw_key_sequence=raw,
                              config=config)
     return string
+
+process_seq_non_vn = partial(process_seq, config=c_non_vn)
 
 
 class TestHelpers():
@@ -170,3 +175,26 @@ class TestProcessSeq():
         eq_(process_seq('hww'), 'hw')
         eq_(process_seq('ww'), 'w')
         eq_(process_seq('uww'), 'uw')
+
+    def test_non_vn(self):
+        def atomic(word):
+            eq_(process_seq(word, config=c_non_vn), word)
+        
+        tests = [
+            "system",
+            "Virtualbox",
+            "VMWare",
+            "Microsoft",
+            "Google",
+            "Installation",
+            "teardown",
+            "generators",
+            "event-driven",
+            "flow"
+        ]
+
+        for test in tests:
+            yield atomic, test
+
+        eq_(process_seq_non_vn("aans."), "ấn.")
+        eq_(process_seq_non_vn("aans.tuongwj"), "ấn.tượng")
