@@ -38,12 +38,12 @@ def is_processable(comps):
     return is_valid_combination(('', comps[1], comps[2]), final_form=False)
 
 
-def process_key(string, key, raw_key_sequence=[], config=None):
+def process_key(string, key, raw_key_sequence="", config=None):
     logging.debug("== In process_key() ==")
     logging.debug("key = %s", key)
 
     def default_return():
-        return string + key
+        return string + key, raw_key_sequence + key
 
     if config is None:
         return default_return()
@@ -60,8 +60,8 @@ def process_key(string, key, raw_key_sequence=[], config=None):
     comps = separate(string)
     logging.debug("separate(string) = %s", str(comps))
 
-    if not is_processable(comps):
-        return default_return()
+    # if not is_processable(comps):
+    #     return default_return()
 
     # Find all possible transformations this keypress can generate
     trans_list = get_transformation_list(key, im, raw_key_sequence)
@@ -74,13 +74,15 @@ def process_key(string, key, raw_key_sequence=[], config=None):
 
     logging.debug("new_comps: %s", str(new_comps))
     if new_comps == comps:
+        tmp = list(new_comps)
+
         # If none of the transformations (if any) work
         # then this keystroke is probably an undo key.
         if can_undo(new_comps, trans_list):
             # The prefix "_" means undo.
             for trans in map(lambda x: "_" + x, trans_list):
                 new_comps = transform(new_comps, trans)
-
+    
             # TODO refactor
             if config["input-method"] == "telex" and \
                     len(raw_key_sequence) >= 2 and \
@@ -90,9 +92,19 @@ def process_key(string, key, raw_key_sequence=[], config=None):
                          raw_key_sequence[-3].lower() == "u"):
                 new_comps[1] = new_comps[1][:-1]
 
+        if tmp == new_comps:
+            raw_key_sequence += key
         new_comps = utils.append_comps(new_comps, key)
+    else:
+        raw_key_sequence += key
 
-    return utils.join(new_comps)
+    logging.debug("%s, %s", utils.join(new_comps), raw_key_sequence)
+
+    if config['skip-non-vietnamese'] == True and (key.isalpha() or key in im) and \
+            not is_valid_combination(new_comps, final_form=False):
+        return raw_key_sequence, raw_key_sequence
+    else:
+        return utils.join(new_comps), raw_key_sequence
 
 
 def get_transformation_list(key, im, raw_key_sequence):
