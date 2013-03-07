@@ -38,12 +38,32 @@ def is_processable(comps):
     return is_valid_combination(('', comps[1], comps[2]), final_form=False)
 
 
-def process_key(string, key, raw_key_sequence=[], config=None):
+def process_key(string, key, raw_key_sequence="", config=None):
+    """
+    Try to apply the transformations inferred from `key` to `string` with
+    `raw_key_sequence` as a reference. `config` should be a dictionary-like
+    object obtained from `..config.Config()`.
+
+    returns (new string, new raw_key_sequence)
+
+    >>> process_key('a', 'a', 'a', config=default_config)
+    (â, aa)
+
+    Note that when a key is an undo key, it won't get appended to
+    `raw_key_sequence`.
+
+    >>> process_key('â', 'a', 'aa', config=default_config)
+    (aa, aa)
+    """
+    # TODO Figure out a way to remove the `string` argument. Perhaps only the
+    #      key sequence is needed?
     logging.debug("== In process_key() ==")
     logging.debug("key = %s", key)
+    logging.debug("string = %s", string)
+    logging.debug("raw_key_sequence = %s", raw_key_sequence)
 
     def default_return():
-        return string + key
+        return string + key, raw_key_sequence + key
 
     if config is None:
         return default_return()
@@ -57,11 +77,15 @@ def process_key(string, key, raw_key_sequence=[], config=None):
             config["input-method"] in config["custom-input-methods"]:
         im = config["custom-input-methods"][config["input-method"]]
 
-    comps = separate(string)
+    # Only care about the last alphabetic part:
+    # tôi.là.ai -> ("tôi.là.", "ai")
+    head, tail = gibberish_split(string)
+
+    comps = separate(tail)
     logging.debug("separate(string) = %s", str(comps))
 
-    if not is_processable(comps):
-        return default_return()
+    # if not is_processable(comps):
+    #     return default_return()
 
     # Find all possible transformations this keypress can generate
     trans_list = get_transformation_list(key, im, raw_key_sequence)
@@ -74,25 +98,37 @@ def process_key(string, key, raw_key_sequence=[], config=None):
 
     logging.debug("new_comps: %s", str(new_comps))
     if new_comps == comps:
+        tmp = list(new_comps)
+
         # If none of the transformations (if any) work
         # then this keystroke is probably an undo key.
         if can_undo(new_comps, trans_list):
             # The prefix "_" means undo.
             for trans in map(lambda x: "_" + x, trans_list):
                 new_comps = transform(new_comps, trans)
-
+    
             # TODO refactor
             if config["input-method"] == "telex" and \
-                    len(raw_key_sequence) >= 2 and \
+                    len(raw_key_sequence) >= 1 and \
                     new_comps[1] and new_comps[1][-1].lower() == "u" and \
-                    raw_key_sequence[-2:].lower() == "ww" and \
-                    not (len(raw_key_sequence) >= 3 and
-                         raw_key_sequence[-3].lower() == "u"):
+                    (raw_key_sequence[-1:]+key).lower() == "ww" and \
+                    not (len(raw_key_sequence) >= 2 and
+                         raw_key_sequence[-2].lower() == "u"):
                 new_comps[1] = new_comps[1][:-1]
 
+        if tmp == new_comps:
+            raw_key_sequence += key
         new_comps = utils.append_comps(new_comps, key)
+    else:
+        raw_key_sequence += key
 
-    return utils.join(new_comps)
+    logging.debug("%s, %s", utils.join(new_comps), raw_key_sequence)
+
+    if config['skip-non-vietnamese'] == True and (key.isalpha() or key in im) and \
+            not is_valid_combination(new_comps, final_form=False):
+        return raw_key_sequence, raw_key_sequence
+    else:
+        return head + utils.join(new_comps), raw_key_sequence
 
 
 def get_transformation_list(key, im, raw_key_sequence):
@@ -330,3 +366,18 @@ def can_undo(comps, trans_list):
         return True
     else:
         return False
+
+
+def gibberish_split(head, tail=""):
+    """
+    >>> gibberish_split("aoeu")
+    ("", "aoeu")
+    >>> gibberish_split("ao.eu")
+    ("ao.", "eu")
+    >>> gibberish_split("aoeu.")
+    ("aoeu.", "")
+    """
+    if head == "" or not head[-1].isalpha():
+        return (head, tail)
+    else:
+        return gibberish_split(head[:-1], head[-1] + tail)
