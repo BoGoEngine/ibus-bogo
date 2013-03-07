@@ -290,7 +290,6 @@ class Engine(IBus.Engine):
     def on_updown_pressed(self, key):
         key = {IBus.Up: "up", IBus.Down: "down"}[key]
         if self.is_lookup_table_shown:
-            print("cursor_" + key)
             getattr(self.lookup_table, "cursor_" + key)()
             self.update_lookup_table(self.lookup_table, True)
             self.commit_result(self.lookup_table.get_candidate(
