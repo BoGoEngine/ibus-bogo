@@ -147,6 +147,9 @@ class Engine(IBus.Engine):
                         string_to_text(self.new_string))
                     self.lookup_table.append_candidate(
                         string_to_text(self.stubborn_new_string))
+                    # Don't worry, this is just for the lookup table to appear
+                    # at the correct position. No pre-editing is used.
+                    self.show_preedit_text()
                     self.update_lookup_table(self.lookup_table, True)
                     self.show_lookup_table()
                     self.is_lookup_table_shown = True
@@ -182,6 +185,7 @@ class Engine(IBus.Engine):
         self.stubborn_new_string = ""
         self.current_shown_text = ""
         self.hide_lookup_table()
+        self.hide_preedit_text()
         self.lookup_table.clear()
         self.is_lookup_table_shown = False
 
