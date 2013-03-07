@@ -1,5 +1,5 @@
 from bogo.valid_vietnamese import is_valid_combination
-from bogo.new_bogo_engine import separate
+from bogo.bogo import separate
 from nose.tools import eq_, ok_
 
 import os

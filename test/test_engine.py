@@ -1,6 +1,6 @@
 from nose.tools import eq_
 from functools import partial
-from bogo.new_bogo_engine import *
+from bogo.bogo import *
 from base_config import BaseConfig
 from bogo.mark import Mark
 from bogo.accent import Accent

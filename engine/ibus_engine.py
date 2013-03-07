@@ -24,7 +24,7 @@ from gi.repository import Pango
 import time
 import logging
 
-from bogo import new_bogo_engine as core
+import bogo
 from config import Config
 from keysyms_mapping import mapping
 
@@ -122,7 +122,7 @@ class Engine(IBus.Engine):
             self.old_string = self.new_string
             logging.debug("Old string: %s", self.old_string)
 
-            self.new_string, self.__raw_string = core.process_key(self.old_string,
+            self.new_string, self.__raw_string = bogo.process_key(self.old_string,
                                                                   chr(keyval),
                                                                   raw_key_sequence=self.__raw_string,
                                                                   config=self.__config)
@@ -134,7 +134,7 @@ class Engine(IBus.Engine):
                     self.stubborn_old_string = self.stubborn_new_string
                 stubborn_config = self.__config.keys.copy()
                 stubborn_config['skip-non-vietnamese'] = False
-                self.stubborn_new_string = core.process_key(self.stubborn_old_string,
+                self.stubborn_new_string = bogo.process_key(self.stubborn_old_string,
                                                             chr(keyval),
                                                             config=stubborn_config)[0]
 
