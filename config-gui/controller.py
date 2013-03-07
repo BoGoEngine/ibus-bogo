@@ -26,8 +26,8 @@ if "custom-input-methods" in data:
 
 charsetList = [
     "utf-8",
-    "tcvn3",
-    "vni"
+    # "tcvn3",
+    # "vni"
 ]
 
 # logging.basicConfig(level=logging.DEBUG)

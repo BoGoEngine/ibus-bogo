@@ -33,17 +33,17 @@
         <translation>Bỏ qua những từ không đúng tiếng Việt: </translation>
     </message>
     <message>
-        <location filename="controller.ui" line="161"/>
+        <location filename="controller.ui" line="164"/>
         <source>Tools</source>
         <translation>Công cụ</translation>
     </message>
     <message>
         <location filename="controller.ui" line="167"/>
         <source>Charset converter</source>
-        <translation>Bộ chuyển đổi bảng mã</translation>
+        <translation type="obsolete">Bộ chuyển đổi bảng mã</translation>
     </message>
     <message>
-        <location filename="controller.ui" line="179"/>
+        <location filename="controller.ui" line="182"/>
         <source>Copy some text, choose the source encoding and the destination encoding and press &quot;Convert&quot;. Then paste back.</source>
         <translation>Copy một đoạn văn bản, chọn bảng mã nguồn, bảng mã đích. Ấn nút &quot;Chuyển đổi&quot; và paste trở lại.</translation>
     </message>
@@ -53,24 +53,29 @@
         <translation type="obsolete">→</translation>
     </message>
     <message>
-        <location filename="controller.ui" line="226"/>
+        <location filename="controller.ui" line="229"/>
         <source>Convert</source>
         <translation>Chuyển đổi</translation>
     </message>
     <message>
-        <location filename="controller.ui" line="273"/>
+        <location filename="controller.ui" line="276"/>
         <source>Help</source>
         <translation>Trợ giúp</translation>
     </message>
     <message>
-        <location filename="controller.ui" line="280"/>
+        <location filename="controller.ui" line="283"/>
         <source>Restore Defaults</source>
         <translation>Khôi phục thiết lập chuẩn</translation>
     </message>
     <message>
-        <location filename="controller.ui" line="300"/>
+        <location filename="controller.ui" line="303"/>
         <source>Close</source>
         <translation>Đóng</translation>
+    </message>
+    <message>
+        <location filename="controller.ui" line="170"/>
+        <source>Charset converter (demo)</source>
+        <translation>Bộ chuyển đổi bảng mã (demo)</translation>
     </message>
 </context>
 <context>
@@ -91,7 +96,7 @@
         <translation type="obsolete">Tiếng Anh Mỹ</translation>
     </message>
     <message>
-        <location filename="controller.py" line="67"/>
+        <location filename="controller.py" line="172"/>
         <source>IBus BoGo Settings</source>
         <translation>Thiết lập IBus BoGo </translation>
     </message>

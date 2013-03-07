@@ -23,7 +23,7 @@
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <property name="elideMode">
       <enum>Qt::ElideNone</enum>
@@ -157,6 +157,9 @@
       </layout>
      </widget>
      <widget class="QWidget" name="tab_3">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <attribute name="title">
        <string>Tools</string>
       </attribute>
@@ -164,7 +167,7 @@
        <item>
         <widget class="QGroupBox" name="groupBox">
          <property name="title">
-          <string>Charset converter</string>
+          <string>Charset converter (demo)</string>
          </property>
          <property name="checkable">
           <bool>false</bool>
