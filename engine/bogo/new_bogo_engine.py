@@ -39,6 +39,23 @@ def is_processable(comps):
 
 
 def process_key(string, key, raw_key_sequence="", config=None):
+    """
+    Try to apply the transformations inferred from `key` to `string` with
+    `raw_key_sequence` as a reference. `config` should be a dictionary-like
+    object obtained from `..config.Config()`.
+
+    returns (new string, new raw_key_sequence)
+
+    >>> process_key('a', 'a', 'a', config=default_config)
+    (â, aa)
+
+    Note that when a key is an undo key, it won't get appended to
+    `raw_key_sequence`.
+
+    >>> process_key('â', 'a', 'aa', config=default_config)
+    (aa, aa)
+    """
+    # TODO Figure out a way to remove the `string` argument.
     logging.debug("== In process_key() ==")
     logging.debug("key = %s", key)
 
