@@ -55,9 +55,12 @@ def process_key(string, key, raw_key_sequence="", config=None):
     >>> process_key('â', 'a', 'aa', config=default_config)
     (aa, aa)
     """
-    # TODO Figure out a way to remove the `string` argument.
+    # TODO Figure out a way to remove the `string` argument. Perhaps only the
+    #      key sequence is needed?
     logging.debug("== In process_key() ==")
     logging.debug("key = %s", key)
+    logging.debug("string = %s", string)
+    logging.debug("raw_key_sequence = %s", raw_key_sequence)
 
     def default_return():
         return string + key, raw_key_sequence + key
@@ -74,7 +77,11 @@ def process_key(string, key, raw_key_sequence="", config=None):
             config["input-method"] in config["custom-input-methods"]:
         im = config["custom-input-methods"][config["input-method"]]
 
-    comps = separate(string)
+    # Only care about the last alphabetic part:
+    # tôi.là.ai -> ("tôi.là.", "ai")
+    head, tail = gibberish_split(string)
+
+    comps = separate(tail)
     logging.debug("separate(string) = %s", str(comps))
 
     # if not is_processable(comps):
@@ -121,7 +128,7 @@ def process_key(string, key, raw_key_sequence="", config=None):
             not is_valid_combination(new_comps, final_form=False):
         return raw_key_sequence, raw_key_sequence
     else:
-        return utils.join(new_comps), raw_key_sequence
+        return head + utils.join(new_comps), raw_key_sequence
 
 
 def get_transformation_list(key, im, raw_key_sequence):
@@ -359,3 +366,18 @@ def can_undo(comps, trans_list):
         return True
     else:
         return False
+
+
+def gibberish_split(head, tail=""):
+    """
+    >>> gibberish_split("aoeu")
+    ("", "aoeu")
+    >>> gibberish_split("ao.eu")
+    ("ao.", "eu")
+    >>> gibberish_split("aoeu.")
+    ("aoeu.", "")
+    """
+    if head == "" or not head[-1].isalpha():
+        return (head, tail)
+    else:
+        return gibberish_split(head[:-1], head[-1] + tail)
