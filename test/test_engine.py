@@ -198,3 +198,4 @@ class TestProcessSeq():
 
         eq_(process_seq_non_vn("aans."), "ấn.")
         eq_(process_seq_non_vn("aans.tuongwj"), "ấn.tượng")
+        eq_(process_seq_non_vn("gi[f"), "giờ")

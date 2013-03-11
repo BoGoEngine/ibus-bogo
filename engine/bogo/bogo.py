@@ -245,9 +245,11 @@ def transform(comps, trans):
                 # and ['g', 'i', '']. If we want to type giowf = 'giờ', separate()
                 # will create ['g', 'i', '']. Therefore we have to allow
                 # components[1] == 'i'.
+                if (components[0].lower(), components[1].lower()) == ('g', 'i'):
+                    components[0] += components[1]
+                    components[1] = ''
                 if not components[1] or \
-                        (components[1].lower(), trans[1].lower()) == ('ư', 'ơ') or \
-                        (components[1].lower(), components[0].lower()) == ('i', 'g'):
+                        (components[1].lower(), trans[1].lower()) == ('ư', 'ơ'):
                     components[1] += trans[1]
         else:
             components = utils.append_comps(components, factor)
