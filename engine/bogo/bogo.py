@@ -38,19 +38,19 @@ def is_processable(comps):
     return is_valid_combination(('', comps[1], comps[2]), final_form=False)
 
 
-def process_key(string, key, raw_key_sequence="", config=None):
+def process_key(string, key, fallback_sequence="", config=None):
     """
     Try to apply the transformations inferred from `key` to `string` with
-    `raw_key_sequence` as a reference. `config` should be a dictionary-like
+    `fallback_sequence` as a reference. `config` should be a dictionary-like
     object obtained from `..config.Config()`.
 
-    returns (new string, new raw_key_sequence)
+    returns (new string, new fallback_sequence)
 
     >>> process_key('a', 'a', 'a', config=default_config)
     (â, aa)
 
     Note that when a key is an undo key, it won't get appended to
-    `raw_key_sequence`.
+    `fallback_sequence`.
 
     >>> process_key('â', 'a', 'aa', config=default_config)
     (aa, aa)
@@ -60,10 +60,10 @@ def process_key(string, key, raw_key_sequence="", config=None):
     logging.debug("== In process_key() ==")
     logging.debug("key = %s", key)
     logging.debug("string = %s", string)
-    logging.debug("raw_key_sequence = %s", raw_key_sequence)
+    logging.debug("fallback_sequence = %s", fallback_sequence)
 
     def default_return():
-        return string + key, raw_key_sequence + key
+        return string + key, fallback_sequence + key
 
     if config is None:
         return default_return()
@@ -88,7 +88,7 @@ def process_key(string, key, raw_key_sequence="", config=None):
     #     return default_return()
 
     # Find all possible transformations this keypress can generate
-    trans_list = get_transformation_list(key, im, raw_key_sequence)
+    trans_list = get_transformation_list(key, im, fallback_sequence)
     logging.debug("trans_list = %s", trans_list)
 
     # Then apply them one by one
@@ -109,29 +109,29 @@ def process_key(string, key, raw_key_sequence="", config=None):
     
             # TODO refactor
             if config["input-method"] == "telex" and \
-                    len(raw_key_sequence) >= 1 and \
+                    len(fallback_sequence) >= 1 and \
                     new_comps[1] and new_comps[1][-1].lower() == "u" and \
-                    (raw_key_sequence[-1:]+key).lower() == "ww" and \
-                    not (len(raw_key_sequence) >= 2 and
-                         raw_key_sequence[-2].lower() == "u"):
+                    (fallback_sequence[-1:]+key).lower() == "ww" and \
+                    not (len(fallback_sequence) >= 2 and
+                         fallback_sequence[-2].lower() == "u"):
                 new_comps[1] = new_comps[1][:-1]
 
         if tmp == new_comps:
-            raw_key_sequence += key
+            fallback_sequence += key
         new_comps = utils.append_comps(new_comps, key)
     else:
-        raw_key_sequence += key
+        fallback_sequence += key
 
-    logging.debug("%s, %s", utils.join(new_comps), raw_key_sequence)
+    logging.debug("%s, %s", utils.join(new_comps), fallback_sequence)
 
     if config['skip-non-vietnamese'] == True and (key.isalpha() or key in im) and \
             not is_valid_combination(new_comps, final_form=False):
-        return raw_key_sequence, raw_key_sequence
+        return fallback_sequence, fallback_sequence
     else:
-        return head + utils.join(new_comps), raw_key_sequence
+        return head + utils.join(new_comps), fallback_sequence
 
 
-def get_transformation_list(key, im, raw_key_sequence):
+def get_transformation_list(key, im, fallback_sequence):
     """
         Return the list of transformations inferred from the entered key. The
         map between transform types and keys is given by module
@@ -158,12 +158,12 @@ def get_transformation_list(key, im, raw_key_sequence):
                                                              int(key.isupper()))
 
         if trans_list == ['_']:
-            if len(raw_key_sequence) >= 2:
+            if len(fallback_sequence) >= 2:
                 # TODO Use takewhile()/dropwhile() to process the last IM keypress
-                # instead of assuming it's the last key in raw_key_sequence.
+                # instead of assuming it's the last key in fallback_sequence.
                 t = list(map(lambda x: "_" + x,
-                             get_transformation_list(raw_key_sequence[-2], im,
-                                                     raw_key_sequence[:-1])))
+                             get_transformation_list(fallback_sequence[-2], im,
+                                                     fallback_sequence[:-1])))
                 # print(t)
                 trans_list = t
             # else:

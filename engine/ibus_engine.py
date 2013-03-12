@@ -124,7 +124,7 @@ class Engine(IBus.Engine):
 
             self.new_string, self.__raw_string = bogo.process_key(self.old_string,
                                                                   chr(keyval),
-                                                                  raw_key_sequence=self.__raw_string,
+                                                                  fallback_sequence=self.__raw_string,
                                                                   config=self.__config)
 
             if self.__config['skip-non-vietnamese']:
