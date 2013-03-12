@@ -33,15 +33,17 @@ import argparse
 
 from ibus_engine import Engine
 
+
 current_path = os.path.dirname(os.path.abspath(__file__))
+
 
 class IMApp:
     def __init__(self, exec_by_ibus):
         self.__id = 0
-        engine_name = "BoGo Engine"
+        engine_name = "ibus-bogo-python"
         self.__component = \
           IBus.Component.new("org.freedesktop.IBus.BoGoPython",
-                             "BoGo Engine for IBus",
+                             "ibus-bogo-python for IBus",
                              "0.2",
                              "GPLv3",
                              "Long T. Dam <longdt90@gmail.com>",
@@ -50,7 +52,7 @@ class IMApp:
                              "ibus-bogo")
         engine = IBus.EngineDesc(name = "bogo-python",
                                 longname = engine_name,
-                                description = "BoGo Engine for IBus",
+                                description = "ibus-bogo-python for IBus",
                                 language = "vi",
                                 license = "GPLv3",
                                 author = "Long T. Dam <longdt90@gmail.com>",
