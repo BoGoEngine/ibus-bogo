@@ -25,6 +25,7 @@ from .valid_vietnamese import is_valid_combination
 from . import utils, accent, mark
 import logging
 
+
 Mark = mark.Mark
 Accent = accent.Accent
 
