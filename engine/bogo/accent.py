@@ -26,6 +26,7 @@
 
 from . import utils
 
+
 class Accent:
     GRAVE = 5
     ACUTE = 4
@@ -33,6 +34,7 @@ class Accent:
     TIDLE= 2
     DOT = 1
     NONE = 0
+
 
 def get_accent_char(char):
     """
@@ -43,6 +45,7 @@ def get_accent_char(char):
         return 5 - index % 6
     else:
         return Accent.NONE
+
 
 def add_accent(components, accent):
     """
@@ -70,6 +73,7 @@ def add_accent(components, accent):
         new_vowel = vowel[:1] + add_accent_char(vowel[1], accent) + vowel[2:]
     return [components[0], new_vowel, components[2]]
 
+
 def add_accent_char(char, accent):
     """
     Add accent to a single char.  Parameter accent is member of class
@@ -85,6 +89,7 @@ def add_accent_char(char, accent):
         char = utils.VOWELS[index - accent]
     return utils.change_case(char, case)
         
+
 def add_accent_at(string, accent):
     """
     Add mark to the index-th character of the given string.  Return
@@ -97,11 +102,13 @@ def add_accent_at(string, accent):
     return string[:index] + accent.accent.add_accent_char(string[index], accent) \
         + string[index+1:]
 
+
 def remove_accent_char(char):
     """
     Remove accent from a single char, if any.
     """
     return add_accent_char(char, Accent.NONE)
+
 
 def remove_accent_string(string):
     """

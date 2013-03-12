@@ -21,16 +21,18 @@
 # along with ibus-bogo-python.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-
 VOWELS= "àáảãạaằắẳẵặăầấẩẫậâèéẻẽẹeềếểễệêìíỉĩịi" \
         "òóỏõọoồốổỗộôờớởỡợơùúủũụuừứửữựưỳýỷỹỵy"
+
 
 def join(alist):
     return "".join(alist)
 
+
 def is_vowel(char):
     char = char.lower()
     return True if (char in VOWELS) else False
+
 
 def change_case(string, case):
     """
@@ -43,6 +45,7 @@ def change_case(string, case):
     """
     return string.upper() if case else string.lower()
     
+
 def append_comps(comps, key):
     
     # See this and you'll understand:

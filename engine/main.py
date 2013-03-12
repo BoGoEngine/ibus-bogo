@@ -84,6 +84,7 @@ def launch_engine(exec_by_ibus):
     IBus.init()
     IMApp(exec_by_ibus).run()
 
+
 def main():
     try:
         locale.setlocale(locale.LC_ALL, "")
@@ -102,6 +103,7 @@ def main():
         logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
     launch_engine(exec_by_ibus)
+
 
 if __name__ == "__main__":
     main()

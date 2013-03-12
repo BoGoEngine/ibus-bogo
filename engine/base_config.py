@@ -27,7 +27,6 @@ import os
 
 
 # TODO: This module needs some tests
-
 engine_dir = os.path.dirname(__file__)
 
 

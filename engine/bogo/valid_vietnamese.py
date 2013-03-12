@@ -26,6 +26,7 @@ from . import accent
 from . import mark
 Accent = accent.Accent
 
+
 # Auto-generated list from dictionary
 
 CONSONANTS = (
@@ -48,7 +49,6 @@ OPEN_VOWELS = (
     'uây', 'uê', 'uôi', 'uơ', 'y', 'yêu', 'âu', 'ây', 'ê', 'êu', 'ô', 'ôi', 'ơ',
     'ơi', 'ư', 'ưa', 'ưi', 'ưu', 'ươi', 'ươu'
 )
-
 
 STRIPPED_VOWELS = (
     'a', 'ai', 'ao', 'au', 'ay', 'e', 'eo', 'eu', 'i', 'ia', 'ie', 'ieu', 'iu',

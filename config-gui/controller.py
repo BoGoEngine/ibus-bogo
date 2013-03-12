@@ -31,6 +31,7 @@ from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide.QtUiTools import QUiLoader
 
+
 DEFAULT_LOCALE = "vi_VN"
 
 _dirname = os.path.expanduser("~/.config/ibus-bogo/")
@@ -44,7 +45,6 @@ inputMethodList = list(data["default-input-methods"].keys())
 
 if "custom-input-methods" in data:
     inputMethodList += list(data["custom-input-methods"].keys())
-
 
 charsetList = [
     "utf-8",

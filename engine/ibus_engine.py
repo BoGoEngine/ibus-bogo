@@ -31,6 +31,7 @@ import bogo
 from config import Config
 from keysyms_mapping import mapping
 
+
 # Syntactic sugar
 keysyms = IBus
 modifier = IBus.ModifierType
