@@ -46,7 +46,7 @@ class IMApp:
                              "ibus-bogo-python for IBus",
                              "0.2",
                              "GPLv3",
-                             "Long T. Dam <longdt90@gmail.com>",
+                             "ibus-bogo-python Development Team <bogoengine-dev@googlegroups.com>",
                              "https://github.com/BoGoEngine/ibus-bogo-python",
                              "/usr/bin/exec",
                              "ibus-bogo")
@@ -55,7 +55,7 @@ class IMApp:
                                 description = "ibus-bogo-python for IBus",
                                 language = "vi",
                                 license = "GPLv3",
-                                author = "Long T. Dam <longdt90@gmail.com>",
+                                author = "ibus-bogo-python Development Team <bogoengine-dev@googlegroups.com>",
                                 icon = current_path + "/data/ibus-bogo.svg",
                                 #icon = "ibus-bogo",
                                 layout = "us")
