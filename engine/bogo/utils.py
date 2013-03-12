@@ -31,7 +31,7 @@ def join(alist):
 
 def is_vowel(char):
     char = char.lower()
-    return True if (char in VOWELS) else False
+    return char in VOWELS
 
 
 def change_case(string, case):
@@ -47,7 +47,6 @@ def change_case(string, case):
     
 
 def append_comps(comps, key):
-    
     # See this and you'll understand:
     #   transform(['nn', '', ''],'+n') = ['nnn', '', '']
     #   transform(['c', '', ''],'+o') = ['c', 'o', '']
