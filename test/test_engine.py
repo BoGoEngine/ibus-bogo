@@ -5,6 +5,7 @@ from base_config import BaseConfig
 from bogo.mark import Mark
 from bogo.accent import Accent
 
+
 c = BaseConfig("/tmp/ibus-bogo.json")
 c_non_vn = BaseConfig("/tmp/ibus-bogo-non-vn.json")
 c_non_vn["skip-non-vietnamese"] = True

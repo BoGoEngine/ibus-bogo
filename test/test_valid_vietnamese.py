@@ -4,6 +4,7 @@ from nose.tools import eq_, ok_
 
 import os
 
+
 def test_from_dict():
 	def atomic(word):
 		assert is_valid_combination(separate(word))

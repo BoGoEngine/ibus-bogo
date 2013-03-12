@@ -2,7 +2,7 @@
 > Meanwhile, the keywords, links and headers below should provide you 
 > enough information to get started.
 
-Mã nguồn IBus BoGo được đặt trên [Github](https://github.com/BoGoEngine/ibus-bogo-python).
+Mã nguồn ibus-bogo-python được đặt trên [Github](https://github.com/BoGoEngine/ibus-bogo-python).
 
 Để tham gia viết code bạn cần biết cách sử dụng [git](http://git-scm.com/book)
 và lập trình bằng [python](http://www.greenteapress.com/thinkpython/).
@@ -43,16 +43,15 @@ Bạn có thể tìm thấy tài liệu về cách sử dụng chúng dưới đ
 
 ## Testing
 
-Nhóm phát triển IBus BoGo sử dụng phương pháp TDD (test-driven development)
-để phát triển phần mềm. Khi đóng góp cho BoGo, bạn luôn phải viết test
-mỗi khi thay đổi code. Các test case có thể tìm thấy trong thư mục `test`.
-Có thể chạy các bài test bằng công cụ `nosetests` của Python ở thư mục chính
-của dự án.
+Nhóm phát triển ibus-bogo-python sử dụng phương pháp TDD (test-driven
+development) để phát triển phần mềm. Khi đóng góp cho BoGo, bạn luôn phải
+viết test mỗi khi thay đổi code. Các test case có thể tìm thấy trong thư mục
+`/test`.
 
 ## Git Flow
 
-Ibus BoGo được quản lý theo phương pháp git flow nổi tiếng.
-Phương pháp này có thể trình bày sơ lược như sau:
+ibus-bogo-python được quản lý bằng Git.  Phương pháp này sử dụng có thể trình
+bày sơ lược như sau:
 
 - Repo chính trên Github luôn có 2 branch là `master` và `develop`. `master`
 luôn chứa phiên bản stable mới nhất còn `develop` là branch chứa tất cả
