@@ -47,7 +47,7 @@ def change_case(string, case):
     
 
 def append_comps(comps, key):
-    # See this and you'll understand:
+    # See this and you'll understand: - cmpitg: I don't, please clarify!
     #   transform(['nn', '', ''],'+n') = ['nnn', '', '']
     #   transform(['c', '', ''],'+o') = ['c', 'o', '']
     #   transform(['c', 'o', ''],'+o') = ['c', 'oo', '']
@@ -61,4 +61,3 @@ def append_comps(comps, key):
         else: pos = 2
     c[pos] += key
     return c
-        
