@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from nose.tools import eq_
 from functools import partial
 from bogo.bogo import *
@@ -15,6 +13,7 @@ c_non_vn["skip-non-vietnamese"] = True
 process_key_dfl = partial(process_key, config=c)
 process_key_non_vn = partial(process_key, config=c_non_vn)
 
+
 def process_seq(seq, config=c):
     string = ""
     raw = string
@@ -24,6 +23,7 @@ def process_seq(seq, config=c):
                                   fallback_sequence=raw,
                                   config=config)
     return string
+
 
 process_seq_non_vn = partial(process_seq, config=c_non_vn)
 

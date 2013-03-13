@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from bogo.mark import *
 from nose.tools import eq_
 

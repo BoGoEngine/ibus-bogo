@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 from bogo.valid_vietnamese import is_valid_combination
 from bogo.bogo import separate
 from nose.tools import eq_, ok_
