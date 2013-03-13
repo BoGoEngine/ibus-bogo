@@ -23,7 +23,7 @@ Sau đó đừng ngần ngại thông báo với chúng tôi để trang hướn
 
 ### Từ mã nguồn
 
-IBus BoGo Engine được xây dựng có sử dụng các thành phần sau, hãy chắc
+ibus-bogo-python được xây dựng có sử dụng các thành phần sau, hãy chắc
 chắn rằng các thành phần này đã được cài trên máy nếu bạn cần cài đặt
 từ mã nguồn:
 

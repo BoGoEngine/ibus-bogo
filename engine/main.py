@@ -1,23 +1,23 @@
-#!/usr/bin/env python3
 #
-# IBus-BoGo - The Vietnamese IME for IBus
+# This file is part of ibus-bogo-python project.
 #
-# Copyright (c) 2012- Long T. Dam <longdt90@gmail.com>,
-#                     Trung Ngo <ndtrung4419@gmail.com>
+# Copyright (C) 2012 Long T. Dam <longdt90@gmail.com>
+# Copyright (C) 2012-2013 Trung Ngo <ndtrung4419@gmail.com>
+# Copyright (C) 2013 Duong H. Nguyen <cmpitg@gmail.com>
 #
-# This file is part of IBus-BoGo Project
-# IBus-BoGo is free software: you can redistribute it and/or modify
+# ibus-bogo-python is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# IBus-BoGo is distributed in the hope that it will be useful,
+# ibus-bogo-python is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with IBus-BoGo.  If not, see <http://www.gnu.org/licenses/>.
+# along with ibus-bogo-python.  If not, see <http://www.gnu.org/licenses/>.
+#
 
 from gi.repository import IBus
 from gi.repository import GLib
@@ -31,27 +31,29 @@ import argparse
 
 from ibus_engine import Engine
 
+
 current_path = os.path.dirname(os.path.abspath(__file__))
+
 
 class IMApp:
     def __init__(self, exec_by_ibus):
         self.__id = 0
-        engine_name = "BoGo Engine"
+        engine_name = "ibus-bogo-python"
         self.__component = \
           IBus.Component.new("org.freedesktop.IBus.BoGoPython",
-                             "BoGo Engine for IBus",
+                             "ibus-bogo-python for IBus",
                              "0.2",
                              "GPLv3",
-                             "Long T. Dam <longdt90@gmail.com>",
+                             "ibus-bogo-python Development Team <bogoengine-dev@googlegroups.com>",
                              "https://github.com/BoGoEngine/ibus-bogo-python",
                              "/usr/bin/exec",
                              "ibus-bogo")
         engine = IBus.EngineDesc(name = "bogo-python",
                                 longname = engine_name,
-                                description = "BoGo Engine for IBus",
+                                description = "ibus-bogo-python for IBus",
                                 language = "vi",
                                 license = "GPLv3",
-                                author = "Long T. Dam <longdt90@gmail.com>",
+                                author = "ibus-bogo-python Development Team <bogoengine-dev@googlegroups.com>",
                                 icon = current_path + "/data/ibus-bogo.svg",
                                 #icon = "ibus-bogo",
                                 layout = "us")
@@ -80,6 +82,7 @@ def launch_engine(exec_by_ibus):
     IBus.init()
     IMApp(exec_by_ibus).run()
 
+
 def main():
     try:
         locale.setlocale(locale.LC_ALL, "")
@@ -98,6 +101,7 @@ def main():
         logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
     launch_engine(exec_by_ibus)
+
 
 if __name__ == "__main__":
     main()

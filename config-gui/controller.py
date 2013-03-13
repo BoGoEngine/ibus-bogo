@@ -1,5 +1,26 @@
 #!/usr/bin/env python3
 
+#
+# This file is part of ibus-bogo-python project.
+#
+# Copyright (C) 2012 Long T. Dam <longdt90@gmail.com>
+# Copyright (C) 2012-2013 Trung Ngo <ndtrung4419@gmail.com>
+# Copyright (C) 2013 Duong H. Nguyen <cmpitg@gmail.com>
+#
+# ibus-bogo-python is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# ibus-bogo-python is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with ibus-bogo-python.  If not, see <http://www.gnu.org/licenses/>.
+#
+
 import sys
 import os
 import logging
@@ -8,6 +29,7 @@ import json
 from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide.QtUiTools import QUiLoader
+
 
 DEFAULT_LOCALE = "vi_VN"
 
@@ -22,7 +44,6 @@ inputMethodList = list(data["default-input-methods"].keys())
 
 if "custom-input-methods" in data:
     inputMethodList += list(data["custom-input-methods"].keys())
-
 
 charsetList = [
     "utf-8",

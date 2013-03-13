@@ -1,26 +1,27 @@
-#-*- coding: utf-8
-# New BoGo Engine - Vietnamese Text processing engine
 #
-# Copyright (c) 2012- Long T. Dam <longdt90@gmail.com>,
-#                     Trung Ngo <ndtrung4419@gmail.com>
+# This file is part of ibus-bogo-python project.
 #
-# This file is part of BoGo IBus Engine Project BoGo IBus Engine is
-# free software: you can redistribute it and/or modify it under the
-# terms of the GNU General Public License as published by the Free
-# Software Foundation, either version 3 of the License, or (at your
-# option) any later version.
+# Copyright (C) 2012 Long T. Dam <longdt90@gmail.com>
+# Copyright (C) 2012-2013 Trung Ngo <ndtrung4419@gmail.com>
+# Copyright (C) 2013 Duong H. Nguyen <cmpitg@gmail.com>
 #
-# IBus-BoGo is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-# General Public License for more details.
+# ibus-bogo-python is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# ibus-bogo-python is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with IBus-BoGo. If not, see <http://www.gnu.org/licenses/>.
-
+# along with ibus-bogo-python.  If not, see <http://www.gnu.org/licenses/>.
+#
 
 from . import accent, utils
 Accent = accent.Accent
+
 
 class Mark:
     HAT = 4
@@ -29,6 +30,7 @@ class Mark:
     BAR = 1
     NONE = 0
     
+
 FAMILY_A = "aăâ"
 FAMILY_E = "eê"
 FAMILY_O = "oơô"
@@ -85,6 +87,7 @@ def add_mark(components, mark):
             comp[0] = comp[0][:-1] + "d"
     return comp
 
+
 def add_mark_at(string, index, mark):
     """
     Add mark to the index-th character of the given string. Return the new string after applying change.
@@ -94,6 +97,7 @@ def add_mark_at(string, index, mark):
         return string
     # Python can handle the case which index is out of range of given string
     return string[:index] + add_mark_char(string[index], mark) + string[index+1:]
+
 
 def add_mark_char(char, mark):
     """
@@ -138,6 +142,7 @@ def add_mark_char(char, mark):
     new_char = accent.add_accent_char(new_char, ac)
     return utils.change_case(new_char, case)
 
+
 def is_valid_mark(comps, mark_trans):
     """
     Check whether the mark given by mark_trans is valid to add to the components
@@ -156,9 +161,11 @@ def is_valid_mark(comps, mark_trans):
     else:
         return False
 
+
 def remove_mark_char(char):
     """Remove mark from a single character, if any."""
     return add_mark_char(char, Mark.NONE)
+
 
 def remove_mark_string(string):
     return utils.join([remove_mark_char(c) for c in string])

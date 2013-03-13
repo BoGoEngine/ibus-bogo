@@ -5,6 +5,7 @@ from base_config import BaseConfig
 from bogo.mark import Mark
 from bogo.accent import Accent
 
+
 c = BaseConfig("/tmp/ibus-bogo.json")
 c_non_vn = BaseConfig("/tmp/ibus-bogo-non-vn.json")
 c_non_vn["skip-non-vietnamese"] = True
@@ -12,13 +13,17 @@ c_non_vn["skip-non-vietnamese"] = True
 process_key_dfl = partial(process_key, config=c)
 process_key_non_vn = partial(process_key, config=c_non_vn)
 
+
 def process_seq(seq, config=c):
     string = ""
     raw = string
     for i in seq:
-        string, raw = process_key(string, i, raw_key_sequence=raw,
-                             config=config)
+        string, raw = process_key(string,
+                                  i,
+                                  fallback_sequence=raw,
+                                  config=config)
     return string
+
 
 process_seq_non_vn = partial(process_seq, config=c_non_vn)
 

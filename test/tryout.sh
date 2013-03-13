@@ -1,3 +1,5 @@
+#!/bin/sh
+
 #
 # This file is part of ibus-bogo-python project.
 #
@@ -19,46 +21,8 @@
 # along with ibus-bogo-python.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-install (PROGRAMS
-  data/ibus-engine-bogo
-  DESTINATION
-  lib/ibus-bogo
-  )
+TEST_DIR=$(cd `dirname $0`; pwd)
+ENGINE_DIR=$TEST_DIR/../engine/
 
-install (FILES
-  data/bogo.xml
-  DESTINATION
-  ${IBUS_COMPONENT_DIR}
-  )
-
-install (FILES
-  data/ibus-bogo.svg
-  DESTINATION
-  share/icons/hicolor/scalable/apps
-  )
-
-install (FILES
-  main.py
-  ibus_engine.py
-  config.py
-  base_config.py
-  keysyms_mapping.py
-  DESTINATION
-  ${BOGO_INSTALL_DIR}/engine
-  )
-
-install (FILES
-  data/default_config.json
-  DESTINATION
-  ${BOGO_INSTALL_DIR}/engine/data
-)
-
-FILE (GLOB
- bogo "bogo/*.py"
- )
-
-install (FILES
-  ${bogo}
-  DESTINATION
-  ${BOGO_INSTALL_DIR}/engine/bogo
-  )
+pkill -f "ibus-bogo"
+python3 $ENGINE_DIR/main.py

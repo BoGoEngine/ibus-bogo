@@ -1,22 +1,23 @@
 #
-# IBus-BoGo - The Vietnamese IME for IBus
+# This file is part of ibus-bogo-python project.
 #
-# Copyright (c) 2012- Long T. Dam <longdt90@gmail.com>,
-#                     Trung Ngo <ndtrung4419@gmail.com>
+# Copyright (C) 2012 Long T. Dam <longdt90@gmail.com>
+# Copyright (C) 2012-2013 Trung Ngo <ndtrung4419@gmail.com>
+# Copyright (C) 2013 Duong H. Nguyen <cmpitg@gmail.com>
 #
-# This file is part of IBus-BoGo Project
-# IBus-BoGo is free software: you can redistribute it and/or modify
+# ibus-bogo-python is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# IBus-BoGo is distributed in the hope that it will be useful,
+# ibus-bogo-python is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with IBus-BoGo.  If not, see <http://www.gnu.org/licenses/>.
+# along with ibus-bogo-python.  If not, see <http://www.gnu.org/licenses/>.
+#
 
 from gi.repository import GObject
 from gi.repository import IBus
@@ -27,6 +28,7 @@ import logging
 import bogo
 from config import Config
 from keysyms_mapping import mapping
+
 
 # Syntactic sugar
 keysyms = IBus
@@ -62,7 +64,7 @@ class Engine(IBus.Engine):
         self.lookup_table.set_cursor_visible(True)
         self.is_lookup_table_shown = False
         engines.append(self)
-        logging.info("You are running BoGo IBus Engine")
+        logging.info("You are running ibus-bogo-python")
         self.reset_engine()
 
     # The "do_" part is PyGObject's way of overriding base's functions
@@ -124,7 +126,7 @@ class Engine(IBus.Engine):
 
             self.new_string, self.__raw_string = bogo.process_key(self.old_string,
                                                                   chr(keyval),
-                                                                  raw_key_sequence=self.__raw_string,
+                                                                  fallback_sequence=self.__raw_string,
                                                                   config=self.__config)
 
             if self.__config['skip-non-vietnamese']:

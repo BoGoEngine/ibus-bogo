@@ -1,27 +1,29 @@
-#-*- coding: utf-8
-# New BoGo Engine - Vietnamese Text processing engine
 #
-# Copyright (c) 2012- Long T. Dam <longdt90@gmail.com>,
-#                     Trung Ngo <ndtrung4419@gmail.com>
+# This file is part of ibus-bogo-python project.
 #
-# This file is part of BoGo IBus Engine Project BoGo IBus Engine is
-# free software: you can redistribute it and/or modify it under the
-# terms of the GNU General Public License as published by the Free
-# Software Foundation, either version 3 of the License, or (at your
-# option) any later version.
+# Copyright (C) 2012 Long T. Dam <longdt90@gmail.com>
+# Copyright (C) 2012-2013 Trung Ngo <ndtrung4419@gmail.com>
+# Copyright (C) 2013 Duong H. Nguyen <cmpitg@gmail.com>
 #
-# IBus-BoGo is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-# General Public License for more details.
+# ibus-bogo-python is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# ibus-bogo-python is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with IBus-BoGo. If not, see <http://www.gnu.org/licenses/>.
+# along with ibus-bogo-python.  If not, see <http://www.gnu.org/licenses/>.
+#
 
 # TODO: add is_valid_accent() to be on par with mark.py and use it
 # at the end of new_bogo_engine.transform()
 
 from . import utils
+
 
 class Accent:
     GRAVE = 5
@@ -30,6 +32,7 @@ class Accent:
     TIDLE= 2
     DOT = 1
     NONE = 0
+
 
 def get_accent_char(char):
     """
@@ -40,6 +43,7 @@ def get_accent_char(char):
         return 5 - index % 6
     else:
         return Accent.NONE
+
 
 def add_accent(components, accent):
     """
@@ -67,6 +71,7 @@ def add_accent(components, accent):
         new_vowel = vowel[:1] + add_accent_char(vowel[1], accent) + vowel[2:]
     return [components[0], new_vowel, components[2]]
 
+
 def add_accent_char(char, accent):
     """
     Add accent to a single char.  Parameter accent is member of class
@@ -82,6 +87,7 @@ def add_accent_char(char, accent):
         char = utils.VOWELS[index - accent]
     return utils.change_case(char, case)
         
+
 def add_accent_at(string, accent):
     """
     Add mark to the index-th character of the given string.  Return
@@ -94,11 +100,13 @@ def add_accent_at(string, accent):
     return string[:index] + accent.accent.add_accent_char(string[index], accent) \
         + string[index+1:]
 
+
 def remove_accent_char(char):
     """
     Remove accent from a single char, if any.
     """
     return add_accent_char(char, Accent.NONE)
+
 
 def remove_accent_string(string):
     """
