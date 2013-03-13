@@ -19,8 +19,10 @@ def process_seq(seq, config=c):
     string = ""
     raw = string
     for i in seq:
-        string, raw = process_key(string, i, raw_key_sequence=raw,
-                             config=config)
+        string, raw = process_key(string,
+                                  i,
+                                  fallback_sequence=raw,
+                                  config=config)
     return string
 
 process_seq_non_vn = partial(process_seq, config=c_non_vn)
