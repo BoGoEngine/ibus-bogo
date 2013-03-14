@@ -266,16 +266,13 @@ def transform(comps, trans):
         components = reverse(components, trans[1:])
 
     if action == Action.ADD_MARK or (action == Action.ADD_CHAR and parameter.isalpha()):
-        # TODO: rewrite this part in functional style
         # If there is any accent, remove and reapply it
         # because it is likely to be misplaced in previous transformations
-        ac = accent.Accent.NONE
-        for c in components[1]:
-            ac = accent.get_accent_char(c)
-            if ac:
-                break
-        if ac != accent.Accent.NONE:
-            # Remove accent
+        accents = list(filter(lambda accent: accent != Accent.NONE,
+                              map(accent.get_accent_char, components[1])))
+
+        if accents:
+            ac = accents[-1]
             components = accent.add_accent(components, Accent.NONE)
             components = accent.add_accent(components, ac)
 
