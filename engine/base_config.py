@@ -22,6 +22,7 @@
 import logging
 import json
 import os
+import bogo
 
 
 # TODO: This module needs some tests
@@ -35,7 +36,7 @@ class BaseConfig(object):
 
     def __init__(self, path):
         super(BaseConfig, self).__init__()
-        self.keys = {}
+        self._keys = {}
         self.path = path
         f = open(path, "a")
         f.close()
@@ -45,27 +46,40 @@ class BaseConfig(object):
         try:
             f = open(path, "r")
             data = json.loads(f.read())
-            self.keys.update(data)
+            self._keys.update(data)
             f.close()
-            self.sanity_check()
         except:
             logging.debug("Config file corrupted or not exists.")
             self.reset()
+        finally:
+            tmp = self._keys
+            self._keys = bogo.default_config.copy()
+            self._keys.update(tmp)
+            self.sanity_check()
 
     def write_config(self):
         f = open(self.path, "w")
-        f.write(json.dumps(self.keys, indent=4, ensure_ascii=False))
+        f.write(json.dumps(self._keys, indent=4, ensure_ascii=False))
         f.close()
 
     def __setitem__(self, key, value):
-        self.keys[key] = value
+        self._keys[key] = value
         self.write_config()
 
     def __getitem__(self, key):
-        return self.keys[key]
+        return self._keys[key]
 
     def __contains__(self, key):
-        return self.keys.__contains__(key)
+        return self._keys.__contains__(key)
+
+    def items(self):
+        return self._keys.items()
+
+    def iteritems(self):
+        return self._keys.iteritems()
+
+    def keys(self):
+        return self._keys.keys()
 
     def reset(self):
         # Only reset what's needed
@@ -74,8 +88,8 @@ class BaseConfig(object):
 
     def sanity_check(self):
         # Should check something here
-        if self.keys["input-method"] not in self.keys["default-input-methods"] and \
-                "custom-input-methods" in self.keys and \
-                self.keys["input-method"] not in self.keys["custom-input-methods"]:
+        if self._keys["input-method"] not in self._keys["default-input-methods"] and \
+                "custom-input-methods" in self._keys and \
+                self._keys["input-method"] not in self._keys["custom-input-methods"]:
             raise ValueError
 

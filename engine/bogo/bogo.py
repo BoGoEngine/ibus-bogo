@@ -35,6 +35,54 @@ class Action:
     ADD_CHAR = 0
 
 
+default_config = {
+    "input-method": "telex",
+    "output-charset": "utf-8",
+    "skip-non-vietnamese" : True,
+    "default-input-methods": {
+        "simple-telex": {
+            "a": "a^",
+            "o": "o^",
+            "e": "e^",
+            "w": ["u*", "o*", "a+"],
+            "d": "d-",
+            "f": "\\",
+            "s": "/",
+            "r": "?",
+            "x": "~",
+            "j": "."
+        },
+        "telex": {
+            "a": "a^",
+            "o": "o^",
+            "e": "e^",
+            "w": ["u*", "o*", "a+", "<ư"],
+            "d": "d-",
+            "f": "\\",
+            "s": "/",
+            "r": "?",
+            "x": "~",
+            "j": ".",
+            "]": "<ư",
+            "[": "<ơ",
+            "}": "<Ư",
+            "{": "<Ơ"
+        },
+        "vni": {
+            "6": ["a^", "o^", "e^"],
+            "7": ["u*", "o*"],
+            "8": "a+",
+            "9": "d-",
+            "2": "\\",
+            "1": "/",
+            "3": "?",
+            "4": "~",
+            "5": "."
+        }
+    }
+}
+
+
 def is_processable(comps):
     # For now only check the last 2 components
     return is_valid_combination(('', comps[1], comps[2]), final_form=False)
@@ -44,17 +92,17 @@ def process_key(string, key, fallback_sequence="", config=None):
     """
     Try to apply the transformations inferred from `key` to `string` with
     `fallback_sequence` as a reference. `config` should be a dictionary-like
-    object obtained from `..config.Config()`.
+    object following the form of `default_config`.
 
     returns (new string, new fallback_sequence)
 
-    >>> process_key('a', 'a', 'a', config=default_config)
+    >>> process_key('a', 'a', 'a')
     (â, aa)
 
     Note that when a key is an undo key, it won't get appended to
     `fallback_sequence`.
 
-    >>> process_key('â', 'a', 'aa', config=default_config)
+    >>> process_key('â', 'a', 'aa')
     (aa, aa)
     """
     # TODO Figure out a way to remove the `string` argument. Perhaps only the
@@ -67,12 +115,15 @@ def process_key(string, key, fallback_sequence="", config=None):
     def default_return():
         return string + key, fallback_sequence + key
 
+    # Let's be extra-safe
     if config is None:
-        return default_return()
+        config = default_config
+    else:
+        tmp = config
+        config = default_config.copy()
+        config.update(tmp)  # OMG, Python's dict.update is IN-PLACE!
 
-    # NOTE to whoever reading this:
-    # config.py is on our back here. If this module is ever used outside
-    # this project, remember to port config.py as well.
+    # Get the input method translation table (Telex, VNI,...)
     if config["input-method"] in config["default-input-methods"]:
         im = config["default-input-methods"][config["input-method"]]
     elif "custom-input-methods" in config and \
