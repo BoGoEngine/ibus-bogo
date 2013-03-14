@@ -361,19 +361,23 @@ def can_undo(comps, trans_list):
     mark_list = list(map(mark.get_mark_char, utils.join(comps)))
     action_list = list(map(lambda x: get_action(x), trans_list))
 
-    a = [action for action in action_list if action[0] == Action.ADD_ACCENT and action[1] in accent_list]
-    b = [action for action in action_list if action[0] == Action.ADD_MARK and action[1] in mark_list]
-    c = [trans for trans in trans_list if
-         trans[0] == "<" and trans[1].lower() in accent.remove_accent_string(comps[1]).lower()]
+    def atomic_check(action):
+        """
+        Check if the `action` created one of the marks, accents, or characters
+        in `comps`.
+        """
+        return (action[0] == Action.ADD_ACCENT and action[1] in accent_list) \
+                or (action[0] == Action.ADD_MARK and action[1] in mark_list) \
+                or (action[0] == Action.ADD_CHAR and action[1] == \
+                    accent.remove_accent_char(comps[1][:-1].lower()))  # ơ, ư
 
-    if a != [] or b != [] or c != []:
-        return True
-    else:
-        return False
-
+    return any(map(atomic_check, action_list))
 
 def gibberish_split(head, tail=""):
     """
+    Try to split a string into two parts: the alphabetic part at the end and the
+    rest.
+
     >>> gibberish_split("aoeu")
     ("", "aoeu")
     >>> gibberish_split("ao.eu")
