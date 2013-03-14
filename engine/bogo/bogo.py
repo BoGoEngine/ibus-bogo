@@ -179,7 +179,7 @@ def get_transformation_list(key, im, fallback_sequence):
 def get_action(trans):
     """
     Return the action inferred from the transformation `trans`.
-    and the factor going with this action
+    and the parameter going with this action
     An Action.ADD_MARK goes with a Mark
     while an Action.ADD_ACCENT goes with an Accent
     """
@@ -221,12 +221,12 @@ def transform(comps, trans):
     logging.debug("== In transform() ==")
     components = list(comps)
 
-    action, factor = get_action(trans)
+    action, parameter = get_action(trans)
 
     if action == Action.ADD_ACCENT:
-        components = accent.add_accent(components, factor)
+        components = accent.add_accent(components, parameter)
     elif action == Action.ADD_MARK and mark.is_valid_mark(components, trans):
-        components = mark.add_mark(components, factor)
+        components = mark.add_mark(components, parameter)
 
         # Handle uơ in "huơ", "thuở", "quở"
         # If the current word has no last consonant and the first consonant
@@ -254,8 +254,8 @@ def transform(comps, trans):
                         (components[1].lower(), trans[1].lower()) == ('ư', 'ơ'):
                     components[1] += trans[1]
         else:
-            components = utils.append_comps(components, factor)
-            if factor.isalpha() and \
+            components = utils.append_comps(components, parameter)
+            if parameter.isalpha() and \
                     accent.remove_accent_string(components[1]).lower().startswith("uơ"):
                 accent_list = map(accent.get_accent_char, components[1])
                 components[1] = ('ư', 'Ư')[components[1][0].isupper()] + \
@@ -265,7 +265,7 @@ def transform(comps, trans):
     elif action == Action.UNDO:
         components = reverse(components, trans[1:])
 
-    if action == Action.ADD_MARK or (action == Action.ADD_CHAR and factor.isalpha()):
+    if action == Action.ADD_MARK or (action == Action.ADD_CHAR and parameter.isalpha()):
         # TODO: rewrite this part in functional style
         # If there is any accent, remove and reapply it
         # because it is likely to be misplaced in previous transformations
@@ -289,11 +289,11 @@ def reverse(components, trans):
     string.
     """
 
-    action, factor = get_action(trans)
+    action, parameter = get_action(trans)
     comps = list(components)
     string = utils.join(comps)
 
-    if action == Action.ADD_CHAR and string[-1].lower() == factor.lower():
+    if action == Action.ADD_CHAR and string[-1].lower() == parameter.lower():
         if comps[2]:
             i = 2
         elif comps[1]:
@@ -304,7 +304,7 @@ def reverse(components, trans):
     elif action == Action.ADD_ACCENT:
         comps = accent.add_accent(comps, Accent.NONE)
     elif action == Action.ADD_MARK:
-        if factor == Mark.BAR:
+        if parameter == Mark.BAR:
             comps[0] = comps[0][:-1] + \
                 mark.add_mark_char(comps[0][-1:], Mark.NONE)
         else:
