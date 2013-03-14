@@ -284,7 +284,7 @@ def transform(comps, trans):
 
 def separate(string):
     """
-    Separate a string into smaller parts: first consonant (or garbage), vowel,
+    Separate a string into smaller parts: first consonant (or head), vowel,
     last consonant (if any).
 
     >>> separate('tuong')
@@ -299,17 +299,18 @@ def separate(string):
             return atomic_separate(string[:-1],
                                    string[-1] + last_chars, last_is_vowel)
 
-    a = atomic_separate(string, "", False)
-    b = atomic_separate(a[0], "", True)
+    head, last_consonant = atomic_separate(string, "", False)
+    first_consonant, vowel = atomic_separate(head, "", True)
 
-    comps = [b[0], b[1], a[1]]
+    if last_consonant and not (vowel + first_consonant):
+        comps = [last_consonant, '', '']  # ['', '', b] -> ['b', '', '']
+    else:
+        comps = [first_consonant, vowel, last_consonant]
 
-    if a[1] and not b[0] and not b[1]:
-        comps.reverse()
-
-    # 'gi' and 'q' need some special treatments
+    # 'gi' and 'qu' are considered qualified consonants.
     # We want something like this:
     #     ['g', 'ia', ''] -> ['gi', 'a', '']
+    #     ['q', 'ua', ''] -> ['qu', 'a', '']
     if (comps[0] != '' and comps[1] != '') and \
         ((comps[0] in 'gG' and comps[1][0] in 'iI' and len(comps[1]) > 1) or
          (comps[0] in 'qQ' and comps[1][0] in 'uU')):
