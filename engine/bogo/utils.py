@@ -61,22 +61,22 @@ def append_comps(comps, key):
     return c
 
 
-def gibberish_split(head, tail=""):
-    """
-    Try to split a string into two parts: the alphabetic part at the end and the
-    rest.
+# def gibberish_split(head, tail=""):
+#     """
+#     Try to split a string into two parts: the alphabetic part at the end and the
+#     rest.
 
-    >>> gibberish_split("aoeu")
-    ("", "aoeu")
-    >>> gibberish_split("ao.eu")
-    ("ao.", "eu")
-    >>> gibberish_split("aoeu.")
-    ("aoeu.", "")
-    """
-    if head == "" or not head[-1].isalpha():
-        return (head, tail)
-    else:
-        return gibberish_split(head[:-1], head[-1] + tail)
+#     >>> gibberish_split("aoeu")
+#     ("", "aoeu")
+#     >>> gibberish_split("ao.eu")
+#     ("ao.", "eu")
+#     >>> gibberish_split("aoeu.")
+#     ("aoeu.", "")
+#     """
+#     if head == "" or not head[-1].isalpha():
+#         return (head, tail)
+#     else:
+#         return gibberish_split(head[:-1], head[-1] + tail)
 
 
 def separate(string):

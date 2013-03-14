@@ -79,11 +79,7 @@ def process_key(string, key, fallback_sequence="", config=None):
             config["input-method"] in config["custom-input-methods"]:
         im = config["custom-input-methods"][config["input-method"]]
 
-    # Only care about the last alphabetic part:
-    # tôi.là.ai -> ("tôi.là.", "ai")
-    head, tail = utils.gibberish_split(string)
-
-    comps = utils.separate(tail)
+    comps = utils.separate(string)
     logging.debug("separate(string) = %s", str(comps))
 
     # if not is_processable(comps):
@@ -130,7 +126,7 @@ def process_key(string, key, fallback_sequence="", config=None):
             not is_valid_combination(new_comps, final_form=False):
         return fallback_sequence, fallback_sequence
     else:
-        return head + utils.join(new_comps), fallback_sequence
+        return utils.join(new_comps), fallback_sequence
 
 
 def get_transformation_list(key, im, fallback_sequence):

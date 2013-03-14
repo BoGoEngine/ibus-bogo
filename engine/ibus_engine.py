@@ -98,7 +98,7 @@ class Engine(IBus.Engine):
         if keyval == keysyms.BackSpace:
             return self.on_backspace_pressed()
 
-        if self.is_character(keyval) and state & (modifier.CONTROL_MASK | modifier.MOD1_MASK) == 0:
+        if self.is_processable_key(keyval) and state & (modifier.CONTROL_MASK | modifier.MOD1_MASK) == 0:
             # Process entered key here
             # self.__raw_string = self.__raw_string + chr(keyval)
             logging.debug("\nRaw string: %s" % self.__raw_string)
@@ -165,11 +165,6 @@ class Engine(IBus.Engine):
 
             self.commit_result(self.new_string)
             return True
-
-        if keyval == keysyms.space:
-            logging.debug("Pressed a space")
-            self.reset_engine()
-            return False
 
         self.reset_engine()
         return False
@@ -239,8 +234,12 @@ class Engine(IBus.Engine):
 
         self.current_shown_text = string
 
-    def is_character(self, keyval):
-        return keyval in range(33, 126)
+    def is_processable_key(self, keyval):
+        # return keyval in range(33, 126)
+        # TODO not assuming default-input-methods
+        current_im = config['default-input-methods'][config['input-method']]
+        return 0 <= keyval <= 0x10ffff and \
+               chr(keyval).isalpha() or chr(keyval) in current_im.keys()
 
     def do_enable(self):
         global last_engine
