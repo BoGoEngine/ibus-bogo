@@ -81,9 +81,9 @@ def process_key(string, key, fallback_sequence="", config=None):
 
     # Only care about the last alphabetic part:
     # tôi.là.ai -> ("tôi.là.", "ai")
-    head, tail = gibberish_split(string)
+    head, tail = utils.gibberish_split(string)
 
-    comps = separate(tail)
+    comps = utils.separate(tail)
     logging.debug("separate(string) = %s", str(comps))
 
     # if not is_processable(comps):
@@ -282,44 +282,6 @@ def transform(comps, trans):
     return components
 
 
-def separate(string):
-    """
-    Separate a string into smaller parts: first consonant (or head), vowel,
-    last consonant (if any).
-
-    >>> separate('tuong')
-    ['t','uo','ng']
-    >>> separate('ohmyfkinggod')
-    ['ohmyfkingg','o','d']
-    """
-    def atomic_separate(string, last_chars, last_is_vowel):
-        if string == "" or (last_is_vowel != utils.is_vowel(string[-1])):
-            return (string, last_chars)
-        else:
-            return atomic_separate(string[:-1],
-                                   string[-1] + last_chars, last_is_vowel)
-
-    head, last_consonant = atomic_separate(string, "", False)
-    first_consonant, vowel = atomic_separate(head, "", True)
-
-    if last_consonant and not (vowel + first_consonant):
-        comps = [last_consonant, '', '']  # ['', '', b] -> ['b', '', '']
-    else:
-        comps = [first_consonant, vowel, last_consonant]
-
-    # 'gi' and 'qu' are considered qualified consonants.
-    # We want something like this:
-    #     ['g', 'ia', ''] -> ['gi', 'a', '']
-    #     ['q', 'ua', ''] -> ['qu', 'a', '']
-    if (comps[0] != '' and comps[1] != '') and \
-        ((comps[0] in 'gG' and comps[1][0] in 'iI' and len(comps[1]) > 1) or
-         (comps[0] in 'qQ' and comps[1][0] in 'uU')):
-        comps[0] += comps[1][:1]
-        comps[1] = comps[1][1:]
-
-    return comps
-
-
 def reverse(components, trans):
     """
     Reverse the effect of transformation 'trans' on 'components'
@@ -373,20 +335,3 @@ def can_undo(comps, trans_list):
                     accent.remove_accent_char(comps[1][:-1].lower()))  # ơ, ư
 
     return any(map(atomic_check, action_list))
-
-def gibberish_split(head, tail=""):
-    """
-    Try to split a string into two parts: the alphabetic part at the end and the
-    rest.
-
-    >>> gibberish_split("aoeu")
-    ("", "aoeu")
-    >>> gibberish_split("ao.eu")
-    ("ao.", "eu")
-    >>> gibberish_split("aoeu.")
-    ("aoeu.", "")
-    """
-    if head == "" or not head[-1].isalpha():
-        return (head, tail)
-    else:
-        return gibberish_split(head[:-1], head[-1] + tail)
