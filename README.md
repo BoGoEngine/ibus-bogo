@@ -20,7 +20,7 @@ xử lý tiếng Việt **BoGoEngine**.
 
 ## Hướng dẫn nhanh
 
-1. [Cài đặt](INSTALL.md) và sử dụng
+1. [Cài đặt](doc/INSTALL.md) và sử dụng
 
 2. Chia sẻ cho người thân
 
@@ -29,7 +29,7 @@ xử lý tiếng Việt **BoGoEngine**.
 
 4. [Thông báo lỗi và đóng góp ý tưởng](https://github.com/BoGoEngine/ibus-bogo-python/issues?state=open)
 
-5. Fork, vọc code và [tham gia đóng góp](CONTRIBUTE.md)
+5. Fork, vọc code và [tham gia đóng góp](doc/CONTRIBUTE.md)
 
 ## Giấy phép xuất bản (License)
 
