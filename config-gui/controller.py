@@ -54,10 +54,11 @@ charsetList = [
 # logging.basicConfig(level=logging.DEBUG)
 
 current_dir = os.path.dirname(__file__)
-top_dir = os.path.abspath(os.path.join(current_dir, ".."))
 
-sys.path.append(top_dir)
-from ibus_engine.base_config import BaseConfig
+sys.path.append(os.path.abspath(os.path.join(current_dir, "..")))
+sys.path.append(os.path.abspath(os.path.join(current_dir, "..", "ibus_engine")))
+
+from base_config import BaseConfig
 
 
 class Settings(BaseConfig, QObject):

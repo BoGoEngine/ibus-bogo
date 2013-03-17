@@ -25,6 +25,11 @@ from gi.repository import Pango
 import time
 import logging
 
+import sys
+import os.path
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 import bogo
 from config import Config
 from keysyms_mapping import mapping
