@@ -30,7 +30,7 @@
     <message>
         <location filename="controller.ui" line="150"/>
         <source>Skip non-Vietnamese:</source>
-        <translation>Bỏ qua những từ không đúng tiếng Việt: </translation>
+        <translation>Tự động trả về tiếng Anh:</translation>
     </message>
     <message>
         <location filename="controller.ui" line="164"/>
