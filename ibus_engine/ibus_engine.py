@@ -34,6 +34,9 @@ import bogo
 from config import Config
 from keysyms_mapping import mapping
 
+import vncharsets
+vncharsets.init()
+
 
 # Syntactic sugar
 keysyms = IBus
@@ -212,6 +215,28 @@ class Engine(IBus.Engine):
         for i in range(number_fake_backspace):
             self.forward_key_event(keysyms.BackSpace, 14, 0)
 
+        # Charset conversion
+        # We encode a Unicode string into a byte sequence with the specified
+        # encoding and then re-interpret it as a Unicode string containing
+        # only latin-1 (ISO-8859-1) characters.
+        #
+        # This method has the flaw of not being able to commit raw legacy
+        # encoding strings but it's the only thing we can do now as we cannot
+        # commit bytes in Python 3, just Unicode string. Consider this example:
+        #
+        #     - UTF-8 'à': 0xc3 0xa0
+        #     - TCVN3 'à': 0xb5 (rendered as '¶')
+        #     - UTF-8 '¶': 0xc2 0xb6
+        #
+        # So if we typed 'à' in TCVN3, what the client receives would be
+        # 0xc2 0xb6. Field testing shows that this does not affect LibreOffice
+        # Writer and Kate (when forcing the file's encoding to be latin-1)
+        # though.
+        if config['output-charset'] != 'utf-8':
+            string_to_commit = string_to_commit \
+                .encode(config['output-charset']) \
+                .decode('latin-1')
+
         # This is a very very veryyyy CRUDE way to detect
         # if the current input context is from a GTK app
         # as currently (2013/02/22, IBus 1.4.1), only the IBus Gtk client can
@@ -223,12 +248,13 @@ class Engine(IBus.Engine):
         # backspaces, resulting in undesirable output.
         if self.caps & IBus.Capabilite.SURROUNDING_TEXT:
             logging.debug("forwarding as commit")
+
             for ch in string_to_commit:
-                if ch in mapping:
-                    ch = mapping[ch]
-                else:
-                    ch = ord(ch)
-                self.forward_key_event(ch, 0, 0)
+                self.forward_key_event(
+                    mapping[ch] if ch in mapping else ord(ch),
+                    0,
+                    0
+                )
         else:
             logging.debug("Committing")
             # Delaying to partially solve the synchronization issue.
@@ -244,7 +270,7 @@ class Engine(IBus.Engine):
         # TODO not assuming default-input-methods
         current_im = config['default-input-methods'][config['input-method']]
         return 0 <= keyval <= 0x10ffff and \
-               chr(keyval).isalpha() or chr(keyval) in current_im.keys()
+            chr(keyval).isalpha() or chr(keyval) in current_im.keys()
 
     def do_enable(self):
         global last_engine
