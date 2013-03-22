@@ -27,11 +27,13 @@ def _charmap_encoder(input, errors="strict", encoding_table=None):
 
 def _charmap_decoder(input, errors="strict", decoding_table=None):
     result = []
+    # When invoked as a stateless decoder, `byte`'s type is a "bytes" but
+    # when invoked through IncrementalEncoder, `byte` is an int.
+    if isinstance(input[0], int):
+        input = [bytes([byte]) for byte in input]
     for byte in input:
-        # When invoked as a stateless decoder, `byte`'s type is a "bytes" but
-        # when invoked through IncrementalEncoder, `byte` is an int.
-        byte = byte if isinstance(byte, bytes) else bytes([byte])
-        byte = byte.decode('latin-1')
+        if isinstance(byte, bytes):
+            byte = byte.decode('latin-1')
         if byte in decoding_table:
             result.append(decoding_table[byte])
         else:

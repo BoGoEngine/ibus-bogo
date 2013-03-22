@@ -56,9 +56,18 @@ def vni_decode(input, error, map):
     # Read a two-byte chunk, if it is in the map, then convert it into utf-8
     # else check if the first byte is in the map, else interpret it as a normal
     # utf-8 char. Continue.
-    while i < len(input) - 1:
-        twobyte_code = struct.unpack(">H", input[i:i+2])[0]
-        onebyte_code = input[i]
+    while i < len(input):
+        # FIXME Not sure about endianness here
+        try:
+            twobyte_code = struct.unpack(">H", input[i:i+2])[0]
+        except:
+            # It's the last byte. Therefore, skip the two-byte thingy.
+            twobyte_code = None
+
+        # Sometimes it's an int, sometimes it's a bytes
+        onebyte_code = ord(input[i]) if isinstance(input[i], bytes) \
+                       else input[i]
+
         if twobyte_code in map:
             result.append(struct.pack("=H", map[twobyte_code]).decode('utf-16'))
             i += 2
@@ -66,10 +75,10 @@ def vni_decode(input, error, map):
             result.append(struct.pack("=H", map[onebyte_code]).decode('utf-16'))
             i += 1
         else:
-            result.append(input[i:i+1].decode('utf-8'))
+            onebyte_code = onebyte_code if isinstance(onebyte_code, bytes) \
+                           else bytes([onebyte_code])
+            result.append(onebyte_code.decode('latin-1'))
             i += 1
-    # Read the last byte
-    result.append(input[i:i+1].decode('utf-8'))
     return ("".join(result), len(input))
 
 
