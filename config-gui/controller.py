@@ -29,36 +29,42 @@ import json
 from PySide.QtCore import *
 from PySide.QtGui import *
 from PySide.QtUiTools import QUiLoader
+from gi.repository import Notify
+import charset_converter
 
-
-DEFAULT_LOCALE = "vi_VN"
-
-_dirname = os.path.expanduser("~/.config/ibus-bogo/")
-if not os.path.exists(_dirname):
-    os.makedirs(_dirname)
-config_path = os.path.join(_dirname, "config.json")
-
-jsonData = open(config_path)
-data = json.load(jsonData)
-inputMethodList = list(data["default-input-methods"].keys())
-
-if "custom-input-methods" in data:
-    inputMethodList += list(data["custom-input-methods"].keys())
-
-charsetList = [
-    "utf-8",
-    # "tcvn3",
-    # "vni"
-]
-
-# logging.basicConfig(level=logging.DEBUG)
-
+# Import stuff from BoGo
 current_dir = os.path.dirname(__file__)
 
 sys.path.append(os.path.abspath(os.path.join(current_dir, "..")))
 sys.path.append(os.path.abspath(os.path.join(current_dir, "..", "ibus_engine")))
 
 from base_config import BaseConfig
+import vncharsets
+
+
+# Find the config file or create one if none exists
+_dirname = os.path.expanduser("~/.config/ibus-bogo/")
+if not os.path.exists(_dirname):
+    os.makedirs(_dirname)
+config_path = os.path.join(_dirname, "config.json")
+jsonData = open(config_path)
+
+# Fill in some global data
+config = json.load(jsonData)
+inputMethodList = list(config["default-input-methods"].keys())
+
+if "custom-input-methods" in config:
+    inputMethodList += list(config["custom-input-methods"].keys())
+
+charsetList = [
+    "utf-8",
+    "tcvn3",
+    "vni"
+]
+
+DEFAULT_LOCALE = "vi_VN"
+
+# logging.basicConfig(level=logging.DEBUG)
 
 
 class Settings(BaseConfig, QObject):
@@ -112,12 +118,16 @@ class Window(QWidget):
         self.skipNonVNCheckBox = self.win.findChild(QCheckBox, "skipNonVNCheckBox")
         self.guiLanguageComboBox = self.win.findChild(QComboBox, "guiLanguageComboBox")
 
+        self.sourceCharsetCombo = self.win.findChild(QComboBox, "sourceCharsetCombo")
+
         # Set their initial values
         for i in range(len(inputMethodList)):
             self.inputCombo.insertItem(i, inputMethodList[i])
 
         for i in range(len(charsetList)):
             self.charsetCombo.insertItem(i, charsetList[i])
+            if charsetList[i] != "utf-8":
+                self.sourceCharsetCombo.insertItem(i, charsetList[i].upper())
 
         self.setupLanguages()
         self.refreshGui()
@@ -158,6 +168,29 @@ class Window(QWidget):
         self.switchLanguage(self.guiLanguages[index][0])
         self.settings["gui-language"] = self.guiLanguages[index][0]
 
+    @Slot()
+    def on_convertButton_clicked(self):
+        # TODO Don't always process when the button is pressed.
+        clipboard = self.app.clipboard()
+        mime = clipboard.mimeData()
+        sourceEncoding = self.sourceCharsetCombo.currentText().lower()
+        try:
+            if mime.hasHtml() or mime.hasText():
+                html, text = mime.html(), mime.text()
+                html, text = charset_converter.convert(html, text, sourceEncoding)
+
+                new_mime = QMimeData()
+                new_mime.setHtml(html)
+                new_mime.setText(text)
+
+                clipboard.setMimeData(new_mime)
+                n = Notify.Notification.new("Converted", sourceEncoding + "-> utf-8", "")
+            else:
+                n = Notify.Notification.new("Cannot convert", "No HTML/plain text data in clipboard.", "")
+        except UnicodeEncodeError:
+            n = Notify.Notification.new("Cannot convert", "Mixed Unicode in clipboard.", "")
+        n.show()
+
     def switchLanguage(self, locale):
         logging.debug("switchLanguage: %s", locale)
         if locale == "en_US":
@@ -195,6 +228,8 @@ class Window(QWidget):
 
 
 def main():
+    vncharsets.init()
+    Notify.init("IBus BoGo Settings")
     app = QApplication(sys.argv)
 
     settings = Settings(config_path)

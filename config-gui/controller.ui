@@ -158,7 +158,7 @@
      </widget>
      <widget class="QWidget" name="tab_3">
       <property name="enabled">
-       <bool>false</bool>
+       <bool>true</bool>
       </property>
       <attribute name="title">
        <string>Tools</string>
@@ -192,7 +192,7 @@
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout_2">
             <item>
-             <widget class="QComboBox" name="comboBox_2"/>
+             <widget class="QComboBox" name="sourceCharsetCombo"/>
             </item>
             <item>
              <widget class="QLabel" name="label_2">
@@ -214,7 +214,16 @@
              </widget>
             </item>
             <item>
-             <widget class="QComboBox" name="comboBox"/>
+             <widget class="QComboBox" name="destCharsetCombo">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <item>
+               <property name="text">
+                <string>UTF-8</string>
+               </property>
+              </item>
+             </widget>
             </item>
             <item>
              <widget class="Line" name="line_2">
@@ -224,7 +233,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="pushButton">
+             <widget class="QPushButton" name="convertButton">
               <property name="text">
                <string>Convert</string>
               </property>
