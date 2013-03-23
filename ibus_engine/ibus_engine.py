@@ -21,7 +21,8 @@
 
 from gi.repository import GObject
 from gi.repository import IBus
-from gi.repository import Pango
+from gi.repository import Gdk
+from gi.repository import Wnck
 import time
 import logging
 
@@ -58,6 +59,18 @@ def string_to_text(string):
     return IBus.Text.new_from_string(string)
 
 
+def check_unity():
+    screen = Wnck.Screen.get_default()
+    screen.force_update()
+    win = Wnck.Screen.get_active_window(screen)
+    win_name = Wnck.Window.get_name(win)
+    logging.info("Current active window: %s" % win_name)
+    if win_name == 'launcher':
+        return True
+    else:
+        return False
+
+
 class Engine(IBus.Engine):
     __gtype_name__ = 'EngineBoGo'
 
@@ -74,6 +87,7 @@ class Engine(IBus.Engine):
         engines.append(self)
         logging.info("You are running ibus-bogo-python")
         self.reset_engine()
+        self.is_in_unity = check_unity()
 
     # The "do_" part is PyGObject's way of overriding base's functions
     def do_process_key_event(self, keyval, keycode, state):
@@ -90,6 +104,9 @@ class Engine(IBus.Engine):
 
         This function gets called whenever a key is pressed.
         """
+        if self.is_in_unity == True:
+            return False
+        
         logging.debug("%s | %s | %s", keyval, keycode, state)
         # ignore key release events
         # is_press = ((state & IBus.ModifierType.RELEASE_MASK) == 0)
