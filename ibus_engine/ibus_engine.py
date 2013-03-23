@@ -28,7 +28,7 @@ import time
 import logging
 
 import sys
-import os.path
+import os
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
@@ -87,8 +87,9 @@ class Engine(IBus.Engine):
         self.is_lookup_table_shown = False
         engines.append(self)
         logging.info("You are running ibus-bogo-python")
-        self.reset_engine()
         self.is_in_unity = check_unity()
+        self.setup_tool_buttons()
+        self.reset_engine()
 
     # The "do_" part is PyGObject's way of overriding base's functions
     def do_process_key_event(self, keyval, keycode, state):
@@ -293,6 +294,29 @@ class Engine(IBus.Engine):
         # return 0 <= keyval <= 0x10ffff and \
         #     (chr(keyval).isalpha() or chr(keyval) in current_im.keys())
 
+    def setup_tool_buttons(self):
+        self.prop_list = IBus.PropList()
+        pref_button = IBus.Property.new(key="preferences",
+            type=IBus.PropType.NORMAL,
+            label=string_to_text("Pref"),
+            icon="preferences-other",
+            tooltip=string_to_text("Preferences"),
+            sensitive=True,
+            visible=True,
+            state=0,
+            prop_list=None)
+        help_button = IBus.Property.new(key="help",
+            type=IBus.PropType.NORMAL,
+            label=string_to_text("Help"),
+            icon="system-help",
+            tooltip=string_to_text("Help"),
+            sensitive=True,
+            visible=True,
+            state=0,
+            prop_list=None)
+        self.prop_list.append(pref_button)
+        self.prop_list.append(help_button)
+
     def do_enable(self):
         global last_engine
         global engines
@@ -310,7 +334,7 @@ class Engine(IBus.Engine):
 
         Called when the input client widget gets focus.
         """
-        # self.register_properties(self.__config.prop_list)
+        self.register_properties(self.prop_list)
 
     def do_focus_out(self):
         """Implements IBus.Engine's focus_out's default signal handler.
@@ -319,8 +343,16 @@ class Engine(IBus.Engine):
         """
         self.reset_engine()
 
-    def do_property_activate(self, prop_name, state):
-        self.__config.do_property_activate(self, prop_name, state)
+    def do_property_activate(self, prop_key, state):
+        if prop_key == "preferences":
+            try:
+                pid = os.fork()
+                if pid == 0:
+                    # os.system("/usr/lib/ibus-bogo/ibus-bogo-settings")
+                    os.system("../config-gui/controller.py")
+                    os._exit(0)
+            except:
+                pass
         self.reset_engine()
 
     def do_set_capabilities(self, caps):
