@@ -53,10 +53,11 @@ charsetList = [
 
 # logging.basicConfig(level=logging.DEBUG)
 
-current_dir = os.path.dirname(os.path.abspath(__file__))
-engine_dir = os.path.abspath(os.path.join(current_dir, "..", "engine"))
+current_dir = os.path.dirname(__file__)
 
-sys.path.append(engine_dir)
+sys.path.append(os.path.abspath(os.path.join(current_dir, "..")))
+sys.path.append(os.path.abspath(os.path.join(current_dir, "..", "ibus_engine")))
+
 from base_config import BaseConfig
 
 

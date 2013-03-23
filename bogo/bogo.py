@@ -35,6 +35,54 @@ class Action:
     ADD_CHAR = 0
 
 
+default_config = {
+    "input-method": "telex",
+    "output-charset": "utf-8",
+    "skip-non-vietnamese" : True,
+    "default-input-methods": {
+        "simple-telex": {
+            "a": "a^",
+            "o": "o^",
+            "e": "e^",
+            "w": ["u*", "o*", "a+"],
+            "d": "d-",
+            "f": "\\",
+            "s": "/",
+            "r": "?",
+            "x": "~",
+            "j": "."
+        },
+        "telex": {
+            "a": "a^",
+            "o": "o^",
+            "e": "e^",
+            "w": ["u*", "o*", "a+", "<ư"],
+            "d": "d-",
+            "f": "\\",
+            "s": "/",
+            "r": "?",
+            "x": "~",
+            "j": ".",
+            "]": "<ư",
+            "[": "<ơ",
+            "}": "<Ư",
+            "{": "<Ơ"
+        },
+        "vni": {
+            "6": ["a^", "o^", "e^"],
+            "7": ["u*", "o*"],
+            "8": "a+",
+            "9": "d-",
+            "2": "\\",
+            "1": "/",
+            "3": "?",
+            "4": "~",
+            "5": "."
+        }
+    }
+}
+
+
 def is_processable(comps):
     # For now only check the last 2 components
     return is_valid_combination(('', comps[1], comps[2]), final_form=False)
@@ -44,17 +92,17 @@ def process_key(string, key, fallback_sequence="", config=None):
     """
     Try to apply the transformations inferred from `key` to `string` with
     `fallback_sequence` as a reference. `config` should be a dictionary-like
-    object obtained from `..config.Config()`.
+    object following the form of `default_config`.
 
     returns (new string, new fallback_sequence)
 
-    >>> process_key('a', 'a', 'a', config=default_config)
+    >>> process_key('a', 'a', 'a')
     (â, aa)
 
     Note that when a key is an undo key, it won't get appended to
     `fallback_sequence`.
 
-    >>> process_key('â', 'a', 'aa', config=default_config)
+    >>> process_key('â', 'a', 'aa')
     (aa, aa)
     """
     # TODO Figure out a way to remove the `string` argument. Perhaps only the
@@ -67,23 +115,22 @@ def process_key(string, key, fallback_sequence="", config=None):
     def default_return():
         return string + key, fallback_sequence + key
 
+    # Let's be extra-safe
     if config is None:
-        return default_return()
+        config = default_config
+    else:
+        tmp = config
+        config = default_config.copy()
+        config.update(tmp)  # OMG, Python's dict.update is IN-PLACE!
 
-    # NOTE to whoever reading this:
-    # config.py is on our back here. If this module is ever used outside
-    # this project, remember to port config.py as well.
+    # Get the input method translation table (Telex, VNI,...)
     if config["input-method"] in config["default-input-methods"]:
         im = config["default-input-methods"][config["input-method"]]
     elif "custom-input-methods" in config and \
             config["input-method"] in config["custom-input-methods"]:
         im = config["custom-input-methods"][config["input-method"]]
 
-    # Only care about the last alphabetic part:
-    # tôi.là.ai -> ("tôi.là.", "ai")
-    head, tail = gibberish_split(string)
-
-    comps = separate(tail)
+    comps = utils.separate(string)
     logging.debug("separate(string) = %s", str(comps))
 
     # if not is_processable(comps):
@@ -130,7 +177,7 @@ def process_key(string, key, fallback_sequence="", config=None):
             not is_valid_combination(new_comps, final_form=False):
         return fallback_sequence, fallback_sequence
     else:
-        return head + utils.join(new_comps), fallback_sequence
+        return utils.join(new_comps), fallback_sequence
 
 
 def get_transformation_list(key, im, fallback_sequence):
@@ -179,7 +226,7 @@ def get_transformation_list(key, im, fallback_sequence):
 def get_action(trans):
     """
     Return the action inferred from the transformation `trans`.
-    and the factor going with this action
+    and the parameter going with this action
     An Action.ADD_MARK goes with a Mark
     while an Action.ADD_ACCENT goes with an Accent
     """
@@ -221,12 +268,12 @@ def transform(comps, trans):
     logging.debug("== In transform() ==")
     components = list(comps)
 
-    action, factor = get_action(trans)
+    action, parameter = get_action(trans)
 
     if action == Action.ADD_ACCENT:
-        components = accent.add_accent(components, factor)
+        components = accent.add_accent(components, parameter)
     elif action == Action.ADD_MARK and mark.is_valid_mark(components, trans):
-        components = mark.add_mark(components, factor)
+        components = mark.add_mark(components, parameter)
 
         # Handle uơ in "huơ", "thuở", "quở"
         # If the current word has no last consonant and the first consonant
@@ -254,8 +301,8 @@ def transform(comps, trans):
                         (components[1].lower(), trans[1].lower()) == ('ư', 'ơ'):
                     components[1] += trans[1]
         else:
-            components = utils.append_comps(components, factor)
-            if factor.isalpha() and \
+            components = utils.append_comps(components, parameter)
+            if parameter.isalpha() and \
                     accent.remove_accent_string(components[1]).lower().startswith("uơ"):
                 accent_list = map(accent.get_accent_char, components[1])
                 components[1] = ('ư', 'Ư')[components[1][0].isupper()] + \
@@ -265,58 +312,18 @@ def transform(comps, trans):
     elif action == Action.UNDO:
         components = reverse(components, trans[1:])
 
-    if action == Action.ADD_MARK or (action == Action.ADD_CHAR and factor.isalpha()):
-        # TODO: rewrite this part in functional style
+    if action == Action.ADD_MARK or (action == Action.ADD_CHAR and parameter.isalpha()):
         # If there is any accent, remove and reapply it
         # because it is likely to be misplaced in previous transformations
-        ac = accent.Accent.NONE
-        for c in components[1]:
-            ac = accent.get_accent_char(c)
-            if ac:
-                break
-        if ac != accent.Accent.NONE:
-            # Remove accent
+        accents = list(filter(lambda accent: accent != Accent.NONE,
+                              map(accent.get_accent_char, components[1])))
+
+        if accents:
+            ac = accents[-1]
             components = accent.add_accent(components, Accent.NONE)
             components = accent.add_accent(components, ac)
 
     return components
-
-
-def separate(string):
-    """
-    Separate a string into smaller parts: first consonant (or garbage), vowel,
-    last consonant (if any).
-
-    >>> separate('tuong')
-    ['t','uo','ng']
-    >>> separate('ohmyfkinggod')
-    ['ohmyfkingg','o','d']
-    """
-    def atomic_separate(string, last_chars, last_is_vowel):
-        if string == "" or (last_is_vowel != utils.is_vowel(string[-1])):
-            return (string, last_chars)
-        else:
-            return atomic_separate(string[:-1],
-                                   string[-1] + last_chars, last_is_vowel)
-
-    a = atomic_separate(string, "", False)
-    b = atomic_separate(a[0], "", True)
-
-    comps = [b[0], b[1], a[1]]
-
-    if a[1] and not b[0] and not b[1]:
-        comps.reverse()
-
-    # 'gi' and 'q' need some special treatments
-    # We want something like this:
-    #     ['g', 'ia', ''] -> ['gi', 'a', '']
-    if (comps[0] != '' and comps[1] != '') and \
-        ((comps[0] in 'gG' and comps[1][0] in 'iI' and len(comps[1]) > 1) or
-         (comps[0] in 'qQ' and comps[1][0] in 'uU')):
-        comps[0] += comps[1][:1]
-        comps[1] = comps[1][1:]
-
-    return comps
 
 
 def reverse(components, trans):
@@ -326,11 +333,11 @@ def reverse(components, trans):
     string.
     """
 
-    action, factor = get_action(trans)
+    action, parameter = get_action(trans)
     comps = list(components)
     string = utils.join(comps)
 
-    if action == Action.ADD_CHAR and string[-1].lower() == factor.lower():
+    if action == Action.ADD_CHAR and string[-1].lower() == parameter.lower():
         if comps[2]:
             i = 2
         elif comps[1]:
@@ -341,7 +348,7 @@ def reverse(components, trans):
     elif action == Action.ADD_ACCENT:
         comps = accent.add_accent(comps, Accent.NONE)
     elif action == Action.ADD_MARK:
-        if factor == Mark.BAR:
+        if parameter == Mark.BAR:
             comps[0] = comps[0][:-1] + \
                 mark.add_mark_char(comps[0][-1:], Mark.NONE)
         else:
@@ -361,27 +368,14 @@ def can_undo(comps, trans_list):
     mark_list = list(map(mark.get_mark_char, utils.join(comps)))
     action_list = list(map(lambda x: get_action(x), trans_list))
 
-    a = [action for action in action_list if action[0] == Action.ADD_ACCENT and action[1] in accent_list]
-    b = [action for action in action_list if action[0] == Action.ADD_MARK and action[1] in mark_list]
-    c = [trans for trans in trans_list if
-         trans[0] == "<" and trans[1].lower() in accent.remove_accent_string(comps[1]).lower()]
+    def atomic_check(action):
+        """
+        Check if the `action` created one of the marks, accents, or characters
+        in `comps`.
+        """
+        return (action[0] == Action.ADD_ACCENT and action[1] in accent_list) \
+                or (action[0] == Action.ADD_MARK and action[1] in mark_list) \
+                or (action[0] == Action.ADD_CHAR and action[1] == \
+                    accent.remove_accent_char(comps[1][:-1].lower()))  # ơ, ư
 
-    if a != [] or b != [] or c != []:
-        return True
-    else:
-        return False
-
-
-def gibberish_split(head, tail=""):
-    """
-    >>> gibberish_split("aoeu")
-    ("", "aoeu")
-    >>> gibberish_split("ao.eu")
-    ("ao.", "eu")
-    >>> gibberish_split("aoeu.")
-    ("aoeu.", "")
-    """
-    if head == "" or not head[-1].isalpha():
-        return (head, tail)
-    else:
-        return gibberish_split(head[:-1], head[-1] + tail)
+    return any(map(atomic_check, action_list))
