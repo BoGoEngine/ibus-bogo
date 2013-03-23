@@ -43,15 +43,8 @@ License v3.0).  Xem tệp *COPYING* để biết thêm chi tiết.
 
 ## Credits
 
-Bản quyền (C) năm 2012 bởi:
-
-* Đàm Tiến Long [@fuzzysource](https://github.com/fuzzysource/)
-* Ngô Đức Trung [@lewtds](https://github.com/lewtds/)
-
-Bản quyền (C) năm 2013 bởi:
-
-* Ngô Đức Trung [@lewtds](https://github.com/lewtds/)
-* Nguyễn Hà Dương [@cmpitg](https://github.com/CMPITG/)
+Bản quyền thuộc về các tác giả nằm trong file [AUTHORS](AUTHORS) với thời hạn
+ghi trong phần LICENSE của từng file mã nguồn.
 
 Nhóm phát triển xin chân thành gửi lời cảm ơn đặc biệt đến:
 
