@@ -161,7 +161,7 @@ class Engine(IBus.Engine):
                     self.stubborn_old_string = self.old_string
                 else:
                     self.stubborn_old_string = self.stubborn_new_string
-                stubborn_config = self.__config.keys.copy()
+                stubborn_config = dict(self.__config.items())
                 stubborn_config['skip-non-vietnamese'] = False
                 self.stubborn_new_string = bogo.process_key(self.stubborn_old_string,
                                                             chr(keyval),
