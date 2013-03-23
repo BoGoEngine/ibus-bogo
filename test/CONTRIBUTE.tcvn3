@@ -1,0 +1,84 @@
+> Sorry. English documentation will be released as soon as possible.
+> Meanwhile, the keywords, links and headers below should provide you 
+> enough information to get started.
+
+M· nguån ibus-bogo-python ®­îc ®Æt trªn [Github](https://github.com/BoGoEngine/ibus-bogo-python).
+
+§Ó tham gia viÕt code b¹n cÇn biÕt c¸ch sö dông [git](http://git-scm.com/book)
+vµ lËp tr×nh b»ng [python](http://www.greenteapress.com/thinkpython/).
+H·y fork vµ t¹o mét branch míi tõ branch `develop` (xem phÇn Git Flow bªn d­íi),
+sau ®ã viÕt code vµ göi chóng t«i mét 
+[pull request](https://help.github.com/articles/using-pull-requests).
+Chóng t«i sÏ xem xĞt vµ commit code cña b¹n trong thêi gian sím nhÊt.
+
+Tuy nhiªn, b¹n còng cã thÓ ®ãng gãp theo nh÷ng c¸ch ®¬n gi¶n h¬n nh­
+sö dông phiªn b¶n unstable vµ th«ng b¸o lçi, viÕt h­íng dÉn sö dông, 
+viÕt blog, chia sÎ víi b¹n bÌ vµ ng­êi th©n vÒ bé gâ tiÕng ViÖt nµy.
+
+Mäi sù ®ãng gãp cña c¸c b¹n dï d­íi h×nh thøc nµo còng ®Òu ®­îc chóng t«i
+hÕt søc tr©n träng.
+
+## CÊu tróc code
+
+Chóng t«i cè g¾ng module hãa phÇn mÒm ®Ó dÔ dµng chuyÓn sang c¸c nÒn t¶ng kh¸c
+nªn BoGo ®­îc chia lµm 2 thµnh phÇn lµ IBus engine vµ BoGo engine.
+BoGo engine lµ phÇn xö lı tiÕng ViÖt chİnh n»m trong th­ môc `engine/bogo`
+cã API ®¬n gi¶n (hµm `process_key()`). Cßn IBus engine lµ phÇn giao tiÕp
+víi IBus, gåm tÊt c¶ c¸c file vµ th­ môc con trong `engine` kh«ng bao gåm
+`engine/bogo`, cã nhiÖm vô gäi hµm `process_key`, ®­a kÕt qu¶ cho ng­êi
+dïng vµ t¹o giao diÖn tinh chØnh ph­¬ng ph¸p gâ.
+
+## Documentation
+
+Chóng t«i còng cè g¾ng viÕt code thËt dÔ hiÓu víi documentation,
+comment ®Çy ®ñ trong code nªn hi väng b¹n sÏ kh«ng c¶m thÊy khã kh¨n
+khi t×m hiÓu BoGo.
+
+Thµnh phÇn IBus engine cã sö dông c¸c th­ viÖn ngoµi cña IBus, Gtk vµ GLib/GIO.
+B¹n cã thÓ t×m thÊy tµi liÖu vÒ c¸ch sö dông chóng d­íi ®©y:
+
+* [IBus](http://ibus.googlecode.com/svn/docs/ibus-1.5/index.html)
+* [Gtk](http://python-gtk-3-tutorial.readthedocs.org/en/latest/index.html)
+* [GIO](http://developer.gnome.org/gio/unstable/)
+
+## Testing
+
+Nhãm ph¸t triÓn ibus-bogo-python sö dông ph­¬ng ph¸p TDD (test-driven
+development) ®Ó ph¸t triÓn phÇn mÒm. Khi ®ãng gãp cho BoGo, b¹n lu«n ph¶i
+viÕt test mçi khi thay ®æi code. C¸c test case cã thÓ t×m thÊy trong th­ môc
+`/test`.
+
+## Git Flow
+
+ibus-bogo-python ®­îc qu¶n lı b»ng Git.  Ph­¬ng ph¸p nµy sö dông cã thÓ tr×nh
+bµy s¬ l­îc nh­ sau:
+
+- Repo chİnh trªn Github lu«n cã 2 branch lµ `master` vµ `develop`. `master`
+lu«n chøa phiªn b¶n stable míi nhÊt cßn `develop` lµ branch chøa tÊt c¶
+nh÷ng thay ®æi míi nhÊt cña BoGo. Tuy nhiªn, th­êng İt khi commit trùc tiÕp
+vµo `develop` ngoµi nh÷ng commit söa lçi nhá.
+
+- Khi thùc hiÖn mét tİnh n¨ng míi th× lËp tr×nh viªn t¹o branch míi víi 
+tªn `feature/<tªn tİnh n¨ng>`. Khi ®· c¶m thÊy ®ñ chİn th× merge branch
+nµy víi `develop` vµ xãa branch `feature/*` ®i. Tõ sau trë ®i tİnh n¨ng
+nµy sÏ ®­îc maintain trong branch `develop`.
+
+- Khi cã ®ñ tİnh n¨ng míi vµ c¸c lçi quan träng ®· ®­îc söa th× cã thÓ
+tİnh ®Õn viÖc release phiªn b¶n major míi. Khi ®ã t¹o branch `release/v<phiªn b¶n>`
+vµ thùc hiÖn tÊt c¶ c¸c commit söa lçi cho phiªn b¶n nµy t¹i ®©y. Khi tÊt
+c¶ c¸c lçi tr­íc khi ph¸t hµnh ®­îc söa hÕt th× söa version string trong
+source code, t¹o tag cho phiªn b¶n míi vµ merge vµo master. Trong toµn
+bé qu¸ tr×nh nµy, c¸c thay ®æi míi vÉn thùc hiÖn ë c¸c feature branch
+vµ `develop` nh­ b×nh th­êng. Sau khi release th× c¸c commit ë `release/*`
+®­îc merge trë l¹i vµo `develop`.
+
+- Sau khi release phiªn b¶n major mµ ph¸t hiÖn lçi ®Æc biÖt nghiªm träng
+nµo ®ã th× ph¶i söa ngay lËp tøc vµ release phiªn b¶n minor víi branch 
+`hotfix/v<phiªn b¶n>`. Quy tr×nh gièng nh­ mét branch `release/*`. 
+Sau khi release ph¶i merge l¹i vµo `develop`.
+
+Chi tiÕt vÒ ph­¬ng ph¸p git flow cã thÓ ®­îc t×m hiÓu t¹i ®©y:
+- <http://nvie.com/posts/a-successful-git-branching-model/>
+
+C«ng cô hç trî lµ git-flow cã thÓ t×m hiÓu t¹i ®©y:
+- <http://jeffkreeftmeijer.com/2010/why-arent-you-using-git-flow/>

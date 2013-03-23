@@ -1,0 +1,84 @@
+> Sorry. English documentation will be released as soon as possible.
+> Meanwhile, the keywords, links and headers below should provide you 
+> enough information to get started.
+
+Maõ nguoàn ibus-bogo-python ñöôïc ñaët treân [Github](https://github.com/BoGoEngine/ibus-bogo-python).
+
+Ñeå tham gia vieát code baïn caàn bieát caùch söû duïng [git](http://git-scm.com/book)
+vaø laäp trình baèng [python](http://www.greenteapress.com/thinkpython/).
+Haõy fork vaø taïo moät branch môùi töø branch `develop` (xem phaàn Git Flow beân döôùi),
+sau ñoù vieát code vaø göûi chuùng toâi moät 
+[pull request](https://help.github.com/articles/using-pull-requests).
+Chuùng toâi seõ xem xeùt vaø commit code cuûa baïn trong thôøi gian sôùm nhaát.
+
+Tuy nhieân, baïn cuõng coù theå ñoùng goùp theo nhöõng caùch ñôn giaûn hôn nhö
+söû duïng phieân baûn unstable vaø thoâng baùo loãi, vieát höôùng daãn söû duïng, 
+vieát blog, chia seû vôùi baïn beø vaø ngöôøi thaân veà boä goõ tieáng Vieät naøy.
+
+Moïi söï ñoùng goùp cuûa caùc baïn duø döôùi hình thöùc naøo cuõng ñeàu ñöôïc chuùng toâi
+heát söùc traân troïng.
+
+## Caáu truùc code
+
+Chuùng toâi coá gaéng module hoùa phaàn meàm ñeå deã daøng chuyeån sang caùc neàn taûng khaùc
+neân BoGo ñöôïc chia laøm 2 thaønh phaàn laø IBus engine vaø BoGo engine.
+BoGo engine laø phaàn xöû lyù tieáng Vieät chính naèm trong thö muïc `engine/bogo`
+coù API ñôn giaûn (haøm `process_key()`). Coøn IBus engine laø phaàn giao tieáp
+vôùi IBus, goàm taát caû caùc file vaø thö muïc con trong `engine` khoâng bao goàm
+`engine/bogo`, coù nhieäm vuï goïi haøm `process_key`, ñöa keát quaû cho ngöôøi
+duøng vaø taïo giao dieän tinh chænh phöông phaùp goõ.
+
+## Documentation
+
+Chuùng toâi cuõng coá gaéng vieát code thaät deã hieåu vôùi documentation,
+comment ñaày ñuû trong code neân hi voïng baïn seõ khoâng caûm thaáy khoù khaên
+khi tìm hieåu BoGo.
+
+Thaønh phaàn IBus engine coù söû duïng caùc thö vieän ngoaøi cuûa IBus, Gtk vaø GLib/GIO.
+Baïn coù theå tìm thaáy taøi lieäu veà caùch söû duïng chuùng döôùi ñaây:
+
+* [IBus](http://ibus.googlecode.com/svn/docs/ibus-1.5/index.html)
+* [Gtk](http://python-gtk-3-tutorial.readthedocs.org/en/latest/index.html)
+* [GIO](http://developer.gnome.org/gio/unstable/)
+
+## Testing
+
+Nhoùm phaùt trieån ibus-bogo-python söû duïng phöông phaùp TDD (test-driven
+development) ñeå phaùt trieån phaàn meàm. Khi ñoùng goùp cho BoGo, baïn luoân phaûi
+vieát test moãi khi thay ñoåi code. Caùc test case coù theå tìm thaáy trong thö muïc
+`/test`.
+
+## Git Flow
+
+ibus-bogo-python ñöôïc quaûn lyù baèng Git.  Phöông phaùp naøy söû duïng coù theå trình
+baøy sô löôïc nhö sau:
+
+- Repo chính treân Github luoân coù 2 branch laø `master` vaø `develop`. `master`
+luoân chöùa phieân baûn stable môùi nhaát coøn `develop` laø branch chöùa taát caû
+nhöõng thay ñoåi môùi nhaát cuûa BoGo. Tuy nhieân, thöôøng ít khi commit tröïc tieáp
+vaøo `develop` ngoaøi nhöõng commit söûa loãi nhoû.
+
+- Khi thöïc hieän moät tính naêng môùi thì laäp trình vieân taïo branch môùi vôùi 
+teân `feature/<teân tính naêng>`. Khi ñaõ caûm thaáy ñuû chín thì merge branch
+naøy vôùi `develop` vaø xoùa branch `feature/*` ñi. Töø sau trôû ñi tính naêng
+naøy seõ ñöôïc maintain trong branch `develop`.
+
+- Khi coù ñuû tính naêng môùi vaø caùc loãi quan troïng ñaõ ñöôïc söûa thì coù theå
+tính ñeán vieäc release phieân baûn major môùi. Khi ñoù taïo branch `release/v<phieân baûn>`
+vaø thöïc hieän taát caû caùc commit söûa loãi cho phieân baûn naøy taïi ñaây. Khi taát
+caû caùc loãi tröôùc khi phaùt haønh ñöôïc söûa heát thì söûa version string trong
+source code, taïo tag cho phieân baûn môùi vaø merge vaøo master. Trong toaøn
+boä quaù trình naøy, caùc thay ñoåi môùi vaãn thöïc hieän ôû caùc feature branch
+vaø `develop` nhö bình thöôøng. Sau khi release thì caùc commit ôû `release/*`
+ñöôïc merge trôû laïi vaøo `develop`.
+
+- Sau khi release phieân baûn major maø phaùt hieän loãi ñaëc bieät nghieâm troïng
+naøo ñoù thì phaûi söûa ngay laäp töùc vaø release phieân baûn minor vôùi branch 
+`hotfix/v<phieân baûn>`. Quy trình gioáng nhö moät branch `release/*`. 
+Sau khi release phaûi merge laïi vaøo `develop`.
+
+Chi tieát veà phöông phaùp git flow coù theå ñöôïc tìm hieåu taïi ñaây:
+- <http://nvie.com/posts/a-successful-git-branching-model/>
+
+Coâng cuï hoã trôï laø git-flow coù theå tìm hieåu taïi ñaây:
+- <http://jeffkreeftmeijer.com/2010/why-arent-you-using-git-flow/>
