@@ -5,7 +5,8 @@ Maintainer: Trung Ngo <ndtrung4419@gmail.com>
 Build-Depends: debhelper (>= 9.0.0),
  python3 (>= 3.2),
  cmake,
- pyside-tools
+ pyside-tools,
+ qt4-linguist-tools
 Standards-Version: 3.9.3
 Homepage: http://bogoengine.github.com/
 Vcs-Git: git://github.com/BoGoEngine/ibus-bogo-python.git
