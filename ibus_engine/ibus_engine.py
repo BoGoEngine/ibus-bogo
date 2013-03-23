@@ -283,11 +283,14 @@ class Engine(IBus.Engine):
         self.current_shown_text = string
 
     def is_processable_key(self, keyval):
-        # return keyval in range(33, 126)
-        # TODO not assuming default-input-methods
-        current_im = config['default-input-methods'][config['input-method']]
-        return 0 <= keyval <= 0x10ffff and \
-            chr(keyval).isalpha() or chr(keyval) in current_im.keys()
+        return keyval in range(33, 126)
+        # This can be extended to support typing in French, Japanese,...
+        # keyboards. But currently not working.
+        #
+        # TODO Don't assume default-input-methods
+        # current_im = config['default-input-methods'][config['input-method']]
+        # return 0 <= keyval <= 0x10ffff and \
+        #     (chr(keyval).isalpha() or chr(keyval) in current_im.keys())
 
     def do_enable(self):
         global last_engine
