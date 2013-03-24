@@ -350,7 +350,10 @@ class Engine(IBus.Engine):
                 pid = os.fork()
                 if pid == 0:
                     # os.system("/usr/lib/ibus-bogo/ibus-bogo-settings")
-                    os.system("../config-gui/controller.py")
+                    os.system("python3 " + \
+                              os.path.join(os.path.dirname(__file__),
+                                           "..",
+                                           "config-gui/controller.py"))
                     os._exit(0)
             except:
                 pass
