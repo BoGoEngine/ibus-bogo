@@ -108,7 +108,7 @@ class Engine(IBus.Engine):
         """
         if self.is_in_unity == True:
             return False
-        
+
         logging.debug("%s | %s | %s", keyval, keycode, state)
         # ignore key release events
         # is_press = ((state & IBus.ModifierType.RELEASE_MASK) == 0)
@@ -298,23 +298,23 @@ class Engine(IBus.Engine):
     def setup_tool_buttons(self):
         self.prop_list = IBus.PropList()
         pref_button = IBus.Property.new(key="preferences",
-            type=IBus.PropType.NORMAL,
-            label=string_to_text("Pref"),
-            icon="preferences-other",
-            tooltip=string_to_text("Preferences"),
-            sensitive=True,
-            visible=True,
-            state=0,
-            prop_list=None)
+                                        type=IBus.PropType.NORMAL,
+                                        label=string_to_text("Pref"),
+                                        icon="preferences-other",
+                                        tooltip=string_to_text("Preferences"),
+                                        sensitive=True,
+                                        visible=True,
+                                        state=0,
+                                        prop_list=None)
         help_button = IBus.Property.new(key="help",
-            type=IBus.PropType.NORMAL,
-            label=string_to_text("Help"),
-            icon="system-help",
-            tooltip=string_to_text("Help"),
-            sensitive=True,
-            visible=True,
-            state=0,
-            prop_list=None)
+                                        type=IBus.PropType.NORMAL,
+                                        label=string_to_text("Help"),
+                                        icon="system-help",
+                                        tooltip=string_to_text("Help"),
+                                        sensitive=True,
+                                        visible=True,
+                                        state=0,
+                                        prop_list=None)
         self.prop_list.append(pref_button)
         self.prop_list.append(help_button)
 
