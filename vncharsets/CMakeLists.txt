@@ -19,46 +19,18 @@
 # along with ibus-bogo-python.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-install (PROGRAMS
-  data/ibus-engine-bogo
-  DESTINATION
-  lib/ibus-bogo
-  )
 
 install (FILES
-  data/bogo.xml
+  base_charset.py
+  __init__.py
+  tcvn3.py
+  vni.py
   DESTINATION
-  ${IBUS_COMPONENT_DIR}
+  ${BOGO_INSTALL_DIR}/vncharsets
   )
 
-install (FILES
-  data/ibus-bogo.svg
+install(FILES
+  charset-data/TCVN3.json
   DESTINATION
-  share/icons/hicolor/scalable/apps
-  )
-
-install (FILES
-  main.py
-  ibus_engine.py
-  config.py
-  base_config.py
-  keysyms_mapping.py
-  DESTINATION
-  ${BOGO_INSTALL_DIR}/ibus_engine
-  )
-
-install (FILES
-  data/default_config.json
-  DESTINATION
-  ${BOGO_INSTALL_DIR}/ibus_engine/data
+  ${BOGO_INSTALL_DIR}/vncharsets/charset-data
 )
-
-FILE (GLOB
- bogo "bogo/*.py"
- )
-
-install (FILES
-  ${bogo}
-  DESTINATION
-  ${BOGO_INSTALL_DIR}/ibus_engine/bogo
-  )

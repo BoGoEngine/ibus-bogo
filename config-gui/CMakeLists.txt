@@ -28,6 +28,7 @@ install (PROGRAMS
 install (FILES
   controller.py
   controller.ui
+  charset_converter.py
   DESTINATION
   ${BOGO_INSTALL_DIR}/config-gui
   )

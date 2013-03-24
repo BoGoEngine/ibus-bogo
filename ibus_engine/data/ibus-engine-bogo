@@ -21,4 +21,4 @@
 # along with ibus-bogo-python.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-env python3 /usr/share/ibus-bogo/engine/main.py $@
+env python3 /usr/share/ibus-bogo/ibus_engine/main.py $@

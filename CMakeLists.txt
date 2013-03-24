@@ -32,6 +32,8 @@ add_custom_target(uninstall
 ENABLE_TESTING()
 
 # Directories with CMakeLists.txt
+add_subdirectory (bogo)
 add_subdirectory (ibus_engine)
+add_subdirectory (vncharsets)
 add_subdirectory (config-gui)
 
