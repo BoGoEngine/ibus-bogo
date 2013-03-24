@@ -125,7 +125,7 @@ class Engine(IBus.Engine):
         if keyval == keysyms.BackSpace:
             return self.on_backspace_pressed()
 
-        if self.is_processable_key(keyval) and state & (modifier.CONTROL_MASK | modifier.MOD1_MASK) == 0:
+        if self.is_processable_key(keyval, state):
             # Process entered key here
             # self.__raw_string = self.__raw_string + chr(keyval)
             logging.debug("\nRaw string: %s" % self.__raw_string)
@@ -284,15 +284,16 @@ class Engine(IBus.Engine):
 
         self.current_shown_text = string
 
-    def is_processable_key(self, keyval):
-        return keyval in range(33, 126)
+    def is_processable_key(self, keyval, state):
         # This can be extended to support typing in French, Japanese,...
         # keyboards. But currently not working.
         #
         # TODO Don't assume default-input-methods
-        # current_im = config['default-input-methods'][config['input-method']]
-        # return 0 <= keyval <= 0x10ffff and \
-        #     (chr(keyval).isalpha() or chr(keyval) in current_im.keys())
+        key = chr(keyval)
+        current_im = config['default-input-methods'][config['input-method']]
+        return keyval in range(33, 126) and \
+            state & (modifier.CONTROL_MASK | modifier.MOD1_MASK) == 0 and \
+            (key.isalpha() or key in current_im.keys())
 
     def setup_tool_buttons(self):
         self.prop_list = IBus.PropList()
