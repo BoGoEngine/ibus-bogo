@@ -214,6 +214,7 @@ class Engine(IBus.Engine):
         self.hide_preedit_text()
         self.lookup_table.clear()
         self.is_lookup_table_shown = False
+        self.is_table_dirty = False
 
     def commit_result(self, string):
         def get_nbackspace_and_string_to_commit(old_string, new_string):
@@ -368,7 +369,9 @@ class Engine(IBus.Engine):
         pass
 
     def on_return_pressed(self):
-        if self.stubborn_new_string and self.is_lookup_table_shown:
+        if self.stubborn_new_string and \
+                self.is_lookup_table_shown and \
+                self.is_table_dirty:
             self.old_string = self.new_string
             self.commit_result(self.lookup_table.get_candidate(
                 self.lookup_table.get_cursor_pos()).get_text())
@@ -385,6 +388,7 @@ class Engine(IBus.Engine):
             self.update_lookup_table(self.lookup_table, True)
             self.commit_result(self.lookup_table.get_candidate(
                 self.lookup_table.get_cursor_pos()).get_text())
+            self.is_table_dirty = True
             return True
         else:
             return False
