@@ -22,7 +22,7 @@
 #
 
 TEST_DIR=$(cd `dirname $0`; pwd)
-ENGINE_DIR=$TEST_DIR/../engine/
+ENGINE_DIR=$TEST_DIR/../ibus_engine
 
 pkill -f "ibus-bogo"
 python3 $ENGINE_DIR/main.py
