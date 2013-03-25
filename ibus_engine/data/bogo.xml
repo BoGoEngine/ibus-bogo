@@ -20,7 +20,7 @@ Ngô Đức Trung &lt;ndtrung4419@gmail.com&gt;
             <author>Đàm Tiến Long &lt;longdt90@gmail.com&gt;
 Ngô Đức Trung &lt;ndtrung4419@gmail.com&gt;
             </author>
-            <icon>ibus-bogo</icon>
+            <icon>/usr/share/icons/hicolor/scalable/apps/ibus-bogo.svg</icon>
             <layout>us</layout>
             <longname>BoGo</longname>
             <description>BoGo Engine for IBus</description>
