@@ -108,6 +108,9 @@ class TestProcessSeq():
         # thươ.
         eq_(process_seq("thuowr."), "thuở.")
 
+        eq_(process_seq("[["), "[")
+        eq_(process_seq_non_vn("[["), "[")
+
     def test_free_key_position(self):
         eq_(process_seq('toios'), 'tối')
         eq_(process_seq('toois'), 'tối')
