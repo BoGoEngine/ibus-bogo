@@ -105,7 +105,11 @@ def is_valid_combination(components, final_form=True):
         #         break
         # if not good_vowel:
         #     return False
-        return mark.remove_mark_string(vowel) in STRIPPED_VOWELS
+        accentless_vowel = accent.remove_accent_string(vowel)
+        stripped_vowel = mark.remove_mark_string(accentless_vowel)
+        last_consonant = comps[2]
+        return (last_consonant == "" and stripped_vowel in STRIPPED_VOWELS) or \
+            (last_consonant != "" and accentless_vowel in CLOSED_VOWELS)
 
     # 'ăch'?
     if comps[2] == 'ch' and ((vowel in 'ăâeôơuư') or
