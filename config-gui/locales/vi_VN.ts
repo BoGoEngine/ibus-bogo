@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.0" language="vi_VN">
+<!DOCTYPE TS><TS version="1.1" language="vi_VN">
 <context>
     <name>Form</name>
     <message>
@@ -48,7 +47,7 @@
         <source>Copy some text, choose the source encoding and the destination encoding and press &quot;Convert&quot;. Then paste back.</source>
         <translation>Copy một đoạn văn bản, chọn bảng mã nguồn, bảng mã đích. Ấn nút &quot;Chuyển đổi&quot; và paste trở lại.</translation>
     </message>
-    <message utf8="true">
+    <message encoding="UTF-8">
         <location filename="controller.ui" line="203"/>
         <source>→</source>
         <translation type="obsolete">→</translation>
