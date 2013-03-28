@@ -26,9 +26,10 @@ from gi.repository import Gdk
 from gi.repository import Wnck
 import time
 import logging
-
+import subprocess
 import sys
 import os
+
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
@@ -360,6 +361,8 @@ class Engine(IBus.Engine):
                     os._exit(0)
             except:
                 pass
+        elif prop_key == "help":
+            subprocess.call("xdg-open http://ibus-bogo.readthedocs.org/en/latest/usage.html", shell=True)
         self.reset_engine()
 
     def do_set_capabilities(self, caps):

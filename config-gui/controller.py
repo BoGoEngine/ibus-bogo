@@ -23,6 +23,7 @@
 
 import sys
 import os
+import subprocess
 import logging
 import hashlib
 import json
@@ -190,6 +191,10 @@ class Window(QWidget):
         except UnicodeEncodeError:
             n = Notify.Notification.new("Cannot convert", "Mixed Unicode in clipboard.", "")
         n.show()
+
+    @Slot()
+    def on_helpButton_clicked(self):
+        subprocess.call("xdg-open http://ibus-bogo.readthedocs.org/en/latest/usage.html", shell=True)
 
     def switchLanguage(self, locale):
         logging.debug("switchLanguage: %s", locale)
