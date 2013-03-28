@@ -40,8 +40,9 @@ tiếng Việt cho người dùng:
    :align: center
 
 **CHÚ Ý:**
-Với phiên bản 0.3 thì tính năng này chưa thực sự ổn định và có thể mất
-thời gian làm quen với một số người sử dụng nên đã được tắt mặc định.
+Với phiên bản 0.3 thì tính năng này có thể mất
+thời gian làm quen với một số người sử dụng và chưa thực sự ổn định, sẽ
+hiển thị password nếu bạn gõ trong Terminal nên đã được tắt mặc định.
 Tuy nhiên, bạn có thể bật/tắt lựa chọn **Tự động trả về tiếng Anh**
 trong tab **Chính tả** của phần mềm thiết lập.
 
