@@ -144,7 +144,7 @@ class TestProcessSeq():
     def test_non_vn(self):
         def atomic(word):
             eq_(process_seq(word, config=c_non_vn), word)
-        
+
         tests = [
             "system",
             "Virtualbox",
@@ -162,6 +162,7 @@ class TestProcessSeq():
             yield atomic, test
 
         eq_(process_seq_non_vn("aans."), "ấn.")
+        eq_(process_seq_non_vn("aans]"), "ấn]")
         # eq_(process_seq_non_vn("aans.tuongwj"), "ấn.tượng")
         eq_(process_seq_non_vn("gi[f"), "giờ")
         eq_(process_seq_non_vn("taojc"), "taojc")

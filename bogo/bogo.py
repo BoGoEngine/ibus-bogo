@@ -155,7 +155,7 @@ def process_key(string, key, fallback_sequence="", config=None):
             # The prefix "_" means undo.
             for trans in map(lambda x: "_" + x, trans_list):
                 new_comps = transform(new_comps, trans)
-    
+
             # TODO refactor
             if config["input-method"] == "telex" and \
                     len(fallback_sequence) >= 1 and \
@@ -173,7 +173,7 @@ def process_key(string, key, fallback_sequence="", config=None):
 
     logging.debug("%s, %s", utils.join(new_comps), fallback_sequence)
 
-    if config['skip-non-vietnamese'] == True and (key.isalpha() or key in im) and \
+    if config['skip-non-vietnamese'] == True and key.isalpha() and \
             not is_valid_combination(new_comps, final_form=False):
         return fallback_sequence, fallback_sequence
     else:
