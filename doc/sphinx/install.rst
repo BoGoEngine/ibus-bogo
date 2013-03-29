@@ -13,7 +13,12 @@ Với các HĐH thuộc dòng Debian/Ubuntu thì bạn có thể cài đặt t�
 cách chạy lệnh sau::
 
     wget -O - http://bogoengine.github.com/debian/stable/installer.sh | sh
-    
+   
+Hoặc nếu bạn luôn muốn dùng phiên bản đang phát triển, cập nhật liên tục,
+có thể nhiều lỗi thì sử dụng lệnh sau::
+
+    wget -O - http://bogoengine.github.com/debian/unstable/installer.sh | sh
+
 (nội dung script là thêm repo của nhóm phát triển, sau đó cài đặt gói
 ``ibus-bogo``)
 
