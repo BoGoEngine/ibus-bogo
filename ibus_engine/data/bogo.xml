@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- filename: bogo.xml -->
+<component>
+	<name>org.freedesktop.IBus.BoGoPython</name>
+	<description>BoGo Engine for IBus</description>
+	<exec>/usr/lib/ibus-bogo/ibus-engine-bogo --ibus</exec>
+	<version>0.3</version>
+	<author>Đàm Tiến Long &lt;longdt90@gmail.com&gt;
+Ngô Đức Trung &lt;ndtrung4419@gmail.com&gt;
+    </author>
+	<license>GPL</license>
+	<homepage>http://github.com/milkycoffee</homepage>
+	<textdomain>ibus-bogo</textdomain>
+
+	<engines>
+        <engine>
+            <name>bogo-python</name>
+            <language>vi</language>
+            <license>GPL</license>
+            <author>Đàm Tiến Long &lt;longdt90@gmail.com&gt;
+Ngô Đức Trung &lt;ndtrung4419@gmail.com&gt;
+            </author>
+            <icon>/usr/share/icons/hicolor/scalable/apps/ibus-bogo.svg</icon>
+            <layout>us</layout>
+            <longname>BoGo</longname>
+            <description>BoGo Engine for IBus</description>
+            <rank>0</rank>
+            <setup>/usr/lib/ibus-bogo/ibus-bogo-settings</setup>
+        </engine>
+	</engines>
+</component>

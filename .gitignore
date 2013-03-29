@@ -1,0 +1,11 @@
+*.pyc
+build
+obj-*-linux-gnu
+/debian/files
+/debian/ibus-bogo
+/debian/ibus-bogo.debhelper.log
+/debian/ibus-bogo.postinst.debhelper
+/debian/ibus-bogo.prerm.debhelper
+/debian/ibus-bogo.substvars
+/config-gui/locales/*.qm
+/doc/sphinx/_build
