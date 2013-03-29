@@ -1,8 +1,26 @@
-ibus-bogo (0.2.99~beta1.2) precise; urgency=low
+ibus-bogo (0.3.0) unstable; urgency=low
 
-  * Another beta version
+  * New upstream release
+    - Automatic testing with travis-gi.org [CLOSE #25]
+    - Ported to Python 3 [CLOSES #19]
+    - Flexible typing order (chieuef, chieefu, chieeuf,...)
+    - Localized GUI for config
+    - Move from GSettings to (watched) plaintext config file
+    - Allow custom input method layout definition [CLOSES #22]
+    - No more sync-related issues when typing in Gtk apps (caà,...)
+      (see commit 65fa19)
+    - Basic support for non-Vietnamese typing
+    - New icon [CLOSE #23]
+    - A basic charset converter in the config tool (Tools tab) and
+      allow typing in legacy encodings [CLOSE #65]
+    - Workaround for "uơ" [CLOSE #38]
+    - Various code refactoring
 
- -- Trung Ngo <ndtrung4419@gmail.com>  Sat, 23 Mar 2013 17:01:55 +0700
+  * Add "pyside-tools" and "qt4-linguist-tools" as build dependencies
+
+  * Add "gir1.2-wnck-3.0" as dependency
+
+ -- Trung Ngo <ndtrung4419@gmail.com>  Fri, 29 Mar 2013 21:39:42 +0700
 
 ibus-bogo (0.1.0~precise1~ppa2) precise; urgency=low
 

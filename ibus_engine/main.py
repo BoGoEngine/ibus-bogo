@@ -42,7 +42,7 @@ class IMApp:
         self.__component = \
           IBus.Component.new("org.freedesktop.IBus.BoGoPython",
                              "ibus-bogo-python for IBus",
-                             "0.2",
+                             "0.3",
                              "GPLv3",
                              "ibus-bogo-python Development Team <bogoengine-dev@googlegroups.com>",
                              "https://github.com/BoGoEngine/ibus-bogo-python",
