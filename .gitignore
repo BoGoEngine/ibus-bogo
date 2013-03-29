@@ -8,3 +8,4 @@ obj-*-linux-gnu
 /debian/ibus-bogo.prerm.debhelper
 /debian/ibus-bogo.substvars
 /config-gui/locales/*.qm
+/doc/sphinx/_build
