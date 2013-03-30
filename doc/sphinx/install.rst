@@ -12,12 +12,12 @@ Từ gói cài đặt cho các bản phân phối Linux thông dụng
 Với các HĐH thuộc dòng Debian/Ubuntu thì bạn có thể cài đặt tự động bằng
 cách chạy lệnh sau::
 
-    wget -O - http://bogoengine.github.com/debian/stable/installer.sh | sh
+    wget -O - http://bogoengine.github.com/debian/stable/installer.sh | sudo sh
    
 Hoặc nếu bạn luôn muốn dùng phiên bản đang phát triển, cập nhật liên tục,
 có thể nhiều lỗi thì sử dụng lệnh sau::
 
-    wget -O - http://bogoengine.github.com/debian/unstable/installer.sh | sh
+    wget -O - http://bogoengine.github.com/debian/unstable/installer.sh | sudo sh
 
 (nội dung script là thêm repo của nhóm phát triển, sau đó cài đặt gói
 ``ibus-bogo``)
