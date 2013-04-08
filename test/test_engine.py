@@ -111,6 +111,21 @@ class TestProcessSeq():
         eq_(process_seq("[["), "[")
         eq_(process_seq_non_vn("[["), "[")
 
+        # BUG #77
+        eq_(process_seq_non_vn("ddiemer"), "điểm")
+
+        # BUG #78
+        eq_(process_seq("tuoufw"), "tườu")
+
+        # BUG #79
+        eq_(process_seq("huoswc"), "hước")
+
+        # BUG #81
+        eq_(process_seq("khoefo"), "khoèo")
+
+        # BUG #82
+        eq_(process_seq("uorw"), "uở")
+
     def test_free_key_position(self):
         eq_(process_seq('toios'), 'tối')
         eq_(process_seq('toois'), 'tối')

@@ -288,7 +288,7 @@ def transform(comps, trans):
         # NOTE: In the dictionary, these are the only words having this strange
         # vowel so we don't need to worry about other cases.
         if accent.remove_accent_string(components[1]).lower() == "ươ" and \
-                not components[2] and components[0].lower() in ["h", "th", "kh"]:
+                not components[2] and components[0].lower() in ["", "h", "th", "kh"]:
             # Backup accents
             ac = accent.get_accent_string(components[1])
             components[1] = ('u', 'U')[components[1][0].isupper()] + components[1][1]
