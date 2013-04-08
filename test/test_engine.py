@@ -6,7 +6,7 @@ from base_config import BaseConfig
 from bogo.mark import Mark
 from bogo.accent import Accent
 from .gen_key_sequences import gen_key_sequences
-
+import os
 
 c = BaseConfig("/tmp/ibus-bogo.json")
 c_non_vn = BaseConfig("/tmp/ibus-bogo-non-vn.json")
@@ -104,7 +104,7 @@ class TestProcessSeq():
         def atomic(word, sequence):
             eq_(word, process_seq(sequence))
 
-        with open("vi-DauCu.dic") as dictionary:
+        with open(os.path.join(os.path.dirname(__file__), 'vi-DauCu.dic')) as dictionary:
             for word in dictionary.read().splitlines():
                 word = word.rstrip()
                 for sequence in gen_key_sequences(word):
