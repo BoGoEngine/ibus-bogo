@@ -26,6 +26,7 @@ Accent = accent.Accent
 
 
 # Auto-generated list from dictionary
+# TODO Think about words composed entirely of vowels
 
 CONSONANTS = (
     'b', 'c', 'ch', 'd', 'g', 'gh', 'gi', 'h', 'k', 'kh', 'l', 'm', 'n', 'ng',
@@ -48,12 +49,13 @@ OPEN_VOWELS = (
     'ơi', 'ư', 'ưa', 'ưi', 'ưu', 'ươi', 'ươu'
 )
 
-STRIPPED_VOWELS = (
-    'a', 'ai', 'ao', 'au', 'ay', 'e', 'eo', 'eu', 'i', 'ia', 'ie', 'ieu', 'iu',
-    'o', 'oa', 'oai', 'oao', 'oay', 'oe', 'oeo', 'oi', 'oo', 'u', 'ua', 'uay',
-    'ue', 'ui', 'uo', 'uoi', 'uou', 'uu', 'uy', 'uya', 'uye', 'uyu', 'y', 'ye',
-    'yeu'
-)
+
+STRIPPED_VOWELS = set([mark.strip(vowel) \
+                       for vowel in CLOSED_VOWELS + OPEN_VOWELS])
+
+STRIPPED_CLOSED_VOWELS = set([mark.strip(vowel) for vowel in CLOSED_VOWELS])
+
+STRIPPED_OPEN_VOWELS = set([mark.strip(vowel) for vowel in OPEN_VOWELS])
 
 
 def is_valid_combination(components, final_form=True):
@@ -105,11 +107,8 @@ def is_valid_combination(components, final_form=True):
         #         break
         # if not good_vowel:
         #     return False
-        accentless_vowel = accent.remove_accent_string(vowel)
-        stripped_vowel = mark.remove_mark_string(accentless_vowel)
-        last_consonant = comps[2]
-        return (last_consonant == "" and stripped_vowel in STRIPPED_VOWELS) or \
-            (last_consonant != "" and accentless_vowel in CLOSED_VOWELS)
+        stripped_vowel = mark.strip(vowel)
+        return stripped_vowel in STRIPPED_VOWELS
 
     # 'ăch'?
     if comps[2] == 'ch' and ((vowel in 'ăâeôơuư') or
