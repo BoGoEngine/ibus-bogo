@@ -46,7 +46,7 @@ def partition(iterable):
 
     def is_blank(value):
         return value == ''
-    return takewhile(is_blank, iterable), dropwhile(is_blank, iterable)
+    return takewhile(is_blank, t1), dropwhile(is_blank, t2)
 
 
 def strip(string):
