@@ -171,13 +171,14 @@ def process_key(string, key, fallback_sequence="", config=None):
     else:
         fallback_sequence += key
 
-    logging.debug("%s, %s", utils.join(new_comps), fallback_sequence)
-
     if config['skip-non-vietnamese'] == True and key.isalpha() and \
             not is_valid_combination(new_comps, final_form=False):
-        return fallback_sequence, fallback_sequence
+        result = fallback_sequence, fallback_sequence
     else:
-        return utils.join(new_comps), fallback_sequence
+        result =  utils.join(new_comps), fallback_sequence
+
+    logging.debug("Final word: %s, %s", result[0], result[1])
+    return result
 
 
 def get_transformation_list(key, im, fallback_sequence):
