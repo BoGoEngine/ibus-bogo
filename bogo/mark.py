@@ -29,7 +29,7 @@ class Mark:
     BREVE = 2
     BAR = 1
     NONE = 0
-    
+
 
 FAMILY_A = "aăâ"
 FAMILY_E = "eê"
@@ -150,13 +150,12 @@ def is_valid_mark(comps, mark_trans):
     if mark_trans == "*_":
         return True
     components = list(comps)
-    if components[1] != "":
-        raw_vowel = accent.add_accent(components, Accent.NONE)[1].lower()
-        raw_vowel = utils.join([add_mark_char(c, Mark.NONE) for c in raw_vowel])
+
     if mark_trans[0] == 'd' and components[0] \
             and components[0][-1].lower() in ("d", "đ"):
         return True
-    elif components[1] != "" and raw_vowel.find(mark_trans[0]) != -1:
+    elif components[1] != "" and \
+            strip(components[1]).lower().find(mark_trans[0]) != -1:
         return True
     else:
         return False
@@ -169,3 +168,10 @@ def remove_mark_char(char):
 
 def remove_mark_string(string):
     return utils.join([remove_mark_char(c) for c in string])
+
+
+def strip(string):
+    """
+    Strip a string of all marks and accents.
+    """
+    return remove_mark_string(accent.remove_accent_string(string))
