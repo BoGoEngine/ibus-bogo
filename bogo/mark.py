@@ -73,7 +73,7 @@ def add_mark(components, mark):
             if raw_vowel != "ua":
                 comp[1] = add_mark_at(comp[1], raw_vowel.find("a"), Mark.BREVE)
         elif mark == Mark.HORN:
-            if raw_vowel in ("uo", "uoi", "uo"):
+            if raw_vowel in ("uo", "uoi", "uou"):
                 comp[1] = utils.join([add_mark_char(c, Mark.HORN) for c in comp[1][:2]]) + comp[1][2:]
             elif raw_vowel == "oa":
                 comp[1] = add_mark_at(comp[1], 1, Mark.HORN)
