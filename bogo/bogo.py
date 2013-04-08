@@ -265,10 +265,14 @@ def transform(comps, trans):
     """
     Transform the given string with transform type trans
     """
-    logging.debug("== In transform() ==")
+    logging.debug("== In transform(%s, %s) ==", comps, trans)
     components = list(comps)
 
     action, parameter = get_action(trans)
+    if action == Action.ADD_MARK and \
+            components[2] == "" and \
+            mark.strip(components[1]).lower() in ['oe', 'oa'] and trans == "o^":
+        action, parameter = Action.ADD_CHAR, trans[0]
 
     if action == Action.ADD_ACCENT:
         components = accent.add_accent(components, parameter)
@@ -323,6 +327,7 @@ def transform(comps, trans):
             components = accent.add_accent(components, Accent.NONE)
             components = accent.add_accent(components, ac)
 
+    logging.debug("After transform: %s", components)
     return components
 
 
