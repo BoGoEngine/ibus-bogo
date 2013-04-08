@@ -1,9 +1,11 @@
 from nose.tools import eq_
+from nose.plugins.attrib import attr
 from functools import partial
 from bogo.bogo import *
 from base_config import BaseConfig
 from bogo.mark import Mark
 from bogo.accent import Accent
+from .gen_key_sequences import gen_key_sequences
 
 
 c = BaseConfig("/tmp/ibus-bogo.json")
@@ -96,6 +98,17 @@ class TestProcessSeq():
         # English words
         eq_(process_seq('case'), 'cáe')
         eq_(process_seq('reset'), 'rết')
+
+    @attr('slow')
+    def test_with_dictionary(self):
+        def atomic(word, sequence):
+            eq_(word, process_seq(sequence))
+
+        with open("vi-DauCu.dic") as dictionary:
+            for word in dictionary.read().splitlines():
+                word = word.rstrip()
+                for sequence in gen_key_sequences(word):
+                    yield atomic, word, sequence
 
     def test_bugs_related(self):
         # naỳ.
