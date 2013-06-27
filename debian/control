@@ -13,8 +13,13 @@ Vcs-Git: git://github.com/BoGoEngine/ibus-bogo-python.git
 
 Package: ibus-bogo
 Architecture: all
-Depends: ${python3:Depends}, ${misc:Depends}, python3-gi,
- gir1.2-ibus-1.0, gir1.2-wnck-3.0, python3-pyside
+Depends: ${python3:Depends},
+ ${misc:Depends},
+ python3-gi,
+ gir1.2-ibus-1.0,
+ gir1.2-wnck-3.0,
+ python3-pyside.qtgui,
+ python3-pyside.qtuitools
 Conflicts: python-bogo, ibus-bogo-python, libbogo0
 Replaces: python-bogo, ibus-bogo-python, libbogo0
 Description: BoGo engine for IBus
