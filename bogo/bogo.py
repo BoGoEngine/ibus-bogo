@@ -171,13 +171,14 @@ def process_key(string, key, fallback_sequence="", config=None):
     else:
         fallback_sequence += key
 
-    logging.debug("%s, %s", utils.join(new_comps), fallback_sequence)
-
     if config['skip-non-vietnamese'] == True and key.isalpha() and \
             not is_valid_combination(new_comps, final_form=False):
-        return fallback_sequence, fallback_sequence
+        result = fallback_sequence, fallback_sequence
     else:
-        return utils.join(new_comps), fallback_sequence
+        result =  utils.join(new_comps), fallback_sequence
+
+    logging.debug("Final word: %s, %s", result[0], result[1])
+    return result
 
 
 def get_transformation_list(key, im, fallback_sequence):
@@ -265,10 +266,14 @@ def transform(comps, trans):
     """
     Transform the given string with transform type trans
     """
-    logging.debug("== In transform() ==")
+    logging.debug("== In transform(%s, %s) ==", comps, trans)
     components = list(comps)
 
     action, parameter = get_action(trans)
+    if action == Action.ADD_MARK and \
+            components[2] == "" and \
+            mark.strip(components[1]).lower() in ['oe', 'oa'] and trans == "o^":
+        action, parameter = Action.ADD_CHAR, trans[0]
 
     if action == Action.ADD_ACCENT:
         components = accent.add_accent(components, parameter)
@@ -284,8 +289,11 @@ def transform(comps, trans):
         # NOTE: In the dictionary, these are the only words having this strange
         # vowel so we don't need to worry about other cases.
         if accent.remove_accent_string(components[1]).lower() == "ươ" and \
-                not components[2] and components[0].lower() in ["h", "th"]:
+                not components[2] and components[0].lower() in ["", "h", "th", "kh"]:
+            # Backup accents
+            ac = accent.get_accent_string(components[1])
             components[1] = ('u', 'U')[components[1][0].isupper()] + components[1][1]
+            components = accent.add_accent(components, ac)
 
     elif action == Action.ADD_CHAR:
         if trans[0] == "<":
@@ -304,25 +312,23 @@ def transform(comps, trans):
             components = utils.append_comps(components, parameter)
             if parameter.isalpha() and \
                     accent.remove_accent_string(components[1]).lower().startswith("uơ"):
-                accent_list = map(accent.get_accent_char, components[1])
+                ac = accent.get_accent_string(components[1])
                 components[1] = ('ư', 'Ư')[components[1][0].isupper()] + \
                     ('ơ', 'Ơ')[components[1][1].isupper()] + components[1][2:]
-                for ac in accent_list:
-                    accent.add_accent(components, ac)
+                components = accent.add_accent(components, ac)
     elif action == Action.UNDO:
         components = reverse(components, trans[1:])
 
     if action == Action.ADD_MARK or (action == Action.ADD_CHAR and parameter.isalpha()):
         # If there is any accent, remove and reapply it
         # because it is likely to be misplaced in previous transformations
-        accents = list(filter(lambda accent: accent != Accent.NONE,
-                              map(accent.get_accent_char, components[1])))
+        ac = accent.get_accent_string(components[1])
 
-        if accents:
-            ac = accents[-1]
+        if ac != accent.Accent.NONE:
             components = accent.add_accent(components, Accent.NONE)
             components = accent.add_accent(components, ac)
 
+    logging.debug("After transform: %s", components)
     return components
 
 

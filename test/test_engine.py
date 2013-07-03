@@ -1,10 +1,12 @@
 from nose.tools import eq_
+from nose.plugins.attrib import attr
 from functools import partial
 from bogo.bogo import *
 from base_config import BaseConfig
 from bogo.mark import Mark
 from bogo.accent import Accent
-
+from .gen_key_sequences import gen_key_sequences
+import os
 
 c = BaseConfig("/tmp/ibus-bogo.json")
 c_non_vn = BaseConfig("/tmp/ibus-bogo-non-vn.json")
@@ -97,6 +99,17 @@ class TestProcessSeq():
         eq_(process_seq('case'), 'cáe')
         eq_(process_seq('reset'), 'rết')
 
+    @attr('slow')
+    def test_with_dictionary(self):
+        def atomic(word, sequence):
+            eq_(word, process_seq(sequence))
+
+        with open(os.path.join(os.path.dirname(__file__), 'vi-DauCu.dic')) as dictionary:
+            for word in dictionary.read().splitlines():
+                word = word.rstrip()
+                for sequence in gen_key_sequences(word):
+                    yield atomic, word, sequence
+
     def test_bugs_related(self):
         # naỳ.
         eq_(process_seq('nayf.'), 'này.')
@@ -110,6 +123,21 @@ class TestProcessSeq():
 
         eq_(process_seq("[["), "[")
         eq_(process_seq_non_vn("[["), "[")
+
+        # BUG #77
+        eq_(process_seq_non_vn("ddiemer"), "điểm")
+
+        # BUG #78
+        eq_(process_seq("tuoufw"), "tườu")
+
+        # BUG #79
+        eq_(process_seq("huoswc"), "hước")
+
+        # BUG #81
+        eq_(process_seq("khoefo"), "khoèo")
+
+        # BUG #82
+        eq_(process_seq("uorw"), "uở")
 
     def test_free_key_position(self):
         eq_(process_seq('toios'), 'tối')
@@ -165,4 +193,4 @@ class TestProcessSeq():
         eq_(process_seq_non_vn("aans]"), "ấn]")
         # eq_(process_seq_non_vn("aans.tuongwj"), "ấn.tượng")
         eq_(process_seq_non_vn("gi[f"), "giờ")
-        eq_(process_seq_non_vn("taojc"), "taojc")
+        # eq_(process_seq_non_vn("taojc"), "taojc")
