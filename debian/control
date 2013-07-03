@@ -19,7 +19,10 @@ Depends: ${python3:Depends},
  gir1.2-ibus-1.0,
  gir1.2-wnck-3.0,
  python3-pyside.qtgui,
- python3-pyside.qtuitools
+ python3-pyside.qtuitools,
+ ibus,
+ libnotify,
+ gir1.2-notify
 Conflicts: python-bogo, ibus-bogo-python, libbogo0
 Replaces: python-bogo, ibus-bogo-python, libbogo0
 Description: BoGo engine for IBus
