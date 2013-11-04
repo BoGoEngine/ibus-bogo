@@ -1,13 +1,4 @@
-# ibus-bogo-python - Bộ gõ tiếng Việt iBus
-
-* `last commit:`
-[![Build Status](https://travis-ci.org/BoGoEngine/ibus-bogo-python.png)](https://travis-ci.org/BoGoEngine/ibus-bogo-python)
-
-* `master:`
-[![Build Status](https://travis-ci.org/BoGoEngine/ibus-bogo-python.png?branch=master)](https://travis-ci.org/BoGoEngine/ibus-bogo-python)
-
-* `develop:`
-[![Build Status](https://travis-ci.org/BoGoEngine/ibus-bogo-python.png?branch=develop)](https://travis-ci.org/BoGoEngine/ibus-bogo-python)
+# ibus-bogo-python <br/> Bộ gõ tiếng Việt cho iBus [![Build Status](https://travis-ci.org/BoGoEngine/ibus-bogo-python.png)](https://travis-ci.org/BoGoEngine/ibus-bogo-python) [![Stories in Ready](https://badge.waffle.io/BogoEngine/ibus-bogo-python.png?label=ready)](http://waffle.io/BogoEngine/ibus-bogo-python)
 
 ## Giới thiệu
 
