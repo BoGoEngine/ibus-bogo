@@ -43,3 +43,7 @@ Nhóm phát triển xin chân thành gửi lời cảm ơn đặc biệt đến:
 * [Hà Quang Dương](https://github.com/haqduong): có nhiều đóng góp quan trọng
 * [Ngô Huy](https://github.com/NgoHuy): cung cấp gói cài đặt cho Arch Linux
 * [Trương Anh Tuấn](https://github.com/tuanta): cung cấp gói cài đặt cho Fedora
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/BoGoEngine/ibus-bogo-python/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
