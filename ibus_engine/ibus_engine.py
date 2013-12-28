@@ -235,7 +235,12 @@ class Engine(IBus.Engine):
         logging.debug("Number of fake backspace: %d", number_fake_backspace)
         logging.debug("String to commit: %s", string_to_commit)
 
-        for i in range(number_fake_backspace):
+        #A super simple way to fix the issue with autocomplete:
+        #Just add a backtick after the text, all sort of autocomplete will be gone
+        #and do one more backspace!
+        #It's a little bit "crude" but it works!
+        self.forward_key_event(keysyms.grave, 41, 0)
+        for i in range(number_fake_backspace+1):
             self.forward_key_event(keysyms.BackSpace, 14, 0)
 
         # Charset conversion
