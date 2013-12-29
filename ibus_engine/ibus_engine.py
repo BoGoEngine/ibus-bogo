@@ -35,24 +35,20 @@ sys.path.append(
 
 import bogo
 from config import Config
-from keysyms_mapping import mapping
+from IBus_mapping import mapping
 
 import vncharsets
 vncharsets.init()
 
 
-# Syntactic sugar
-keysyms = IBus
-modifier = IBus.ModifierType
-
-# I know, I know. Singleton/global objects are horrible but
-# right now there is no known way to pass more args to Engine
-# because of how python-gobject works.
+# Since we don't instantiate the Engine class ourselves (IBus does), we can't
+# inject a Config object into it. Therefore, we have to resort to using a global
+# object like this.
+#
 # TODO: We should be able to subclass
 # IBusFactory and pre-apply the config object as an argument to
 # our engine's constructor.
 config = Config()
-
 
 
 def string_to_text(string):
@@ -67,8 +63,9 @@ def check_unity():
         window_name = window.get_name()
         window_type = window.get_window_type()
         logging.info("Current active window: %s" % window_name)
-        if window_type == Wnck.WindowType.DOCK and (window_name == 'launcher'
-                                                    or window_name == 'unity-dash'):
+        if window_type == Wnck.WindowType.DOCK and \
+                (window_name == 'launcher' or
+                 window_name == 'unity-dash'):
             return True
         else:
             return False
@@ -105,21 +102,27 @@ class Engine(IBus.Engine):
             keyval - The keycode, transformed through a keymap, stays the
                 same for every keyboard
             keycode - Keyboard-dependant key code
-            state - The state of modifier keys like Shift, Control, etc.
+            state - The state of IBus.ModifierType keys like
+                Shift, Control, etc.
         Return:
             True - if successfully process the keyevent
             False - otherwise
 
         This function gets called whenever a key is pressed.
         """
-        if self.is_in_unity == True:
+        if self.is_in_unity is True:
             return False
 
         logging.debug("%s | %s | %s", keyval, keycode, state)
-        # ignore key release events
-        # is_press = ((state & IBus.ModifierType.RELEASE_MASK) == 0)
-        is_press = (state & (1 << 30)) == 0  # There's a strange overflow bug with Python3-gi and IBus
-        if not is_press:
+
+        # Ignore key release events
+        event_is_key_press = (state & (1 << 30)) == 0  # There's a strange
+
+        # There is a strange overflow bug with python3-gi here so the above
+        # line is used instead
+        # is_press = ((state & IBus.IBus.ModifierTypeType.RELEASE_MASK) == 0)
+
+        if not event_is_key_press:
             return False
 
         if keyval == IBus.Return:
@@ -128,7 +131,7 @@ class Engine(IBus.Engine):
         if keyval in [IBus.Up, IBus.Down]:
             return self.on_updown_pressed(keyval)
 
-        if keyval == keysyms.BackSpace:
+        if keyval == IBus.BackSpace:
             return self.on_backspace_pressed()
 
         if self.is_processable_key(keyval, state):
@@ -137,8 +140,8 @@ class Engine(IBus.Engine):
             logging.debug("\nRaw string: %s" % self.__raw_string)
 
             case = 0
-            cap = state & IBus.ModifierType.LOCK_MASK
-            shift = state & IBus.ModifierType.SHIFT_MASK
+            cap = state & IBus.IBus.ModifierTypeType.LOCK_MASK
+            shift = state & IBus.IBus.ModifierTypeType.SHIFT_MASK
             if (cap or shift) and not (cap and shift):
                 case = 1
             logging.debug("case: %d", case)
@@ -157,11 +160,13 @@ class Engine(IBus.Engine):
             self.old_string = self.new_string
             logging.debug("Old string: %s", self.old_string)
 
-            self.new_string, self.__raw_string = bogo.process_key(self.old_string,
-                                                                  chr(keyval),
-                                                                  fallback_sequence=self.__raw_string,
-                                                                  config=self.__config)
+            self.new_string, self.__raw_string = \
+                bogo.process_key(self.old_string,
+                                 chr(keyval),
+                                 fallback_sequence=self.__raw_string,
+                                 config=self.__config)
 
+            # FIXME: Some explanation is overdue...
             if self.__config['skip-non-vietnamese']:
                 if not self.stubborn_old_string:
                     self.stubborn_old_string = self.old_string
@@ -169,9 +174,10 @@ class Engine(IBus.Engine):
                     self.stubborn_old_string = self.stubborn_new_string
                 stubborn_config = dict(self.__config.items())
                 stubborn_config['skip-non-vietnamese'] = False
-                self.stubborn_new_string = bogo.process_key(self.stubborn_old_string,
-                                                            chr(keyval),
-                                                            config=stubborn_config)[0]
+                self.stubborn_new_string = \
+                    bogo.process_key(self.stubborn_old_string,
+                                     chr(keyval),
+                                     config=stubborn_config)[0]
 
                 if self.stubborn_new_string != self.new_string:
                     # The key sequence cannot generate a correct Vietnamese
@@ -182,9 +188,11 @@ class Engine(IBus.Engine):
                         string_to_text(self.new_string))
                     self.lookup_table.append_candidate(
                         string_to_text(self.stubborn_new_string))
-                    # Don't worry, this is just for the lookup table to appear
-                    # at the correct position. No pre-editing is used.
+
+                    # Urge IBus to put the lookup table at the correct location.
+                    # Despite this call, no pre-editing is shown.
                     self.show_preedit_text()
+
                     self.update_lookup_table(self.lookup_table, True)
                     self.show_lookup_table()
                     self.is_lookup_table_shown = True
@@ -239,7 +247,7 @@ class Engine(IBus.Engine):
         logging.debug("String to commit: %s", string_to_commit)
 
         for i in range(number_fake_backspace):
-            self.forward_key_event(keysyms.BackSpace, 14, 0)
+            self.forward_key_event(IBus.BackSpace, 14, 0)
 
         # Charset conversion
         # We encode a Unicode string into a byte sequence with the specified
@@ -263,15 +271,17 @@ class Engine(IBus.Engine):
                 .encode(config['output-charset']) \
                 .decode('latin-1')
 
-        # This is a very very veryyyy CRUDE way to detect
-        # if the current input context is from a GTK app
-        # as currently (2013/02/22, IBus 1.4.1), only the IBus Gtk client can
-        # do surrounding text.
+        # We cannot commit the text in Gtk since there is a bug in which
+        # sometimes committed text comes before the forwarded
+        # backspaces, resulting in undesirable output. Instead, we forward
+        # each character to the current input context.
         #
-        # We have to forward each character instead of committing them
-        # because of a synchronization issue in Gtk/IBus
-        # where sometimes committed text comes before forwarded
-        # backspaces, resulting in undesirable output.
+        # We also need to detect whether the current input context is from a
+        # GTK app by checking for the SURROUNDING_TEXT capability. It works
+        # because as of right now (2013/02/22, IBus 1.4.1), only the IBus Gtk
+        # client can do surrounding text.
+        #
+        # Very very veryyyy CRUDE, by the way.
         if self.caps & IBus.Capabilite.SURROUNDING_TEXT:
             logging.debug("forwarding as commit")
 
@@ -296,10 +306,12 @@ class Engine(IBus.Engine):
         # keyboards. But currently not working.
         #
         # TODO Don't assume default-input-methods
-        key = chr(keyval)
         current_im = config['default-input-methods'][config['input-method']]
+
+        key = chr(keyval)
         return keyval in range(33, 126) and \
-            state & (modifier.CONTROL_MASK | modifier.MOD1_MASK) == 0 and \
+            state & (IBus.ModifierType.CONTROL_MASK |
+                     IBus.ModifierType.MOD1_MASK) == 0 and \
             (key.isalpha() or key in current_im.keys())
 
     def setup_tool_buttons(self):
@@ -351,7 +363,7 @@ class Engine(IBus.Engine):
                 pid = os.fork()
                 if pid == 0:
                     # os.system("/usr/lib/ibus-bogo/ibus-bogo-settings")
-                    os.system("python3 " + \
+                    os.system("python3 " +
                               os.path.join(os.path.dirname(__file__),
                                            "..",
                                            "config-gui/controller.py"))
@@ -359,7 +371,8 @@ class Engine(IBus.Engine):
             except:
                 pass
         elif prop_key == "help":
-            subprocess.call("xdg-open http://ibus-bogo.readthedocs.org/en/latest/usage.html", shell=True)
+            link = "http://ibus-bogo.readthedocs.org/en/latest/usage.html"
+            subprocess.call("xdg-open " + link, shell=True)
         self.reset_engine()
 
     def do_set_capabilities(self, caps):
