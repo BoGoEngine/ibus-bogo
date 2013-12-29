@@ -133,24 +133,15 @@ class Engine(IBus.Engine):
             return self.on_backspace_pressed()
 
         if self.is_processable_key(keyval, modifiers):
-            logging.debug("\nRaw string: %s" % self.__raw_string)
             logging.debug("Key pressed: %c", chr(keyval))
+            logging.debug("Raw string: %s", self.__raw_string)
+            logging.debug("Old string: %s", self.old_string)
 
             # Brace shift for TELEX's ][ keys.
-            # When typing with capslock on, ][ won't get shifted to }{
-            # so we have to shift them manually.
-            capital_case = 0
-            caps_lock = modifiers & IBus.ModifierType.LOCK_MASK
-            shift = modifiers & IBus.ModifierType.SHIFT_MASK
-            if (caps_lock or shift) and not (caps_lock and shift):
-                capital_case = 1
-
-            brace_shift = False
-            if chr(keyval) in ['[', ']'] and capital_case == 1:
-                keyval = keyval + 0x20
-                brace_shift = True
-
-            logging.debug("Old string: %s", self.old_string)
+            # When typing with capslock on, ][ won't get shifted to }{ resulting
+            # in weird capitalization in "TưởNG". So we have to shift them
+            # manually.
+            keyval, brace_shift = self.do_brace_shift(keyval, modifiers)
 
             self.new_string, self.__raw_string = \
                 bogo.process_key(self.old_string,
@@ -204,6 +195,20 @@ class Engine(IBus.Engine):
 
         self.reset_engine()
         return False
+
+    def do_brace_shift(keyval, modifiers):
+        capital_case = 0
+        caps_lock = modifiers & IBus.ModifierType.LOCK_MASK
+        shift = modifiers & IBus.ModifierType.SHIFT_MASK
+        if (caps_lock or shift) and not (caps_lock and shift):
+            capital_case = 1
+
+        brace_shift = False
+        if chr(keyval) in ['[', ']'] and capital_case == 1:
+            keyval = keyval + 0x20
+            brace_shift = True
+
+        return keyval, brace_shift
 
     # This messes up Pidgin
     # def do_reset(self):
