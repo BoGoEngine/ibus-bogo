@@ -38,7 +38,7 @@ class Action:
 default_config = {
     "input-method": "telex",
     "output-charset": "utf-8",
-    "skip-non-vietnamese" : False,
+    "skip-non-vietnamese": False,
     "default-input-methods": {
         "simple-telex": {
             "a": "a^",
@@ -171,11 +171,11 @@ def process_key(string, key, fallback_sequence="", config=None):
     else:
         fallback_sequence += key
 
-    if config['skip-non-vietnamese'] == True and key.isalpha() and \
+    if config['skip-non-vietnamese'] is True and key.isalpha() and \
             not is_valid_combination(new_comps, final_form=False):
         result = fallback_sequence, fallback_sequence
     else:
-        result =  utils.join(new_comps), fallback_sequence
+        result = utils.join(new_comps), fallback_sequence
 
     logging.debug("Final word: %s, %s", result[0], result[1])
     return result

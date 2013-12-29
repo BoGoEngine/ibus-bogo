@@ -143,14 +143,24 @@ class Engine(IBus.Engine):
             # manually.
             keyval, brace_shift = self.do_brace_shift(keyval, modifiers)
 
+            # Call Bogo engine to process the input
             self.new_string, self.__raw_string = \
                 bogo.process_key(self.old_string,
                                  chr(keyval),
                                  fallback_sequence=self.__raw_string,
                                  config=self.__config)
 
-            # FIXME: Some explanation is overdue...
             if self.__config['skip-non-vietnamese']:
+                # Detect if the raw input sequence can produce a legitimate
+                # Vietnamese word by putting it through bogo.process_key()
+                # twice, first with skip-non-vietnamese on, then with that
+                # setting off. If the two results differ then the sequence
+                # cannot produce a correct Vietnamse word.
+                #
+                # Eg:
+                #   `system` -> system != sýtem   | bad
+                #   `ba`     -> ba     == ba      | good
+                #   `meof`   -> mèo    == mèo     | good
                 if not self.stubborn_old_string:
                     self.stubborn_old_string = self.old_string
                 else:
