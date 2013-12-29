@@ -35,7 +35,7 @@ sys.path.append(
 
 import bogo
 from config import Config
-from IBus_mapping import mapping
+from keysyms_mapping import mapping
 
 import vncharsets
 vncharsets.init()
@@ -120,7 +120,7 @@ class Engine(IBus.Engine):
 
         # There is a strange overflow bug with python3-gi here so the above
         # line is used instead
-        # is_press = ((state & IBus.IBus.ModifierTypeType.RELEASE_MASK) == 0)
+        # is_press = ((state & IBus.ModifierType.RELEASE_MASK) == 0)
 
         if not event_is_key_press:
             return False
@@ -140,8 +140,8 @@ class Engine(IBus.Engine):
             logging.debug("\nRaw string: %s" % self.__raw_string)
 
             case = 0
-            cap = state & IBus.IBus.ModifierTypeType.LOCK_MASK
-            shift = state & IBus.IBus.ModifierTypeType.SHIFT_MASK
+            cap = state & IBus.ModifierType.LOCK_MASK
+            shift = state & IBus.ModifierType.SHIFT_MASK
             if (cap or shift) and not (cap and shift):
                 case = 1
             logging.debug("case: %d", case)
