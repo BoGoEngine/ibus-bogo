@@ -95,14 +95,14 @@ class Engine(IBus.Engine):
         self.reset_engine()
 
     # The "do_" part is PyGObject's way of overriding base's functions
-    def do_process_key_event(self, keyval, keycode, state):
+    def do_process_key_event(self, keyval, keycode, modifiers):
         """Implement IBus.Engine's process_key_event default signal handler.
 
         Args:
             keyval - The keycode, transformed through a keymap, stays the
                 same for every keyboard
             keycode - Keyboard-dependant key code
-            state - The state of IBus.ModifierType keys like
+            modifiers - The state of IBus.ModifierType keys like
                 Shift, Control, etc.
         Return:
             True - if successfully process the keyevent
@@ -114,11 +114,11 @@ class Engine(IBus.Engine):
             return False
 
         # Ignore key release events
-        event_is_key_press = (state & (1 << 30)) == 0  # There's a strange
+        event_is_key_press = (modifiers & (1 << 30)) == 0  # There's a strange
 
         # There is a strange overflow bug with python3-gi here so the above
         # line is used instead
-        # is_press = ((state & IBus.ModifierType.RELEASE_MASK) == 0)
+        # is_press = ((modifiers & IBus.ModifierType.RELEASE_MASK) == 0)
 
         if not event_is_key_press:
             return False
@@ -132,26 +132,24 @@ class Engine(IBus.Engine):
         if keyval == IBus.BackSpace:
             return self.on_backspace_pressed()
 
-        if self.is_processable_key(keyval, state):
+        if self.is_processable_key(keyval, modifiers):
             logging.debug("\nRaw string: %s" % self.__raw_string)
+            logging.debug("Key pressed: %c", chr(keyval))
 
+            # Brace shift for TELEX's ][ keys.
+            # When typing with capslock on, ][ won't get shifted to }{
+            # so we have to shift them manually.
             capital_case = 0
-            caps_lock = state & IBus.ModifierType.LOCK_MASK
-            shift = state & IBus.ModifierType.SHIFT_MASK
+            caps_lock = modifiers & IBus.ModifierType.LOCK_MASK
+            shift = modifiers & IBus.ModifierType.SHIFT_MASK
             if (caps_lock or shift) and not (caps_lock and shift):
                 capital_case = 1
 
             brace_shift = False
             if chr(keyval) in ['[', ']'] and capital_case == 1:
-                # This is for TELEX's ][ keys.
-                # When typing with capslock on, ][ won't get shifted to }{
-                # so we have to shift them manually.
                 keyval = keyval + 0x20
                 brace_shift = True
 
-            logging.debug("Key pressed: %c", chr(keyval))
-
-            self.old_string = self.new_string
             logging.debug("Old string: %s", self.old_string)
 
             self.new_string, self.__raw_string = \
@@ -191,6 +189,7 @@ class Engine(IBus.Engine):
                     self.show_lookup_table()
                     self.is_lookup_table_shown = True
 
+            # Revert the brace shift
             if brace_shift and self.new_string and self.new_string[-1] in "{}":
                 logging.debug("Reverting brace shift")
                 self.new_string = self.new_string[:-1] + \
@@ -199,6 +198,8 @@ class Engine(IBus.Engine):
             logging.debug("New string: %s", self.new_string)
 
             self.commit_result(self.new_string)
+            self.old_string = self.new_string
+
             return True
 
         self.reset_engine()
