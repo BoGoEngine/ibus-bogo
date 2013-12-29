@@ -151,11 +151,11 @@ class Engine(IBus.Engine):
                                  config=self.__config)
 
             if self.__config['skip-non-vietnamese']:
-                # Detect if the raw input sequence can produce a legitimate
-                # Vietnamese word by putting it through bogo.process_key()
-                # twice, first with skip-non-vietnamese on, then with that
-                # setting off. If the two results differ then the sequence
-                # cannot produce a correct Vietnamse word.
+                # Detect if the raw input sequence can produce a syntactically
+                # legitimate Vietnamese word by putting it through
+                # bogo.process_key() twice, first with skip-non-vietnamese on,
+                # then with that setting off. If the two results differ then
+                # the sequence cannot produce a correct Vietnamse word.
                 #
                 # Eg:
                 #   `system` -> system != sýtem   | bad
