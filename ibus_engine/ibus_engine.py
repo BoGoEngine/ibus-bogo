@@ -133,20 +133,16 @@ class Engine(IBus.Engine):
             return self.on_backspace_pressed()
 
         if self.is_processable_key(keyval, state):
-            # Process entered key here
-            # self.__raw_string = self.__raw_string + chr(keyval)
             logging.debug("\nRaw string: %s" % self.__raw_string)
 
-            case = 0
-            cap = state & IBus.ModifierType.LOCK_MASK
+            capital_case = 0
+            caps_lock = state & IBus.ModifierType.LOCK_MASK
             shift = state & IBus.ModifierType.SHIFT_MASK
-            if (cap or shift) and not (cap and shift):
-                case = 1
-            logging.debug("case: %d", case)
-            # logging.debug("keyval: %s", chr(keyval))
+            if (caps_lock or shift) and not (caps_lock and shift):
+                capital_case = 1
 
             brace_shift = False
-            if chr(keyval) in ['[', ']'] and case == 1:
+            if chr(keyval) in ['[', ']'] and capital_case == 1:
                 # This is for TELEX's ][ keys.
                 # When typing with capslock on, ][ won't get shifted to }{
                 # so we have to shift them manually.
