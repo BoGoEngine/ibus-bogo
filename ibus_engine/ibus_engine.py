@@ -52,9 +52,7 @@ modifier = IBus.ModifierType
 # IBusFactory and pre-apply the config object as an argument to
 # our engine's constructor.
 config = Config()
-last_engine = None
-engines = []
-active_engines = []
+
 
 
 def string_to_text(string):
@@ -83,18 +81,20 @@ class Engine(IBus.Engine):
 
     def __init__(self):
         super(Engine, self).__init__()
+        logging.info("You are running ibus-bogo-python")
+
         self.__config = config
-        self.engine_id = len(engines)
         self.caps = 0
+        self.is_in_unity = check_unity()
+
         self.lookup_table = IBus.LookupTable()
         self.lookup_table.set_page_size(4)
         self.lookup_table.set_orientation(1)
         self.lookup_table.set_cursor_visible(True)
         self.is_lookup_table_shown = False
-        engines.append(self)
-        logging.info("You are running ibus-bogo-python")
-        self.is_in_unity = check_unity()
+
         self.setup_tool_buttons()
+
         self.reset_engine()
 
     # The "do_" part is PyGObject's way of overriding base's functions
@@ -326,16 +326,10 @@ class Engine(IBus.Engine):
         self.prop_list.append(help_button)
 
     def do_enable(self):
-        global last_engine
-        global engines
-        last_engine = self
-        active_engines.append(self)
-        logging.debug("Engine #%d enabled", self.engine_id)
+        pass
 
     def do_disable(self):
-        global engines
-        active_engines.remove(self)
-        logging.debug("Engine #%d disabled", self.engine_id)
+        pass
 
     def do_focus_in(self):
         """Implements IBus.Engine's focus_in's default signal handler.
