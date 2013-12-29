@@ -27,9 +27,9 @@ import subprocess
 import logging
 import hashlib
 import json
-from PySide.QtCore import *
-from PySide.QtGui import *
-from PySide.QtUiTools import QUiLoader
+from PyQt4.QtCore import *
+from PyQt4.QtGui import *
+from PyQt4 import uic
 from gi.repository import Notify
 import charset_converter
 
@@ -71,7 +71,7 @@ DEFAULT_LOCALE = "vi_VN"
 class Settings(BaseConfig, QObject):
     # TODO: Make this thing reactive
 
-    changed = Signal()
+    changed = pyqtSignal()
 
     def __init__(self, path):
         BaseConfig.__init__(self, config_path)
@@ -108,9 +108,9 @@ class Window(QWidget):
         self.translator.load(os.path.join(current_dir, "locales", locale))
         app.installTranslator(self.translator)
 
-        loader = QUiLoader()
-        loader.setLanguageChangeEnabled(True)
-        self.win = loader.load(os.path.join(current_dir, "controller.ui"), self)
+        # loader = QUiLoader()
+        # loader.setLanguageChangeEnabled(True)
+        self.win = uic.loadUi(os.path.join(current_dir, "controller.ui"), self)
         QMetaObject.connectSlotsByName(self)
 
         # Define GUI items
@@ -137,39 +137,39 @@ class Window(QWidget):
         box.addWidget(self.win)
         self.setLayout(box)
 
-    @Slot()
+    @pyqtSlot()
     def on_closeButton_clicked(self):
         self.close()
 
-    @Slot()
+    @pyqtSlot()
     def on_helpButton_clicked(self):
         logging.debug("help")
 
-    @Slot()
+    @pyqtSlot()
     def on_resetButton_clicked(self):
         self.settings.reset()
 
-    @Slot(str)
+    @pyqtSlot(str)
     def on_inputMethodComboBox_activated(self, index):
         logging.debug("inputComboChanged: %s", index)
         self.settings["input-method"] = index
 
-    @Slot(str)
+    @pyqtSlot(str)
     def on_charsetComboBox_activated(self, index):
         logging.debug("charsetComboChanged: %s", index)
         self.settings["output-charset"] = index
 
-    @Slot(bool)
+    @pyqtSlot(bool)
     def on_skipNonVNCheckBox_clicked(self, state):
         logging.debug("skipNonVNCheckBoxChanged: %s", str(state))
         self.settings["skip-non-vietnamese"] = state
 
-    @Slot(int)
+    @pyqtSlot(int)
     def on_guiLanguageComboBox_activated(self, index):
         self.switchLanguage(self.guiLanguages[index][0])
         self.settings["gui-language"] = self.guiLanguages[index][0]
 
-    @Slot()
+    @pyqtSlot()
     def on_convertButton_clicked(self):
         # TODO Don't always process when the button is pressed.
         clipboard = self.app.clipboard()
@@ -192,7 +192,7 @@ class Window(QWidget):
             n = Notify.Notification.new("Cannot convert", "Mixed Unicode in clipboard.", "")
         n.show()
 
-    @Slot()
+    @pyqtSlot()
     def on_helpButton_clicked(self):
         subprocess.call("xdg-open http://ibus-bogo.readthedocs.org/en/latest/usage.html", shell=True)
 
