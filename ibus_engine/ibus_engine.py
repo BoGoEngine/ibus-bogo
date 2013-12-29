@@ -62,16 +62,19 @@ def string_to_text(string):
 
 
 def check_unity():
-    screen = Wnck.Screen.get_default()
-    screen.force_update()
-    window = screen.get_active_window()
-    window_name = window.get_name()
-    window_type = window.get_window_type()
-    logging.info("Current active window: %s" % window_name)
-    if window_type == Wnck.WindowType.DOCK and (window_name == 'launcher'
-                                                or window_name == 'unity-dash'):
-        return True
-    else:
+    try:
+        screen = Wnck.Screen.get_default()
+        screen.force_update()
+        window = screen.get_active_window()
+        window_name = window.get_name()
+        window_type = window.get_window_type()
+        logging.info("Current active window: %s" % window_name)
+        if window_type == Wnck.WindowType.DOCK and (window_name == 'launcher'
+                                                    or window_name == 'unity-dash'):
+            return True
+        else:
+            return False
+    except:
         return False
 
 
