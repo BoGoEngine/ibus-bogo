@@ -81,7 +81,7 @@ class Engine(IBus.Engine):
         logging.info("You are running ibus-bogo-python")
 
         self.__config = config
-        self.caps = 0
+        self.input_context_capabilities = 0
         self.is_in_unity = check_unity()
 
         self.lookup_table = IBus.LookupTable()
@@ -292,7 +292,7 @@ class Engine(IBus.Engine):
         # client can do surrounding text.
         #
         # Very very veryyyy CRUDE, by the way.
-        if self.caps & IBus.Capabilite.SURROUNDING_TEXT:
+        if self.input_context_capabilities & IBus.Capabilite.SURROUNDING_TEXT:
             logging.debug("forwarding as commit")
 
             for ch in string_to_commit:
@@ -386,7 +386,7 @@ class Engine(IBus.Engine):
         self.reset_engine()
 
     def do_set_capabilities(self, caps):
-        self.caps = caps
+        self.input_context_capabilities = caps
 
     def do_candidate_clicked(self):
         pass
