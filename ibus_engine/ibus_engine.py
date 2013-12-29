@@ -113,8 +113,6 @@ class Engine(IBus.Engine):
         if self.is_in_unity is True:
             return False
 
-        logging.debug("%s | %s | %s", keyval, keycode, state)
-
         # Ignore key release events
         event_is_key_press = (state & (1 << 30)) == 0  # There's a strange
 
