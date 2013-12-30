@@ -253,10 +253,24 @@ class Engine(IBus.Engine):
 
         number_fake_backspace, string_to_commit = \
             get_nbackspace_and_string_to_commit(self.current_shown_text, string)
+
         logging.debug("Number of fake backspace: %d", number_fake_backspace)
         logging.debug("String to commit: %s", string_to_commit)
 
-        for i in range(number_fake_backspace):
+        # phaikawl@github:
+        #   A simple fix for the issue with autocomplete [issue #73][1]:
+        #   Just add a backtick after the text, the backtick would dismiss the
+        #   autocomplete and make bogo work smoothly.
+        #
+        #   It's a little bit "crude" but it works!
+        #
+        # lewtds@github:
+        #   Any key except a backspace should work either.
+        #
+        # [1]: https://github.com/BoGoEngine/ibus-bogo-python/issues/73
+        #
+        self.forward_key_event(IBus.grave, 41, 0)
+        for i in range(number_fake_backspace + 1):
             self.forward_key_event(IBus.BackSpace, 14, 0)
 
         # Charset conversion
