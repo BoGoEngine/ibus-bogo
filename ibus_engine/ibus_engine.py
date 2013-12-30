@@ -206,7 +206,7 @@ class Engine(IBus.Engine):
         self.reset_engine()
         return False
 
-    def do_brace_shift(keyval, modifiers):
+    def do_brace_shift(self, keyval, modifiers):
         capital_case = 0
         caps_lock = modifiers & IBus.ModifierType.LOCK_MASK
         shift = modifiers & IBus.ModifierType.SHIFT_MASK
