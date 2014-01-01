@@ -19,10 +19,11 @@ xử lý tiếng Việt **BoGoEngine**.
 
 4. [Thông báo lỗi và đóng góp ý tưởng](https://github.com/BoGoEngine/ibus-bogo-python/issues?state=open)
 
-5. Fork, vọc code và [tham gia đóng góp](doc/sphinx/contributing.rst)
+5. Fork, vọc code và [tham gia phát triển cùng chúng tôi][3]!
 
 [1]: https://groups.google.com/forum/?fromgroups#!forum/bogoengine-dev
 [2]: https://kiwiirc.com/client/chat.freenode.net/?nick=bogo-user|?&theme=basic#bogo
+[3]: doc/sphinx/contributing.rst
 
 ## Giấy phép xuất bản (License)
 
