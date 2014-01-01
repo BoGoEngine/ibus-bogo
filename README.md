@@ -16,11 +16,14 @@ xử lý tiếng Việt **BoGoEngine**.
 2. Chia sẻ cho người thân
 
 3. Nếu có câu hỏi, hãy trò chuyện với chúng tôi ở
-   [mailing list của nhóm](https://groups.google.com/forum/?fromgroups#!forum/bogoengine-dev)
+   [mailing list của nhóm][1] hay chat qua [kênh #bogo][2] trên mạng IRC Freenode.
 
 4. [Thông báo lỗi và đóng góp ý tưởng](https://github.com/BoGoEngine/ibus-bogo-python/issues?state=open)
 
 5. Fork, vọc code và [tham gia đóng góp](doc/sphinx/contributing.rst)
+
+[1]: https://groups.google.com/forum/?fromgroups#!forum/bogoengine-dev
+[2]: https://kiwiirc.com/client/chat.freenode.net/?nick=bogo-user|?&theme=basic#bogo
 
 ## Giấy phép xuất bản (License)
 
