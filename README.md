@@ -15,8 +15,7 @@ xử lý tiếng Việt **BoGoEngine**.
 
 2. Chia sẻ cho người thân
 
-3. Nếu có câu hỏi, hãy trò chuyện với chúng tôi ở
-   [mailing list của nhóm][1] hay chat qua [kênh #bogo][2] trên mạng IRC Freenode.
+3. Trò chuyện với chúng tôi ở [mailing list của nhóm][1] hay chat qua [kênh #bogo][2] trên mạng IRC Freenode.
 
 4. [Thông báo lỗi và đóng góp ý tưởng](https://github.com/BoGoEngine/ibus-bogo-python/issues?state=open)
 
