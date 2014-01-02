@@ -37,7 +37,8 @@ import charset_converter
 current_dir = os.path.dirname(__file__)
 
 sys.path.append(os.path.abspath(os.path.join(current_dir, "..")))
-sys.path.append(os.path.abspath(os.path.join(current_dir, "..", "ibus_engine")))
+sys.path.append(
+    os.path.abspath(os.path.join(current_dir, "..", "ibus_engine")))
 
 from base_config import BaseConfig
 import vncharsets
@@ -127,7 +128,8 @@ class Window(QWidget):
         for i in range(len(charsetList)):
             self.ui.charsetComboBox.insertItem(i, charsetList[i])
             if charsetList[i] != "utf-8":
-                self.ui.sourceCharsetCombo.insertItem(i, charsetList[i].upper())
+                self.ui.sourceCharsetCombo.insertItem(
+                    i, charsetList[i].upper())
 
         self.setupLanguages()
         self.refreshGui()
@@ -139,10 +141,6 @@ class Window(QWidget):
     @pyqtSlot()
     def on_closeButton_clicked(self):
         self.close()
-
-    @pyqtSlot()
-    def on_helpButton_clicked(self):
-        logging.debug("help")
 
     @pyqtSlot()
     def on_resetButton_clicked(self):
@@ -177,23 +175,31 @@ class Window(QWidget):
         try:
             if mime.hasHtml() or mime.hasText():
                 html, text = mime.html(), mime.text()
-                html, text = charset_converter.convert(html, text, sourceEncoding)
+                html, text = charset_converter.convert(
+                    html, text, sourceEncoding)
 
                 new_mime = QMimeData()
                 new_mime.setHtml(html)
                 new_mime.setText(text)
 
                 clipboard.setMimeData(new_mime)
-                n = Notify.Notification.new("Converted", sourceEncoding + "-> utf-8", "")
+                n = Notify.Notification.new(
+                    "Converted", sourceEncoding + "-> utf-8", "")
             else:
-                n = Notify.Notification.new("Cannot convert", "No HTML/plain text data in clipboard.", "")
+                n = Notify.Notification.new(
+                    "Cannot convert",
+                    "No HTML/plain text data in clipboard.",
+                    "")
         except UnicodeEncodeError:
-            n = Notify.Notification.new("Cannot convert", "Mixed Unicode in clipboard.", "")
+            n = Notify.Notification.new(
+                "Cannot convert", "Mixed Unicode in clipboard.", "")
         n.show()
 
     @pyqtSlot()
     def on_helpButton_clicked(self):
-        subprocess.call("xdg-open http://ibus-bogo.readthedocs.org/en/latest/usage.html", shell=True)
+        subprocess.call(
+            "xdg-open http://ibus-bogo.readthedocs.org/en/latest/usage.html",
+            shell=True)
 
     def switchLanguage(self, locale):
         logging.debug("switchLanguage: %s", locale)
@@ -212,17 +218,28 @@ class Window(QWidget):
 
         self.ui.guiLanguageComboBox.clear()
         for index, lang in enumerate(self.guiLanguages):
-            self.ui.guiLanguageComboBox.insertItem(index, QIcon(os.path.join(current_dir, "locales", lang[0] + ".png")), lang[1])
+            self.ui.guiLanguageComboBox.insertItem(
+                index,
+                QIcon(os.path.join(current_dir, "locales", lang[0] + ".png")),
+                lang[1])
+
+        languages = [langTuple[0] for langTuple in self.guiLanguages]
         if "gui-language" in self.settings:
-            index = [y[0] for y in self.guiLanguages].index(self.settings["gui-language"])
+            index = languages.index(self.settings["gui-language"])
         else:
-            index = [y[0] for y in self.guiLanguages].index(DEFAULT_LOCALE)
+            index = languages.index(DEFAULT_LOCALE)
         self.ui.guiLanguageComboBox.setCurrentIndex(index)
 
     def refreshGui(self):
-        self.ui.inputMethodComboBox.setCurrentIndex(inputMethodList.index(self.settings["input-method"]))
-        self.ui.charsetComboBox.setCurrentIndex(charsetList.index(self.settings["output-charset"]))
-        self.ui.skipNonVNCheckBox.setChecked(self.settings["skip-non-vietnamese"])
+        self.ui.inputMethodComboBox.setCurrentIndex(
+            inputMethodList.index(self.settings["input-method"]))
+
+        self.ui.charsetComboBox.setCurrentIndex(
+            charsetList.index(self.settings["output-charset"]))
+
+        self.ui.skipNonVNCheckBox.setChecked(
+            self.settings["skip-non-vietnamese"])
+
         if "gui-language" in self.settings:
             self.switchLanguage(self.settings["gui-language"])
 
