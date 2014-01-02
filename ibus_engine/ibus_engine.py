@@ -5,6 +5,7 @@
 # Copyright (C) 2012-2013 Trung Ngo <ndtrung4419@gmail.com>
 # Copyright (C) 2013 Duong H. Nguyen <cmpitg@gmail.com>
 # Copyright (C) 2013 Hai P. Nguyen <hainp2604@gmail.com>
+# Copyright (C) 2013-2014 Hai T. Nguyen <phaikawl@gmail.com>
 #
 # ibus-bogo-python is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -29,6 +30,12 @@ import logging
 import subprocess
 import sys
 import os
+from threading import Thread
+from Xlib.display import Display as XDisplay
+from Xlib import X
+from Xlib.ext import record
+from Xlib.protocol import rq
+from Xlib.protocol import request as xlib
 
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -56,7 +63,6 @@ last_engine = None
 engines = []
 active_engines = []
 
-
 def string_to_text(string):
     return IBus.Text.new_from_string(string)
 
@@ -73,6 +79,41 @@ def check_unity():
         return True
     else:
         return False
+
+class MouseDetect(Thread):
+    def __init__(self):
+        super().__init__()
+        self.detected = False
+
+    def run(self):
+        display = XDisplay()
+        self.display = display
+        ctx = display.record_create_context(
+            0,
+            [record.AllClients],
+            [{
+                    'core_requests': (0, 0),
+                    'core_replies': (0, 0),
+                    'ext_requests': (0, 0, 0, 0),
+                    'ext_replies': (0, 0, 0, 0),
+                    'delivered_events': (0, 0),
+                    'device_events': (X.ButtonPressMask, X.ButtonReleaseMask),
+                    'errors': (0, 0),
+                    'client_started': False,
+                    'client_died': False,
+            }])
+        display.record_enable_context(ctx, self.handler)
+        display.record_free_context(ctx)
+
+    def handler(self, reply):
+        data = reply.data
+        while len(data):
+            event, data = rq.EventField(None).parse_binary_value(data, self.display.display, None, None)
+            if event.type == X.ButtonRelease:
+                self.detected = True
+
+    def reset(self):
+        self.detected = False
 
 
 class Engine(IBus.Engine):
@@ -94,6 +135,11 @@ class Engine(IBus.Engine):
         self.setup_tool_buttons()
         self.reset_engine()
 
+        # Create a new thread to detect mouse clicks
+        self.mouse_detector = MouseDetect()
+        self.mouse_detector.start()
+
+
     # The "do_" part is PyGObject's way of overriding base's functions
     def do_process_key_event(self, keyval, keycode, state):
         """Implement IBus.Engine's process_key_event default signal handler.
@@ -111,6 +157,11 @@ class Engine(IBus.Engine):
         """
         if self.is_in_unity == True:
             return False
+
+        # Reset when a mouse click is detected
+        if self.mouse_detector.detected:
+            self.reset_engine()
+            self.mouse_detector.reset()
 
         logging.debug("%s | %s | %s", keyval, keycode, state)
         # ignore key release events
