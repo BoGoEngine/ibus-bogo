@@ -50,6 +50,7 @@ từ mã nguồn (theo tên gói cài đặt của Debian/Ubuntu):
 * pyside-tools
 * qt4-linguist-tools
 * python3-pyside
+* python3-xlib
 * gir1.2-ibus-1.0 (GObject Introspection data)
 * gir1.2-wnck-3.0
 
