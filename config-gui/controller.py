@@ -110,32 +110,31 @@ class Window(QWidget):
 
         # loader = QUiLoader()
         # loader.setLanguageChangeEnabled(True)
-        self.win = uic.loadUi(os.path.join(current_dir, "controller.ui"), self)
+        Ui_Class, _ = \
+            uic.loadUiType(os.path.join(current_dir, "controller.ui"))
+
+        # Single-inheritance approach
+        # http://pyqt.sourceforge.net/Docs/PyQt4/designer.html
+        self.ui = Ui_Class()
+        self.ui.setupUi(self)
+
         QMetaObject.connectSlotsByName(self)
 
-        # Define GUI items
-        self.inputCombo = self.win.findChild(QComboBox, "inputMethodComboBox")
-        self.charsetCombo = self.win.findChild(QComboBox, "charsetComboBox")
-        self.skipNonVNCheckBox = self.win.findChild(QCheckBox, "skipNonVNCheckBox")
-        self.guiLanguageComboBox = self.win.findChild(QComboBox, "guiLanguageComboBox")
-
-        self.sourceCharsetCombo = self.win.findChild(QComboBox, "sourceCharsetCombo")
-
-        # Set their initial values
+        # Set the combo boxes' initial values
         for i in range(len(inputMethodList)):
-            self.inputCombo.insertItem(i, inputMethodList[i])
+            self.ui.inputMethodComboBox.insertItem(i, inputMethodList[i])
 
         for i in range(len(charsetList)):
-            self.charsetCombo.insertItem(i, charsetList[i])
+            self.ui.charsetComboBox.insertItem(i, charsetList[i])
             if charsetList[i] != "utf-8":
-                self.sourceCharsetCombo.insertItem(i, charsetList[i].upper())
+                self.ui.sourceCharsetCombo.insertItem(i, charsetList[i].upper())
 
         self.setupLanguages()
         self.refreshGui()
 
-        box = QVBoxLayout()
-        box.addWidget(self.win)
-        self.setLayout(box)
+        # box = QVBoxLayout()
+        # box.addWidget(self.win)
+        # self.setLayout(box)
 
     @pyqtSlot()
     def on_closeButton_clicked(self):
@@ -174,7 +173,7 @@ class Window(QWidget):
         # TODO Don't always process when the button is pressed.
         clipboard = self.app.clipboard()
         mime = clipboard.mimeData()
-        sourceEncoding = self.sourceCharsetCombo.currentText().lower()
+        sourceEncoding = self.ui.sourceCharsetCombo.currentText().lower()
         try:
             if mime.hasHtml() or mime.hasText():
                 html, text = mime.html(), mime.text()
@@ -211,25 +210,26 @@ class Window(QWidget):
             ("vi_VN", "Vietnamese")
         ]
 
-        self.guiLanguageComboBox.clear()
+        self.ui.guiLanguageComboBox.clear()
         for index, lang in enumerate(self.guiLanguages):
-            self.guiLanguageComboBox.insertItem(index, QIcon(os.path.join(current_dir, "locales", lang[0] + ".png")), lang[1])
+            self.ui.guiLanguageComboBox.insertItem(index, QIcon(os.path.join(current_dir, "locales", lang[0] + ".png")), lang[1])
         if "gui-language" in self.settings:
             index = [y[0] for y in self.guiLanguages].index(self.settings["gui-language"])
         else:
             index = [y[0] for y in self.guiLanguages].index(DEFAULT_LOCALE)
-        self.guiLanguageComboBox.setCurrentIndex(index)
+        self.ui.guiLanguageComboBox.setCurrentIndex(index)
 
     def refreshGui(self):
-        self.inputCombo.setCurrentIndex(inputMethodList.index(self.settings["input-method"]))
-        self.charsetCombo.setCurrentIndex(charsetList.index(self.settings["output-charset"]))
-        self.skipNonVNCheckBox.setChecked(self.settings["skip-non-vietnamese"])
+        self.ui.inputMethodComboBox.setCurrentIndex(inputMethodList.index(self.settings["input-method"]))
+        self.ui.charsetComboBox.setCurrentIndex(charsetList.index(self.settings["output-charset"]))
+        self.ui.skipNonVNCheckBox.setChecked(self.settings["skip-non-vietnamese"])
         if "gui-language" in self.settings:
             self.switchLanguage(self.settings["gui-language"])
 
     def changeEvent(self, event):
         if event.type() == QEvent.LanguageChange:
             self.setWindowTitle(self.tr("IBus BoGo Settings"))
+            self.ui.retranslateUi(self.ui)
 
 
 def main():
