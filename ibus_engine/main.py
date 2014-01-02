@@ -77,7 +77,7 @@ class IMApp:
         else:
             self.bus.register_component(self.component)
             self.bus.set_global_engine_async(
-                    "bogo-python", -1, None, None, None)
+                "bogo-python", -1, None, None, None)
 
     def run(self):
         self.mainloop.run()
