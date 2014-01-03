@@ -5,7 +5,7 @@
 #
 # Copyright (C) 2012 Long T. Dam <longdt90@gmail.com>
 # Copyright (C) 2012-2013 Trung Ngo <ndtrung4419@gmail.com>
-#1;2802;0c Copyright (C) 2013 Duong H. Nguyen <cmpitg@gmail.com>
+# Copyright (C) 2013 Duong H. Nguyen <cmpitg@gmail.com>
 #
 # ibus-bogo-python is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
