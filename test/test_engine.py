@@ -57,21 +57,25 @@ class TestHelpers():
 
 
 class TestEngine():
+    def send_keys(self, input, engine):
+        [self.send_key(character, engine) for character in input]
+        return self
+
+    def send_key(self, input, engine):
+        engine.do_process_key_event(ord(input), 0, 16)
+        engine.do_process_key_event(ord(input), 0, IBus.ModifierType.RELEASE_MASK)
+
+    def send_bksp(self, engine):
+        engine.on_backspace_pressed()
+        return self
+
     def test_1_bug_117(self):
         """
         baa + bksp => {new_string: b, raw_string: b}
         """
         eng = Engine()
-        eng.do_process_key_event(98, 49, 16) #b
-        eng.do_process_key_event(98, 49, IBus.ModifierType.RELEASE_MASK)
 
-        eng.do_process_key_event(97, 30, 16) #a
-        eng.do_process_key_event(97, 30, IBus.ModifierType.RELEASE_MASK)
-
-        eng.do_process_key_event(97, 30, 16)
-        eng.do_process_key_event(97, 30, IBus.ModifierType.RELEASE_MASK)
-
-        eng.on_backspace_pressed()
+        self.send_keys("baa", eng).send_bksp(eng)
 
         eq_(eng.new_string, 'b')
         eq_(eng._Engine__raw_string, 'b')
@@ -81,19 +85,8 @@ class TestEngine():
         bana + bksp => {new_string: bâ, raw_string: baa}
         """
         eng = Engine()
-        eng.do_process_key_event(98, 49, 16)
-        eng.do_process_key_event(98, 49, IBus.ModifierType.RELEASE_MASK)
 
-        eng.do_process_key_event(97, 30, 16)
-        eng.do_process_key_event(97, 30, IBus.ModifierType.RELEASE_MASK)
-
-        eng.do_process_key_event(110, 38, 16) #n
-        eng.do_process_key_event(110, 38, IBus.ModifierType.RELEASE_MASK)
-
-        eng.do_process_key_event(97, 30, 16)
-        eng.do_process_key_event(97, 30, IBus.ModifierType.RELEASE_MASK)
-
-        eng.on_backspace_pressed()
+        self.send_keys("bana", eng).send_bksp(eng)
 
         eq_(eng.new_string, 'bâ')
         eq_(eng._Engine__raw_string, 'baa')
@@ -103,19 +96,23 @@ class TestEngine():
         ba + bksp + a => {new_string: ba, raw_string: ba}
         """
         eng = Engine()
-        eng.do_process_key_event(98, 49, 16)
-        eng.do_process_key_event(98, 49, IBus.ModifierType.RELEASE_MASK)
 
-        eng.do_process_key_event(97, 30, 16)
-        eng.do_process_key_event(97, 30, IBus.ModifierType.RELEASE_MASK)
-
-        eng.on_backspace_pressed()
-
-        eng.do_process_key_event(97, 30, 16)
-        eng.do_process_key_event(97, 30, IBus.ModifierType.RELEASE_MASK)
+        self.send_keys("ba", eng).send_bksp(eng).send_keys("a", eng)
 
         eq_(eng.new_string, 'ba')
         eq_(eng._Engine__raw_string, 'ba')
+
+    def test_3_bug_117(self):
+        """
+        thuow + bksp => {new_string: thu, raw_string: thu}
+        """
+        eng = Engine()
+
+        self.send_keys("thuow", eng).send_bksp(eng)
+
+        eq_(eng.new_string, 'thu')
+        eq_(eng._Engine__raw_string, 'thu')
+
 
 class TestProcessSeq():
     def test_normal_typing(self):
