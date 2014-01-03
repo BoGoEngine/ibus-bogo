@@ -102,7 +102,7 @@ class TestEngine():
         eq_(eng.new_string, 'ba')
         eq_(eng._Engine__raw_string, 'ba')
 
-    def test_3_bug_117(self):
+    def test_4_bug_117(self):
         """
         thuow + bksp => {new_string: thu, raw_string: thu}
         """
