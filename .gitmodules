@@ -1,0 +1,3 @@
+[submodule "ibus_engine/Xlib"]
+	path = ibus_engine/Xlib
+	url = https://github.com/phaikawl/python-xlib-mirror.git

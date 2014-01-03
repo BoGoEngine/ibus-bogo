@@ -53,6 +53,12 @@ install (FILES
   ${BOGO_INSTALL_DIR}/ibus_engine/data
 )
 
+install (DIRECTORY
+  Xlib
+  DESTINATION
+  ${BOGO_INSTALL_DIR}/ibus_engine
+)
+
 FILE (GLOB
  bogo "bogo/*.py"
  )

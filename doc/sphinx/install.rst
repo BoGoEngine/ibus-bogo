@@ -50,7 +50,6 @@ từ mã nguồn (theo tên gói cài đặt của Debian/Ubuntu):
 * pyside-tools
 * qt4-linguist-tools
 * python3-pyside
-* python3-xlib
 * gir1.2-ibus-1.0 (GObject Introspection data)
 * gir1.2-wnck-3.0
 
@@ -59,9 +58,15 @@ Lệnh sau sẽ cài đặt tất cả các gói cần thiết::
     sudo apt-get install python3 ibus cmake python3-gi pyside-tools \
     gir1.2-ibus-1.0 gir1.2-wnck-3.0 python3-pyside qt4-linguist-tools
 
-Tải mã nguồn tại https://github.com/BoGoEngine/ibus-bogo-python/tags.
+| Tải mã nguồn tại https://github.com/BoGoEngine/ibus-bogo-python/tags rồi giải nén
+| hoặc dùng
+::
 
-Giải nén và chạy lệnh sau để cài đặt::
+    git clone https://github.com/BoGoEngine/ibus-bogo-python.git
+  
+Nếu bạn dùng git clone thì chạy thêm lệnh :code:`git submodule init && git submodule update` trong thư mục mã nguồn
+
+Chạy lệnh sau để cài đặt::
 
     mkdir build && cd build
     cmake .. && make install
