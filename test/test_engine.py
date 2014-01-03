@@ -1,11 +1,16 @@
 from nose.tools import eq_
 from nose.plugins.attrib import attr
 from functools import partial
+
+from gi.repository import IBus
+
 from bogo.bogo import *
 from base_config import BaseConfig
 from bogo.mark import Mark
 from bogo.accent import Accent
 from .gen_key_sequences import gen_key_sequences
+from ibus_engine import Engine
+
 import os
 
 c = BaseConfig("/tmp/ibus-bogo.json")
@@ -50,6 +55,67 @@ class TestHelpers():
     def test_reverse(self):
         pass
 
+
+class TestEngine():
+    def test_1_bug_117(self):
+        """
+        baa + bksp => {new_string: b, raw_string: b}
+        """
+        eng = Engine()
+        eng.do_process_key_event(98, 49, 16) #b
+        eng.do_process_key_event(98, 49, IBus.ModifierType.RELEASE_MASK)
+
+        eng.do_process_key_event(97, 30, 16) #a
+        eng.do_process_key_event(97, 30, IBus.ModifierType.RELEASE_MASK)
+
+        eng.do_process_key_event(97, 30, 16)
+        eng.do_process_key_event(97, 30, IBus.ModifierType.RELEASE_MASK)
+
+        eng.on_backspace_pressed()
+
+        eq_(eng.new_string, 'b')
+        eq_(eng._Engine__raw_string, 'b')
+
+    def test_2_bug_117(self):
+        """
+        bana + bksp => {new_string: bâ, raw_string: baa}
+        """
+        eng = Engine()
+        eng.do_process_key_event(98, 49, 16)
+        eng.do_process_key_event(98, 49, IBus.ModifierType.RELEASE_MASK)
+
+        eng.do_process_key_event(97, 30, 16)
+        eng.do_process_key_event(97, 30, IBus.ModifierType.RELEASE_MASK)
+
+        eng.do_process_key_event(110, 38, 16) #n
+        eng.do_process_key_event(110, 38, IBus.ModifierType.RELEASE_MASK)
+
+        eng.do_process_key_event(97, 30, 16)
+        eng.do_process_key_event(97, 30, IBus.ModifierType.RELEASE_MASK)
+
+        eng.on_backspace_pressed()
+
+        eq_(eng.new_string, 'bâ')
+        eq_(eng._Engine__raw_string, 'baa')
+
+    def test_3_bug_117(self):
+        """
+        ba + bksp + a => {new_string: ba, raw_string: ba}
+        """
+        eng = Engine()
+        eng.do_process_key_event(98, 49, 16)
+        eng.do_process_key_event(98, 49, IBus.ModifierType.RELEASE_MASK)
+
+        eng.do_process_key_event(97, 30, 16)
+        eng.do_process_key_event(97, 30, IBus.ModifierType.RELEASE_MASK)
+
+        eng.on_backspace_pressed()
+
+        eng.do_process_key_event(97, 30, 16)
+        eng.do_process_key_event(97, 30, IBus.ModifierType.RELEASE_MASK)
+
+        eq_(eng.new_string, 'ba')
+        eq_(eng._Engine__raw_string, 'ba')
 
 class TestProcessSeq():
     def test_normal_typing(self):
