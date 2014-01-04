@@ -90,12 +90,18 @@ class Settings(BaseConfig, QObject):
             self.fileHash = h
             logging.debug("File changed")
 
+# Multiple-inheritance approach
+# http://pyqt.sourceforge.net/Docs/PyQt4/designer.html
 
-class Window(QWidget):
+Ui_FormClass, UiFormBase = \
+    uic.loadUiType(os.path.join(current_dir, "controller.ui"))
+
+
+class Window(Ui_FormClass, UiFormBase):
 
     def __init__(self, app, settings):
         super(Window, self).__init__()
-
+        self.setupUi(self)
         self.app = app
         self.settings = settings
         self.settings.changed.connect(self.refreshGui)
@@ -109,34 +115,18 @@ class Window(QWidget):
         self.translator.load(os.path.join(current_dir, "locales", locale))
         app.installTranslator(self.translator)
 
-        # loader = QUiLoader()
-        # loader.setLanguageChangeEnabled(True)
-        Ui_Class, _ = \
-            uic.loadUiType(os.path.join(current_dir, "controller.ui"))
-
-        # Single-inheritance approach
-        # http://pyqt.sourceforge.net/Docs/PyQt4/designer.html
-        self.ui = Ui_Class()
-        self.ui.setupUi(self)
-
-        QMetaObject.connectSlotsByName(self)
-
         # Set the combo boxes' initial values
         for i in range(len(inputMethodList)):
-            self.ui.inputMethodComboBox.insertItem(i, inputMethodList[i])
+            self.inputMethodComboBox.insertItem(i, inputMethodList[i])
 
         for i in range(len(charsetList)):
-            self.ui.charsetComboBox.insertItem(i, charsetList[i])
+            self.charsetComboBox.insertItem(i, charsetList[i])
             if charsetList[i] != "utf-8":
-                self.ui.sourceCharsetCombo.insertItem(
+                self.sourceCharsetCombo.insertItem(
                     i, charsetList[i].upper())
 
         self.setupLanguages()
         self.refreshGui()
-
-        # box = QVBoxLayout()
-        # box.addWidget(self.win)
-        # self.setLayout(box)
 
     @pyqtSlot()
     def on_closeButton_clicked(self):
@@ -216,9 +206,9 @@ class Window(QWidget):
             ("vi_VN", "Vietnamese")
         ]
 
-        self.ui.guiLanguageComboBox.clear()
+        self.guiLanguageComboBox.clear()
         for index, lang in enumerate(self.guiLanguages):
-            self.ui.guiLanguageComboBox.insertItem(
+            self.guiLanguageComboBox.insertItem(
                 index,
                 QIcon(os.path.join(current_dir, "locales", lang[0] + ".png")),
                 lang[1])
@@ -228,16 +218,16 @@ class Window(QWidget):
             index = languages.index(self.settings["gui-language"])
         else:
             index = languages.index(DEFAULT_LOCALE)
-        self.ui.guiLanguageComboBox.setCurrentIndex(index)
+        self.guiLanguageComboBox.setCurrentIndex(index)
 
     def refreshGui(self):
-        self.ui.inputMethodComboBox.setCurrentIndex(
+        self.inputMethodComboBox.setCurrentIndex(
             inputMethodList.index(self.settings["input-method"]))
 
-        self.ui.charsetComboBox.setCurrentIndex(
+        self.charsetComboBox.setCurrentIndex(
             charsetList.index(self.settings["output-charset"]))
 
-        self.ui.skipNonVNCheckBox.setChecked(
+        self.skipNonVNCheckBox.setChecked(
             self.settings["skip-non-vietnamese"])
 
         if "gui-language" in self.settings:
@@ -245,8 +235,7 @@ class Window(QWidget):
 
     def changeEvent(self, event):
         if event.type() == QEvent.LanguageChange:
-            self.setWindowTitle(self.tr("IBus BoGo Settings"))
-            self.ui.retranslateUi(self.ui)
+            self.retranslateUi(self)
 
 
 def main():
