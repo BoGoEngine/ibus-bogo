@@ -432,10 +432,16 @@ class Engine(IBus.Engine):
 
     def on_backspace_pressed(self):
         logging.debug("Getting a backspace")
+        deleted_char = self.new_string[-1]
         self.new_string = self.new_string[:-1]
         self.current_shown_text = self.new_string
+        self.old_string = self.new_string
         # TODO A char in __raw_string doesn't equal a char in new_string
-        self.__raw_string = self.__raw_string[:-1]
         if len(self.new_string) == 0:
             self.reset_engine()
+        else:
+            index = self.__raw_string.rfind(deleted_char)
+            self.__raw_string = self.__raw_string[:-2] if index < 0 else \
+                                    self.__raw_string[:index] + \
+                                    self.__raw_string[(index + 1):]
         return False
