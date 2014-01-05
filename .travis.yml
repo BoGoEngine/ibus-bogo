@@ -2,8 +2,7 @@ language: python
 python:
   - "3.2"
 before_install:
- - sudo apt-get install -qq ibus
- - sudo apt-get install -qq python3-gi
+ - sudo apt-get install -qq ibus python3-gi gir1.2-ibus-1.0
 # command to install dependencies
 #install: "pip install -r requirements.txt --use-mirrors"
 # command to run tests
