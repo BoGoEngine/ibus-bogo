@@ -77,8 +77,6 @@ class IMApp:
         mouse_detector.start()
         try:
             self.__mainloop.run()
-        except KeyboardInterrupt:
-            mouse_detector.terminate()
         finally:
             mouse_detector.terminate()
 
