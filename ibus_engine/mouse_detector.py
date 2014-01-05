@@ -1,6 +1,5 @@
 import os
 import sys
-from threading import Thread
 
 ENGINE_PATH = os.path.dirname(__file__)
 
@@ -10,6 +9,37 @@ from Xlib.display import Display as XDisplay
 from Xlib import X
 from Xlib.ext import record
 from Xlib.protocol import rq
+
+import threading
+import ctypes
+ 
+ 
+def _async_raise(tid, excobj):
+    res = ctypes.pythonapi.PyThreadState_SetAsyncExc(tid, ctypes.py_object(excobj))
+    if res == 0:
+        raise ValueError("nonexistent thread id")
+    elif res > 1:
+        # """if it returns a number greater than one, you're in trouble, 
+        # and you should call it again with exc=NULL to revert the effect"""
+        ctypes.pythonapi.PyThreadState_SetAsyncExc(tid, 0)
+        raise SystemError("PyThreadState_SetAsyncExc failed")
+ 
+class Thread(threading.Thread):
+    def raise_exc(self, excobj):
+        assert self.isAlive(), "thread must be started"
+        for tid, tobj in threading._active.items():
+            if tobj is self:
+                _async_raise(tid, excobj)
+                return
+        
+        # the thread was alive when we entered the loop, but was not found 
+        # in the dict, hence it must have been already terminated. should we raise
+        # an exception here? silently ignore?
+    
+    def terminate(self):
+        # must raise the SystemExit type, instead of a SystemExit() instance
+        # due to a bug in PyThreadState_SetAsyncExc
+        self.raise_exc(SystemExit)
 
 
 class MouseDetector(Thread):
@@ -24,9 +54,8 @@ class MouseDetector(Thread):
         return cls._instance
 
     def run(self):
-        display = XDisplay()
-        self.display = display
-        ctx = display.record_create_context(
+        self.display = XDisplay()
+        self.ctx = self.display.record_create_context(
             0,
             [record.AllClients],
             [{
@@ -41,15 +70,12 @@ class MouseDetector(Thread):
                 'client_died': False,
             }])
 
-        self.running = True
-        display.record_enable_context(ctx, self.handler)
-        display.record_free_context(ctx)
+        self.display.record_enable_context(self.ctx, self.handler)
+        self.display.record_free_context(self.ctx)
 
     def handler(self, reply):
         data = reply.data
         while len(data):
-            if not self.running:
-                break
             event, data = rq \
                 .EventField(None) \
                 .parse_binary_value(data, self.display.display, None, None)
@@ -57,9 +83,6 @@ class MouseDetector(Thread):
             if event.type == X.ButtonRelease:
                 for callback in self.callbacks:
                     callback()
-
-    def stop(self):
-        self._running = False
 
     def add_mouse_click_listener(self, fn):
         self.callbacks.append(fn)

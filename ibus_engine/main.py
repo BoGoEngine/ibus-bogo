@@ -77,8 +77,10 @@ class IMApp:
         mouse_detector.start()
         try:
             self.__mainloop.run()
+        except KeyboardInterrupt:
+            mouse_detector.terminate()
         finally:
-            mouse_detector.stop()
+            mouse_detector.terminate()
 
     def __bus_disconnected_cb(self, bus):
         self.__mainloop.quit()
