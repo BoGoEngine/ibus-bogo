@@ -99,10 +99,7 @@ class Engine(IBus.Engine):
 
         # Create a new thread to detect mouse clicks
         mouse_detector = MouseDetector.get_instance()
-        mouse_detector.on_mouse_clicked_do(self.on_mouse_clicked)
-
-    def on_mouse_clicked(self):
-        self.reset_engine()
+        mouse_detector.add_mouse_click_listener(self.reset_engine)
 
     # The "do_" part is PyGObject's way of overriding base's functions
     def do_process_key_event(self, keyval, keycode, modifiers):
@@ -450,6 +447,3 @@ class Engine(IBus.Engine):
         if len(self.new_string) == 0:
             self.reset_engine()
         return False
-
-    def on_exit(self):
-        self.mouse_detector.stop()
