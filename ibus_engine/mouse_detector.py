@@ -11,10 +11,11 @@ from Xlib import X
 from Xlib.ext import record
 from Xlib.protocol import rq
 
+
 class MouseDetector(Thread):
     def __init__(self):
         super().__init__()
-        self._running = True
+        self.callbacks = []
 
     @classmethod
     def get_instance(cls):
@@ -39,23 +40,26 @@ class MouseDetector(Thread):
                 'client_started': False,
                 'client_died': False,
             }])
+
+        self.running = True
         display.record_enable_context(ctx, self.handler)
         display.record_free_context(ctx)
 
     def handler(self, reply):
         data = reply.data
         while len(data):
-            if not self._running:
+            if not self.running:
                 break
             event, data = rq \
                 .EventField(None) \
                 .parse_binary_value(data, self.display.display, None, None)
 
             if event.type == X.ButtonRelease:
-                self._callback()
+                for callback in self.callbacks:
+                    callback()
 
     def stop(self):
         self._running = False
 
-    def on_mouse_clicked_do(self, fn):
-        self._callback = fn
+    def add_mouse_click_listener(self, fn):
+        self.callbacks.append(fn)
