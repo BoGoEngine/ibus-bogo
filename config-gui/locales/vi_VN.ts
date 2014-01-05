@@ -101,5 +101,10 @@
         <source>US English</source>
         <translation type="obsolete">Tiếng Anh Mỹ</translation>
     </message>
+    <message>
+        <location filename="controller.py" line="232"/>
+        <source>IBus BoGo Settings</source>
+        <translation>Thiết lập IBus BoGo </translation>
+    </message>
 </context>
 </TS>

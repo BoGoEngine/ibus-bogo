@@ -5,6 +5,7 @@
 # Copyright (C) 2012-2013 Trung Ngo <ndtrung4419@gmail.com>
 # Copyright (C) 2013 Duong H. Nguyen <cmpitg@gmail.com>
 # Copyright (C) 2013 Hai P. Nguyen <hainp2604@gmail.com>
+# Copyright (C) 2013-2014 Hai T. Nguyen <phaikawl@gmail.com>
 #
 # ibus-bogo-python is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -27,17 +28,19 @@ from gi.repository import Wnck
 import time
 import logging
 import subprocess
-import sys
 import os
+import sys
 
+ENGINE_PATH = os.path.dirname(__file__)
 sys.path.append(
-    os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+    os.path.abspath(os.path.join(ENGINE_PATH, "..")))
 
 import bogo
+from mouse_detector import MouseDetector
 from config import Config
 from keysyms_mapping import mapping
-
 import vncharsets
+
 vncharsets.init()
 
 
@@ -93,6 +96,10 @@ class Engine(IBus.Engine):
         self.setup_tool_buttons()
 
         self.reset_engine()
+
+        # Create a new thread to detect mouse clicks
+        mouse_detector = MouseDetector.get_instance()
+        mouse_detector.add_mouse_click_listener(self.reset_engine)
 
     # The "do_" part is PyGObject's way of overriding base's functions
     def do_process_key_event(self, keyval, keycode, modifiers):
@@ -252,7 +259,8 @@ class Engine(IBus.Engine):
                 return 0, new_string
 
         number_fake_backspace, string_to_commit = \
-            get_nbackspace_and_string_to_commit(self.current_shown_text, string)
+            get_nbackspace_and_string_to_commit(self.current_shown_text,
+                                                string)
 
         logging.debug("Number of fake backspace: %d", number_fake_backspace)
         logging.debug("String to commit: %s", string_to_commit)

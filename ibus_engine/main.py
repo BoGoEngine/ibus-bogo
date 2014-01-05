@@ -30,6 +30,7 @@ import logging
 import argparse
 
 from ibus_engine import Engine
+from mouse_detector import MouseDetector
 
 
 current_path = os.path.dirname(os.path.abspath(__file__))
@@ -80,7 +81,12 @@ class IMApp:
                 "bogo-python", -1, None, None, None)
 
     def run(self):
-        self.mainloop.run()
+        mouse_detector = MouseDetector.get_instance()
+        mouse_detector.start()
+        try:
+            self.mainloop.run()
+        finally:
+            mouse_detector.terminate()
 
     def bus_disconnected_cb(self, bus):
         self.mainloop.quit()

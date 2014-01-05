@@ -43,6 +43,7 @@ install (FILES
   config.py
   base_config.py
   keysyms_mapping.py
+  mouse_detector.py
   DESTINATION
   ${BOGO_INSTALL_DIR}/ibus_engine
   )
@@ -51,6 +52,12 @@ install (FILES
   data/default_config.json
   DESTINATION
   ${BOGO_INSTALL_DIR}/ibus_engine/data
+)
+
+install (DIRECTORY
+  libs
+  DESTINATION
+  ${BOGO_INSTALL_DIR}/ibus_engine
 )
 
 FILE (GLOB
