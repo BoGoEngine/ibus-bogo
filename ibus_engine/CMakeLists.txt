@@ -43,6 +43,7 @@ install (FILES
   config.py
   base_config.py
   keysyms_mapping.py
+  mouse_detector.py
   DESTINATION
   ${BOGO_INSTALL_DIR}/ibus_engine
   )

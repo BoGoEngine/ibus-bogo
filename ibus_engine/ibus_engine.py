@@ -28,27 +28,19 @@ from gi.repository import Wnck
 import time
 import logging
 import subprocess
-import sys
 import os
-from threading import Thread
+import sys
 
 ENGINE_PATH = os.path.dirname(__file__)
-
-sys.path.insert(0, os.path.abspath(os.path.join(ENGINE_PATH, "libs")))
-
-from Xlib.display import Display as XDisplay
-from Xlib import X
-from Xlib.ext import record
-from Xlib.protocol import rq
-
 sys.path.append(
     os.path.abspath(os.path.join(ENGINE_PATH, "..")))
 
 import bogo
+from mouse_detector import MouseDetector
 from config import Config
 from keysyms_mapping import mapping
-
 import vncharsets
+
 vncharsets.init()
 
 
@@ -84,46 +76,6 @@ def check_unity():
         return False
 
 
-class MouseDetector(Thread):
-
-    def __init__(self):
-        super().__init__()
-        self.detected = False
-
-    def run(self):
-        display = XDisplay()
-        self.display = display
-        ctx = display.record_create_context(
-            0,
-            [record.AllClients],
-            [{
-                'core_requests': (0, 0),
-                'core_replies': (0, 0),
-                'ext_requests': (0, 0, 0, 0),
-                'ext_replies': (0, 0, 0, 0),
-                'delivered_events': (0, 0),
-                'device_events': (X.ButtonPressMask, X.ButtonReleaseMask),
-                'errors': (0, 0),
-                'client_started': False,
-                'client_died': False,
-            }])
-        display.record_enable_context(ctx, self.handler)
-        display.record_free_context(ctx)
-
-    def handler(self, reply):
-        data = reply.data
-        while len(data):
-            event, data = rq \
-                .EventField(None) \
-                .parse_binary_value(data, self.display.display, None, None)
-
-            if event.type == X.ButtonRelease:
-                self.detected = True
-
-    def reset(self):
-        self.detected = False
-
-
 class Engine(IBus.Engine):
     __gtype_name__ = 'EngineBoGo'
 
@@ -146,8 +98,11 @@ class Engine(IBus.Engine):
         self.reset_engine()
 
         # Create a new thread to detect mouse clicks
-        self.mouse_detector = MouseDetector()
-        self.mouse_detector.start()
+        mouse_detector = MouseDetector.get_instance()
+        mouse_detector.on_mouse_clicked_do(self.on_mouse_clicked)
+
+    def on_mouse_clicked(self):
+        self.reset_engine()
 
     # The "do_" part is PyGObject's way of overriding base's functions
     def do_process_key_event(self, keyval, keycode, modifiers):
@@ -167,11 +122,6 @@ class Engine(IBus.Engine):
         """
         if self.is_in_unity is True:
             return False
-
-        # Reset when a mouse click is detected
-        if self.mouse_detector.detected:
-            self.reset_engine()
-            self.mouse_detector.reset()
 
         # Ignore key release events
         event_is_key_press = (modifiers & (1 << 30)) == 0  # There's a strange
@@ -500,3 +450,6 @@ class Engine(IBus.Engine):
         if len(self.new_string) == 0:
             self.reset_engine()
         return False
+
+    def on_exit(self):
+        self.mouse_detector.stop()
