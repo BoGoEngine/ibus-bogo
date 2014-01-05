@@ -31,13 +31,18 @@ import subprocess
 import sys
 import os
 from threading import Thread
-from libs.Xlib.display import Display as XDisplay
-from libs.Xlib import X
-from libs.Xlib.ext import record
-from libs.Xlib.protocol import rq
+
+ENGINE_PATH = os.path.dirname(__file__)
+
+sys.path.insert(0, os.path.abspath(os.path.join(ENGINE_PATH, "libs")))
+
+from Xlib.display import Display as XDisplay
+from Xlib import X
+from Xlib.ext import record
+from Xlib.protocol import rq
 
 sys.path.append(
-    os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+    os.path.abspath(os.path.join(ENGINE_PATH, "..")))
 
 import bogo
 from config import Config
