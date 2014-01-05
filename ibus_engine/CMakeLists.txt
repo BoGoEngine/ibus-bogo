@@ -54,7 +54,7 @@ install (FILES
 )
 
 install (DIRECTORY
-  Xlib
+  libs
   DESTINATION
   ${BOGO_INSTALL_DIR}/ibus_engine
 )

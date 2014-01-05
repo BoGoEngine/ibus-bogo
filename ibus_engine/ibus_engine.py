@@ -31,11 +31,10 @@ import subprocess
 import sys
 import os
 from threading import Thread
-from Xlib.display import Display as XDisplay
-from Xlib import X
-from Xlib.ext import record
-from Xlib.protocol import rq
-from Xlib.protocol import request as xlib
+from libs.Xlib.display import Display as XDisplay
+from libs.Xlib import X
+from libs.Xlib.ext import record
+from libs.Xlib.protocol import rq
 
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
