@@ -1,6 +1,11 @@
 language: python
 python:
   - "3.2"
+# whitelist
+branches:
+  only:
+    - master
+    - develop
 before_install:
  - sudo apt-get install -qq ibus python3-gi gir1.2-ibus-1.0
 # command to install dependencies
