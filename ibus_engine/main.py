@@ -74,6 +74,7 @@ class IMApp:
 
     def run(self):
         mouse_detector = MouseDetector.get_instance()
+        mouse_detector.start()
         try:
             self.__mainloop.run()
         finally:
