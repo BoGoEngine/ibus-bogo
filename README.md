@@ -1,13 +1,4 @@
-# ibus-bogo-python - Bộ gõ tiếng Việt iBus
-
-* `last commit:`
-[![Build Status](https://travis-ci.org/BoGoEngine/ibus-bogo-python.png)](https://travis-ci.org/BoGoEngine/ibus-bogo-python)
-
-* `master:`
-[![Build Status](https://travis-ci.org/BoGoEngine/ibus-bogo-python.png?branch=master)](https://travis-ci.org/BoGoEngine/ibus-bogo-python)
-
-* `develop:`
-[![Build Status](https://travis-ci.org/BoGoEngine/ibus-bogo-python.png?branch=develop)](https://travis-ci.org/BoGoEngine/ibus-bogo-python)
+# ibus-bogo-python <br/> Bộ gõ tiếng Việt cho iBus [![Build Status](https://travis-ci.org/BoGoEngine/ibus-bogo-python.png)](https://travis-ci.org/BoGoEngine/ibus-bogo-python) [![Stories in Ready](https://badge.waffle.io/bogoengine/ibus-bogo-python.png?label=ready)](http://waffle.io/bogoengine/ibus-bogo-python)
 
 ## Giới thiệu
 
@@ -24,12 +15,15 @@ xử lý tiếng Việt **BoGoEngine**.
 
 2. Chia sẻ cho người thân
 
-3. Nếu có câu hỏi, hãy trò chuyện với chúng tôi ở
-   [mailing list của nhóm](https://groups.google.com/forum/?fromgroups#!forum/bogoengine-dev)
+3. Trò chuyện với chúng tôi ở [mailing list của nhóm][1] hay chat qua [kênh #bogo][2] trên mạng IRC Freenode.
 
 4. [Thông báo lỗi và đóng góp ý tưởng](https://github.com/BoGoEngine/ibus-bogo-python/issues?state=open)
 
-5. Fork, vọc code và [tham gia đóng góp](doc/sphinx/contributing.rst)
+5. Fork, vọc code và [tham gia phát triển cùng chúng tôi][3]!
+
+[1]: https://groups.google.com/forum/?fromgroups#!forum/bogoengine-dev
+[2]: https://kiwiirc.com/client/chat.freenode.net/?nick=bogo-user|?&theme=basic#bogo
+[3]: doc/sphinx/contributing.rst
 
 ## Giấy phép xuất bản (License)
 
@@ -52,3 +46,7 @@ Nhóm phát triển xin chân thành gửi lời cảm ơn đặc biệt đến:
 * [Hà Quang Dương](https://github.com/haqduong): có nhiều đóng góp quan trọng
 * [Ngô Huy](https://github.com/NgoHuy): cung cấp gói cài đặt cho Arch Linux
 * [Trương Anh Tuấn](https://github.com/tuanta): cung cấp gói cài đặt cho Fedora
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/BoGoEngine/ibus-bogo-python/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+

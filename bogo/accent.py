@@ -29,7 +29,7 @@ class Accent:
     GRAVE = 5
     ACUTE = 4
     HOOK = 3
-    TIDLE= 2
+    TIDLE = 2
     DOT = 1
     NONE = 0
 
@@ -43,6 +43,15 @@ def get_accent_char(char):
         return 5 - index % 6
     else:
         return Accent.NONE
+
+
+def get_accent_string(string):
+    """
+    Get the first accent from the right of a string.
+    """
+    accents = list(filter(lambda accent: accent != Accent.NONE,
+                          map(get_accent_char, string)))
+    return accents[-1] if accents else Accent.NONE
 
 
 def add_accent(components, accent):
@@ -86,7 +95,7 @@ def add_accent_char(char, accent):
         index = index - index % 6 + 5
         char = utils.VOWELS[index - accent]
     return utils.change_case(char, case)
-        
+
 
 def add_accent_at(string, accent):
     """

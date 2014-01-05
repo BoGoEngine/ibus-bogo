@@ -1,3 +1,16 @@
+ibus-bogo (0.3.0-2) precise; urgency=low
+
+  * Add ibus, libnotify, gir1.2-notify as runtime dependency
+
+ -- Trung Ngo <ndtrung4419@gmail.com>  Wed, 03 Jul 2013 20:59:49 +0700
+
+ibus-bogo (0.3.0-1) precise; urgency=low
+
+  * Depends on python3-pyside.qtgui and python3-pyside.qtuitools
+    instead of python3-pyside
+
+ -- Trung Ngo <ndtrung4419@gmail.com>  Thu, 27 Jun 2013 10:51:27 +0700
+
 ibus-bogo (0.3.0) unstable; urgency=low
 
   * New upstream release
