@@ -61,6 +61,7 @@ vncharsets.init()
 # our engine's constructor.
 config = Config()
 
+
 def string_to_text(string):
     return IBus.Text.new_from_string(string)
 
@@ -82,7 +83,9 @@ def check_unity():
     except:
         return False
 
-class MouseDetect(Thread):
+
+class MouseDetector(Thread):
+
     def __init__(self):
         super().__init__()
         self.detected = False
@@ -94,15 +97,15 @@ class MouseDetect(Thread):
             0,
             [record.AllClients],
             [{
-                    'core_requests': (0, 0),
-                    'core_replies': (0, 0),
-                    'ext_requests': (0, 0, 0, 0),
-                    'ext_replies': (0, 0, 0, 0),
-                    'delivered_events': (0, 0),
-                    'device_events': (X.ButtonPressMask, X.ButtonReleaseMask),
-                    'errors': (0, 0),
-                    'client_started': False,
-                    'client_died': False,
+                'core_requests': (0, 0),
+                'core_replies': (0, 0),
+                'ext_requests': (0, 0, 0, 0),
+                'ext_replies': (0, 0, 0, 0),
+                'delivered_events': (0, 0),
+                'device_events': (X.ButtonPressMask, X.ButtonReleaseMask),
+                'errors': (0, 0),
+                'client_started': False,
+                'client_died': False,
             }])
         display.record_enable_context(ctx, self.handler)
         display.record_free_context(ctx)
@@ -110,7 +113,10 @@ class MouseDetect(Thread):
     def handler(self, reply):
         data = reply.data
         while len(data):
-            event, data = rq.EventField(None).parse_binary_value(data, self.display.display, None, None)
+            event, data = rq \
+                .EventField(None) \
+                .parse_binary_value(data, self.display.display, None, None)
+
             if event.type == X.ButtonRelease:
                 self.detected = True
 
@@ -140,9 +146,8 @@ class Engine(IBus.Engine):
         self.reset_engine()
 
         # Create a new thread to detect mouse clicks
-        self.mouse_detector = MouseDetect()
+        self.mouse_detector = MouseDetector()
         self.mouse_detector.start()
-
 
     # The "do_" part is PyGObject's way of overriding base's functions
     def do_process_key_event(self, keyval, keycode, modifiers):
@@ -307,7 +312,8 @@ class Engine(IBus.Engine):
                 return 0, new_string
 
         number_fake_backspace, string_to_commit = \
-            get_nbackspace_and_string_to_commit(self.current_shown_text, string)
+            get_nbackspace_and_string_to_commit(self.current_shown_text,
+                                                string)
 
         logging.debug("Number of fake backspace: %d", number_fake_backspace)
         logging.debug("String to commit: %s", string_to_commit)
