@@ -4,7 +4,6 @@ from functools import partial
 
 from bogo.bogo import *
 from bogo.mark import Mark
-from .gen_key_sequences import gen_key_sequences
 import os
 
 c = {
@@ -109,11 +108,11 @@ class TestProcessSeq():
         def atomic(word, sequence):
             eq_(word, process_seq(sequence))
 
-        with open(os.path.join(os.path.dirname(__file__), 'vi-DauCu.dic')) as dictionary:
-            for word in dictionary.read().splitlines():
-                word = word.rstrip()
-                for sequence in gen_key_sequences(word):
-                    yield atomic, word, sequence
+        path = os.path.join(os.path.dirname(__file__), 'DauCu.sequences')
+        with open(path) as tests:
+            for test in tests.read().splitlines():
+                sequence, word = test.rstrip().split(":")
+                yield atomic, word, sequence
 
     def test_bugs_related(self):
         # naỳ.
