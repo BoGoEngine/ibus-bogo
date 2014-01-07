@@ -87,12 +87,6 @@ class Engine(IBus.Engine):
 
         self.__config = config
         self.input_context_capabilities = 0
-        self.lookup_table = IBus.LookupTable()
-        self.lookup_table.set_page_size(4)
-        self.lookup_table.set_orientation(1)
-        self.lookup_table.set_cursor_visible(True)
-        self.is_lookup_table_shown = False
-
         self.setup_tool_buttons()
 
         self.reset_engine()
@@ -157,46 +151,6 @@ class Engine(IBus.Engine):
                                  fallback_sequence=self.__raw_string,
                                  config=self.__config)
 
-            if self.__config['skip-non-vietnamese']:
-                # Detect if the raw input sequence can produce a syntactically
-                # legitimate Vietnamese word by putting it through
-                # bogo.process_key() twice, first with skip-non-vietnamese on,
-                # then with that setting off. If the two results differ then
-                # the sequence cannot produce a correct Vietnamse word.
-                #
-                # Eg:
-                #   `system` -> system != sýtem   | bad
-                #   `ba`     -> ba     == ba      | good
-                #   `meof`   -> mèo    == mèo     | good
-                if not self.stubborn_old_string:
-                    self.stubborn_old_string = self.old_string
-                else:
-                    self.stubborn_old_string = self.stubborn_new_string
-                stubborn_config = dict(self.__config.items())
-                stubborn_config['skip-non-vietnamese'] = False
-                self.stubborn_new_string = \
-                    bogo.process_key(self.stubborn_old_string,
-                                     chr(keyval),
-                                     config=stubborn_config)[0]
-
-                if self.stubborn_new_string != self.new_string:
-                    # The key sequence cannot generate a correct Vietnamese
-                    # word. But we will offer the user the incorrect word
-                    # as an option.
-                    self.lookup_table.clear()
-                    self.lookup_table.append_candidate(
-                        string_to_text(self.new_string))
-                    self.lookup_table.append_candidate(
-                        string_to_text(self.stubborn_new_string))
-
-                    # Urge IBus to put the lookup table at the correct location.
-                    # Despite this call, no pre-editing is shown.
-                    self.show_preedit_text()
-
-                    self.update_lookup_table(self.lookup_table, True)
-                    self.show_lookup_table()
-                    self.is_lookup_table_shown = True
-
             # Revert the brace shift
             if brace_shift and self.new_string and self.new_string[-1] in "{}":
                 logging.debug("Reverting brace shift")
@@ -236,14 +190,6 @@ class Engine(IBus.Engine):
         self.new_string = ""
         self.old_string = ""
         self.__raw_string = ""
-        self.stubborn_old_string = ""
-        self.stubborn_new_string = ""
-        self.current_shown_text = ""
-        self.hide_lookup_table()
-        self.hide_preedit_text()
-        self.lookup_table.clear()
-        self.is_lookup_table_shown = False
-        self.is_table_dirty = False
 
     def commit_result(self, string):
         def get_nbackspace_and_string_to_commit(old_string, new_string):
@@ -259,7 +205,7 @@ class Engine(IBus.Engine):
                 return 0, new_string
 
         number_fake_backspace, string_to_commit = \
-            get_nbackspace_and_string_to_commit(self.current_shown_text,
+            get_nbackspace_and_string_to_commit(self.old_string,
                                                 string)
 
         logging.debug("Number of fake backspace: %d", number_fake_backspace)
@@ -373,7 +319,7 @@ class Engine(IBus.Engine):
         pass
 
     def do_disable(self):
-        pass
+        self.reset_engine()
 
     def do_focus_in(self):
         """Implements IBus.Engine's focus_in's default signal handler.
@@ -410,33 +356,9 @@ class Engine(IBus.Engine):
     def do_set_capabilities(self, caps):
         self.input_context_capabilities = caps
 
-    def do_candidate_clicked(self):
-        pass
-
     def on_return_pressed(self):
-        if self.stubborn_new_string and \
-                self.is_lookup_table_shown and \
-                self.is_table_dirty:
-            self.old_string = self.new_string
-            self.commit_result(self.lookup_table.get_candidate(
-                self.lookup_table.get_cursor_pos()).get_text())
-            self.reset_engine()
-            return True
-        else:
-            self.reset_engine()
-            return False
-
-    def on_updown_pressed(self, key):
-        key = {IBus.Up: "up", IBus.Down: "down"}[key]
-        if self.is_lookup_table_shown:
-            getattr(self.lookup_table, "cursor_" + key)()
-            self.update_lookup_table(self.lookup_table, True)
-            self.commit_result(self.lookup_table.get_candidate(
-                self.lookup_table.get_cursor_pos()).get_text())
-            self.is_table_dirty = True
-            return True
-        else:
-            return False
+        self.reset_engine()
+        return False
 
     def on_backspace_pressed(self):
         logging.debug("Getting a backspace")
