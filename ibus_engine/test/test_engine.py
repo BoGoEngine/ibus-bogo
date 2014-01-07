@@ -4,6 +4,33 @@ from ibus_engine.ibus_engine import Engine
 
 
 class TestEngine():
+    def setup(self):
+        config = {
+            "input-method": "telex",
+            "output-charset": "utf-8",
+            "skip-non-vietnamese": True,
+            "default-input-methods": {
+                "telex": {
+                    "a": "a^",
+                    "o": "o^",
+                    "e": "e^",
+                    "w": ["u*", "o*", "a+", "<ư"],
+                    "d": "d-",
+                    "f": "\\",
+                    "s": "/",
+                    "r": "?",
+                    "x": "~",
+                    "j": ".",
+                    "]": "<ư",
+                    "[": "<ơ",
+                    "}": "<Ư",
+                    "{": "<Ơ"
+                },
+            }
+        }
+
+        self.eng = Engine(config)
+
     def send_keys(self, input, engine):
         [self.send_key(character, engine) for character in input]
         return self
@@ -22,53 +49,49 @@ class TestEngine():
         """
         baa + bksp => {new_string: b, raw_string: b}
         """
-        eng = Engine()
 
-        self.send_keys("baa", eng).send_bksp(eng)
+        self.send_keys("baa", self.eng).send_bksp(self.eng)
 
-        eq_(eng.new_string, 'b')
-        eq_(eng._Engine__raw_string, 'b')
+        eq_(self.eng.new_string, 'b')
+        eq_(self.eng._Engine__raw_string, 'b')
 
     def test_2_bug_117(self):
         """
         bana + bksp => {new_string: bâ, raw_string: baa}
         """
-        eng = Engine()
 
-        self.send_keys("bana", eng).send_bksp(eng)
+        self.send_keys("bana", self.eng).send_bksp(self.eng)
 
-        eq_(eng.new_string, 'bâ')
-        eq_(eng._Engine__raw_string, 'baa')
+        eq_(self.eng.new_string, 'bâ')
+        eq_(self.eng._Engine__raw_string, 'baa')
 
     def test_3_bug_117(self):
         """
         ba + bksp + a => {new_string: ba, raw_string: ba}
         """
-        eng = Engine()
 
-        self.send_keys("ba", eng).send_bksp(eng).send_keys("a", eng)
+        self.send_keys("ba", self.eng) \
+            .send_bksp(self.eng).send_keys("a", self.eng)
 
-        eq_(eng.new_string, 'ba')
-        eq_(eng._Engine__raw_string, 'ba')
+        eq_(self.eng.new_string, 'ba')
+        eq_(self.eng._Engine__raw_string, 'ba')
 
     def test_4_bug_117(self):
         """
         thuow + bksp => {new_string: thu, raw_string: thu}
         """
-        eng = Engine()
 
-        self.send_keys("thuow", eng).send_bksp(eng)
+        self.send_keys("thuow", self.eng).send_bksp(self.eng)
 
-        eq_(eng.new_string, 'thu')
-        eq_(eng._Engine__raw_string, 'thu')
+        eq_(self.eng.new_string, 'thu')
+        eq_(self.eng._Engine__raw_string, 'thu')
 
     def test_bug_123(self):
         """
         Should not raise IndexError when backspace is sent repeatedly
         """
-        eng = Engine()
 
-        self.send_bksp(eng)
-        self.send_bksp(eng)
-        self.send_bksp(eng)
-        self.send_bksp(eng)
+        self.send_bksp(self.eng)
+        self.send_bksp(self.eng)
+        self.send_bksp(self.eng)
+        self.send_bksp(self.eng)
