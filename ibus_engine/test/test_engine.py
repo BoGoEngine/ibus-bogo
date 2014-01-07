@@ -9,6 +9,7 @@ class TestEngine():
             "input-method": "telex",
             "output-charset": "utf-8",
             "skip-non-vietnamese": True,
+            "abbreviation-rules-path": "rules.json",
             "default-input-methods": {
                 "telex": {
                     "a": "a^",

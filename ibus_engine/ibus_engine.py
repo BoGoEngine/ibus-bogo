@@ -79,7 +79,7 @@ class Engine(IBus.Engine):
         self.input_context_capabilities = 0
         self.setup_tool_buttons()
 
-        self.abbr_expander = AbbreviationExpander("rules.json")
+        self.abbr_expander = AbbreviationExpander(self.config)
 
         self.reset_engine()
 

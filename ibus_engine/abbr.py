@@ -4,12 +4,12 @@ import json
 
 class AbbreviationExpander():
 
-    def __init__(self, file_path):
-        self.file_path = file_path
+    def __init__(self, config):
+        self.file_path = config["abbreviation-rules-path"]
         self.parse_abbr_rule()
 
         # Setup automatic refreshing
-        f = Gio.File.new_for_path(file_path)
+        f = Gio.File.new_for_path(self.file_path)
         self.monitor = f.monitor_file(0, None)
         self.monitor.connect("changed", self.on_file_changed)
 
