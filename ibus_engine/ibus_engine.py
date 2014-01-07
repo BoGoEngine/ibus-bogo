@@ -79,14 +79,14 @@ def check_unity():
 class Engine(IBus.Engine):
     __gtype_name__ = 'EngineBoGo'
 
+    is_in_unity = check_unity()
+
     def __init__(self):
         super(Engine, self).__init__()
         logging.info("You are running ibus-bogo-python")
 
         self.__config = config
         self.input_context_capabilities = 0
-        self.is_in_unity = check_unity()
-
         self.lookup_table = IBus.LookupTable()
         self.lookup_table.set_page_size(4)
         self.lookup_table.set_orientation(1)
@@ -117,7 +117,7 @@ class Engine(IBus.Engine):
 
         This function gets called whenever a key is pressed.
         """
-        if self.is_in_unity is True:
+        if Engine.is_in_unity is True:
             return False
 
         # Ignore key release events
