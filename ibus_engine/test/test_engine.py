@@ -1,4 +1,4 @@
-from nose.tools import eq_, raises
+from nose.tools import eq_
 from gi.repository import IBus
 from ibus_engine.ibus_engine import Engine
 
