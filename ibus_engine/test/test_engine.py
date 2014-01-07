@@ -1,4 +1,4 @@
-from nose.tools import eq_
+from nose.tools import eq_, raises
 from gi.repository import IBus
 from ibus_engine.ibus_engine import Engine
 
@@ -61,3 +61,14 @@ class TestEngine():
 
         eq_(eng.new_string, 'thu')
         eq_(eng._Engine__raw_string, 'thu')
+
+    def test_bug_123(self):
+        """
+        Should not raise IndexError when backspace is sent repeatedly
+        """
+        eng = Engine()
+
+        self.send_bksp(eng)
+        self.send_bksp(eng)
+        self.send_bksp(eng)
+        self.send_bksp(eng)
