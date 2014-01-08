@@ -2,42 +2,40 @@ from nose.tools import eq_
 from ibus_engine.abbr import AbbreviationExpander
 from gi.repository import GObject
 import threading
+import time
 
 
 class TestAbbreviationExpander():
 
     def setup(self):
-        self.test_file_path = "/tmp/test_abbr.json"
-        with open(self.test_file_path, "w") as test_file:
-            pass
-            test_file.write("{}")
-
-        self.config = {
-            "abbreviation-rules-path": self.test_file_path,
-            "auto-capitalize-abbreviations": False
-        }
-        self.abbr = AbbreviationExpander(self.config)
+        self.abbr = AbbreviationExpander()
 
     def tear_down(self):
         # Delete the test file
         pass
 
-    def test_empty_file(self):
+    def test_no_rule(self):
         eq_(self.abbr.expand("lorem ipsum"), "lorem ipsum")
 
+    def test_simple_rule(self):
+        self.abbr.add_rule("a", "abc")
+        eq_(self.abbr.expand("a"), "abc")
+
     def test_watch_file_content(self):
+        test_file_path = "/tmp/test_rules.json"
+
         loop = GObject.MainLoop()
 
         def mainloop():
+            self.abbr.watch_file(test_file_path)
             loop.run()
 
         threading.Thread(target=mainloop).start()
 
-        test_file = open(self.test_file_path, "w")
-        test_file.write('{"a" : "abc"}')
-        test_file.close()
+        time.sleep(2)
+        with open(test_file_path, "w") as test_file:
+            test_file.write('{"a" : "abc"}')
 
-        import time
         time.sleep(2)
 
         try:
@@ -45,18 +43,17 @@ class TestAbbreviationExpander():
         finally:
             loop.quit()
 
-    def test_auto_capitalization(self):
-        test_file = open(self.test_file_path, "w")
-        test_file.write('{"tm" : "thay mat"}')
-        test_file.close()
+        # Remove the test file
+        # ...
 
-        self.abbr.parse_abbr_rule()
+    def test_auto_capitalization(self):
+        self.abbr.add_rule("tm", "thay mat")
 
         eq_(self.abbr.expand("tm"), "thay mat")
         eq_(self.abbr.expand("Tm"), "Tm")
         eq_(self.abbr.expand("TM"), "TM")
 
-        self.config["auto-capitalize-abbreviations"] = True
+        self.abbr.config["auto-capitalize-abbreviations"] = True
 
         eq_(self.abbr.expand("tm"), "thay mat")
         eq_(self.abbr.expand("Tm"), "Thay mat")

@@ -1,21 +1,37 @@
-from gi.repository import Gio, GObject
+from gi.repository import Gio
 import json
 
 
 class AbbreviationExpander():
 
-    def __init__(self, config):
-        self.config = config
-        self.parse_abbr_rule()
+    def __init__(self, config=None):
+        if config:
+            self.config = config
+        else:
+            self.config = {
+                "auto-capitalize-abbreviations": False
+            }
+        self.abbr_rules = {}
 
+    def watch_file(self, file_path):
         # Setup automatic refreshing
-        f = Gio.File.new_for_path(self.config["abbreviation-rules-path"])
+        self.file_path = file_path
+
+        f = Gio.File.new_for_path(file_path)
         self.monitor = f.monitor_file(0, None)
         self.monitor.connect("changed", self.on_file_changed)
 
-    def on_file_changed(self, monitor, file, other_file, event_type):
-        if event_type == Gio.FileMonitorEvent.CHANGES_DONE_HINT:
-            self.parse_abbr_rule()
+    def on_file_changed(self, monitor, watched_file, other_file, event_type):
+        if event_type == Gio.FileMonitorEvent.CHANGED:
+            with open(watched_file.get_path(), "r") as f:
+                print(watched_file.get_path())
+                # FIXME: Validation and exception checking needed
+                json_content = f.read()
+                self.abbr_rules = json.loads(json_content)
+                print(self.abbr_rules)
+
+    def add_rule(self, abbreviated_string, full_string):
+        self.abbr_rules[abbreviated_string] = full_string
 
     def expand(self, abbr_word):
         lookup_key = abbr_word
@@ -34,9 +50,3 @@ class AbbreviationExpander():
             return expanded_word
         else:
             return abbr_word
-
-    def parse_abbr_rule(self):
-        with open(self.config["abbreviation-rules-path"], "r") as rule_file:
-            rules = json.loads(rule_file.read())
-            # FIXME: some validation needed, perhaps?
-            self.abbr_rules = rules
