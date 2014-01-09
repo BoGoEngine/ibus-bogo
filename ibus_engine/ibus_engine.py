@@ -87,7 +87,7 @@ class Engine(IBus.Engine):
         mouse_detector = MouseDetector.get_instance()
         mouse_detector.add_mouse_click_listener(self.reset_engine)
 
-    # The "do_" part is PyGObject's way of overriding base's functions
+    # The "do_" part denotes a default signal handler
     def do_process_key_event(self, keyval, keycode, modifiers):
         """Implement IBus.Engine's process_key_event default signal handler.
 
@@ -107,7 +107,7 @@ class Engine(IBus.Engine):
             return False
 
         # Ignore key release events
-        event_is_key_press = (modifiers & (1 << 30)) == 0  # There's a strange
+        event_is_key_press = (modifiers & (1 << 30)) == 0
 
         # There is a strange overflow bug with python3-gi here so the above
         # line is used instead
