@@ -119,9 +119,6 @@ class Engine(IBus.Engine):
         if keyval == IBus.Return:
             return self.on_return_pressed()
 
-        if keyval in [IBus.Up, IBus.Down]:
-            return self.on_updown_pressed(keyval)
-
         if keyval == IBus.BackSpace:
             return self.on_backspace_pressed()
 
