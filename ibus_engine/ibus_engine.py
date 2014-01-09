@@ -71,7 +71,7 @@ class Engine(IBus.Engine):
 
     is_in_unity = check_unity()
 
-    def __init__(self, config):
+    def __init__(self, config, abbr_expander):
         super(Engine, self).__init__()
         logging.info("You are running ibus-bogo-python")
 
@@ -79,7 +79,7 @@ class Engine(IBus.Engine):
         self.input_context_capabilities = 0
         self.setup_tool_buttons()
 
-        self.abbr_expander = AbbreviationExpander(self.config)
+        self.abbr_expander = abbr_expander
 
         self.reset_engine()
 

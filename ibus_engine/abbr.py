@@ -14,6 +14,8 @@ class AbbreviationExpander():
         self.abbr_rules = {}
 
     def watch_file(self, file_path):
+        self.read_file(file_path)
+
         # Setup automatic refreshing
         self.file_path = file_path
 
@@ -21,14 +23,14 @@ class AbbreviationExpander():
         self.monitor = f.monitor_file(0, None)
         self.monitor.connect("changed", self.on_file_changed)
 
+    def read_file(self, file_path):
+        with open(file_path) as f:
+            json_content = f.read()
+            self.abbr_rules = json.loads(json_content)
+
     def on_file_changed(self, monitor, watched_file, other_file, event_type):
         if event_type == Gio.FileMonitorEvent.CHANGED:
-            with open(watched_file.get_path(), "r") as f:
-                print(watched_file.get_path())
-                # FIXME: Validation and exception checking needed
-                json_content = f.read()
-                self.abbr_rules = json.loads(json_content)
-                print(self.abbr_rules)
+            self.read_file(watched_file.get_path())
 
     def add_rule(self, abbreviated_string, full_string):
         self.abbr_rules[abbreviated_string] = full_string

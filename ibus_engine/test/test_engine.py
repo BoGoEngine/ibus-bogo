@@ -1,6 +1,7 @@
 from nose.tools import eq_
 from gi.repository import IBus
 from ibus_engine.ibus_engine import Engine
+from ibus_engine.abbr import AbbreviationExpander
 
 
 class TestEngine():
@@ -30,7 +31,9 @@ class TestEngine():
             }
         }
 
-        self.eng = Engine(config)
+        expander = AbbreviationExpander()
+
+        self.eng = Engine(config, expander)
 
     def send_keys(self, input, engine):
         [self.send_key(character, engine) for character in input]

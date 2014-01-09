@@ -32,6 +32,7 @@ import argparse
 from ibus_engine import Engine
 from mouse_detector import MouseDetector
 from config import Config
+from abbr import AbbreviationExpander
 
 
 current_path = os.path.dirname(os.path.abspath(__file__))
@@ -76,7 +77,10 @@ class IMApp:
         self.factory = IBus.Factory.new(self.bus.get_connection())
         self.factory.connect("create-engine", self.create_engine)
 
+        CONFIG_DIR = os.path.expanduser("~/.config/ibus-bogo/")
         self.config = Config()
+        self.abbr_expander = AbbreviationExpander(config=self.config)
+        self.abbr_expander.watch_file(CONFIG_DIR + "/abbr_rules.json")
 
         if exec_by_ibus:
             self.bus.request_name("org.freedesktop.IBus.BoGoPython", 0)
