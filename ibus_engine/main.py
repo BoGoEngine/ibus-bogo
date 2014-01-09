@@ -94,11 +94,23 @@ class IMApp:
             # messages like this:
             #
             # TypeError: __init__() missing 1 required positional argument
+            # 
+            # We will ignore that message by temporarily redirect stderr
+            # to /dev/null
+
+            f = open('/dev/null', 'w')
+            stderr = sys.stderr
+            sys.stderr = f
+
             engine = Engine.new_with_type(GObject.type_from_name("EngineBoGo"),
                                           "bogo-python",
                                           dbus_path,
                                           self.bus.get_connection())
-            Engine.__init__(engine, self.config)
+
+            sys.stderr = stderr
+            f.close()
+
+            Engine.__init__(engine, self.config, self.abbr_expander)
 
             self.engine_count += 1
             return engine
