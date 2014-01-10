@@ -41,7 +41,7 @@ install (FILES
 )
 
 add_custom_target (translations ALL
-  COMMAND pylupdate4 controller.pro
+# COMMAND pylupdate4 controller.pro
   COMMAND lrelease controller.pro
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/config-gui
 )
