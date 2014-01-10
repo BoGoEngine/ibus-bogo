@@ -122,6 +122,13 @@ class Engine(IBus.Engine):
         if keyval == IBus.BackSpace:
             return self.on_backspace_pressed()
 
+        if keyval == IBus.space:
+            if self.config["enable-text-expansion"]:
+                expanded_string = self.abbr_expander.expand(self.new_string)
+                self.commit_result(expanded_string)
+            self.reset_engine()
+            return False
+
         if self.is_processable_key(keyval, modifiers):
             logging.debug("Key pressed: %c", chr(keyval))
             logging.debug("Raw string: %s", self.__raw_string)
@@ -148,10 +155,8 @@ class Engine(IBus.Engine):
 
             logging.debug("New string: %s", self.new_string)
 
-            expanded_string = self.abbr_expander.expand(self.new_string)
-            self.commit_result(expanded_string)
+            self.commit_result(self.new_string)
             self.old_string = self.new_string
-
             return True
 
         self.reset_engine()
