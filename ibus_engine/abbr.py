@@ -24,9 +24,12 @@ class AbbreviationExpander():
         self.monitor.connect("changed", self.on_file_changed)
 
     def read_file(self, file_path):
-        with open(file_path) as f:
-            json_content = f.read()
-            self.abbr_rules = json.loads(json_content)
+        try:
+            with open(file_path) as f:
+                json_content = f.read()
+                self.abbr_rules = json.loads(json_content)
+        except FileNotFoundError:
+            pass
 
     def on_file_changed(self, monitor, watched_file, other_file, event_type):
         if event_type == Gio.FileMonitorEvent.CHANGED:

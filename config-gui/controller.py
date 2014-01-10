@@ -46,7 +46,7 @@ from tablemodel import AbbreviationTableModel
 
 
 # Find the config file or create one if none exists
-CONFIG_DIR = os.path.expanduser("~/.config/ibus-bogo/")
+CONFIG_DIR = os.path.expanduser("~/.config/ibus-bogo")
 if not os.path.exists(CONFIG_DIR):
     os.makedirs(CONFIG_DIR)
 config_path = os.path.join(CONFIG_DIR, "config.json")

@@ -12,14 +12,17 @@ class AbbreviationTableModel(QStandardItemModel):
 
     def __init__(self, parent, rule_file_path):
         # Initialize it with two columns and zero rows
-        super(AbbreviationTableModel, self).__init__(1, 2, parent)
+        super(AbbreviationTableModel, self).__init__(0, 2, parent)
 
         self.setHeaderData(0, Qt.Horizontal, "Expand")
         self.setHeaderData(1, Qt.Horizontal, "To")
 
         self.rule_file_path = rule_file_path
-        with open(self.rule_file_path, "r") as f:
-            self.abbrRules = json.load(f)
+        try:
+            with open(self.rule_file_path, "r") as f:
+                self.abbrRules = json.load(f)
+        except FileNotFoundError:
+            self.abbrRules = {}
 
         row = 0
         for abbr, expanded in self.abbrRules.items():
