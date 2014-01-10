@@ -9,7 +9,7 @@ class AbbreviationExpander():
             self.config = config
         else:
             self.config = {
-                "auto-capitalize-abbreviations": False
+                "auto-capitalize-expansion": False
             }
         self.abbr_rules = {}
 
@@ -36,19 +36,22 @@ class AbbreviationExpander():
         self.abbr_rules[abbreviated_string] = full_string
 
     def expand(self, abbr_word):
-        lookup_key = abbr_word
-        if self.config["auto-capitalize-abbreviations"]:
-            lookup_key = abbr_word.lower()
+        if self.config["auto-capitalize-expansion"]:
+            abbr_word_lower = abbr_word.lower()
 
-        if lookup_key in self.abbr_rules:
-            expanded_word = self.abbr_rules[lookup_key]
+            if abbr_word_lower in self.abbr_rules:
+                expanded_word = self.abbr_rules[abbr_word_lower]
 
-            if self.config["auto-capitalize-abbreviations"]:
                 if abbr_word.isupper():
                     expanded_word = expanded_word.upper()
-                elif abbr_word.istitle():
+                elif abbr_word.istitle() and expanded_word.islower():
                     expanded_word = expanded_word.capitalize()
 
-            return expanded_word
+                return expanded_word
+            # if a lower case match is not found then
+            # fallback to a normal case match
+        
+        if abbr_word in self.abbr_rules:
+            return self.abbr_rules[abbr_word]
         else:
             return abbr_word

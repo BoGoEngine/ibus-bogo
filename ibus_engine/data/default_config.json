@@ -2,6 +2,6 @@
     "input-method": "telex",
     "output-charset": "utf-8",
     "skip-non-vietnamese": false,
-    "abbreviation-rules-path": "rules.json",
-    "auto-capitalize-abbreviations": false
+    "enable-text-expansion": false,
+    "auto-capitalize-expansion": false
 }
