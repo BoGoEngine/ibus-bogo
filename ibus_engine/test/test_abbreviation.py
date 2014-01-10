@@ -53,7 +53,7 @@ class TestAbbreviationExpander():
         eq_(self.abbr.expand("Tm"), "Tm")
         eq_(self.abbr.expand("TM"), "TM")
 
-        self.abbr.config["auto-capitalize-abbreviations"] = True
+        self.abbr.config["auto-capitalize-expansion"] = True
 
         eq_(self.abbr.expand("tm"), "thay mat")
         eq_(self.abbr.expand("Tm"), "Thay mat")
