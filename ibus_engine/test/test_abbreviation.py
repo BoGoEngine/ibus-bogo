@@ -1,4 +1,5 @@
 from nose.tools import eq_
+from nose.plugins.attrib import attr
 from ibus_engine.abbr import AbbreviationExpander
 from gi.repository import GObject
 import threading
@@ -22,6 +23,7 @@ class TestAbbreviationExpander():
         self.abbr.add_rule("a", "abc")
         eq_(self.abbr.expand("a"), "abc")
 
+    @attr('skip-travis')
     def test_watch_file_content(self):
         import tempfile
 
