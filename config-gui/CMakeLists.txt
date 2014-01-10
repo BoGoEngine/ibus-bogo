@@ -27,6 +27,7 @@ install (PROGRAMS
 
 install (FILES
   controller.py
+  tablemodel.py
   controller.ui
   charset_converter.py
   DESTINATION
@@ -40,7 +41,7 @@ install (FILES
 )
 
 add_custom_target (translations ALL
-  COMMAND pyside-lupdate controller.pro
+  COMMAND pylupdate4 controller.pro
   COMMAND lrelease controller.pro
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/config-gui
 )
