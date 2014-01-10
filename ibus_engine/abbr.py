@@ -28,7 +28,7 @@ class AbbreviationExpander():
             with open(file_path) as f:
                 json_content = f.read()
                 self.abbr_rules = json.loads(json_content)
-        except FileNotFoundError:
+        except IOError:
             pass
 
     def on_file_changed(self, monitor, watched_file, other_file, event_type):

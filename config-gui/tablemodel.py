@@ -21,7 +21,7 @@ class AbbreviationTableModel(QStandardItemModel):
         try:
             with open(self.rule_file_path, "r") as f:
                 self.abbrRules = json.load(f)
-        except FileNotFoundError:
+        except IOError:
             self.abbrRules = {}
 
         row = 0
