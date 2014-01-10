@@ -23,21 +23,25 @@ class TestAbbreviationExpander():
         eq_(self.abbr.expand("a"), "abc")
 
     def test_watch_file_content(self):
-        test_file_path = "/tmp/test_rules.json"
-        with open(test_file_path, "w") as f:
-            f.write('{}')
+        import tempfile
+
+        f = tempfile.NamedTemporaryFile(mode="w")
+        f.write('{}')
+        f.file.flush()
 
         loop = GObject.MainLoop()
 
         def mainloop():
-            self.abbr.watch_file(test_file_path)
+            self.abbr.watch_file(f.name)
             loop.run()
 
         threading.Thread(target=mainloop).start()
 
         time.sleep(2)
-        with open(test_file_path, "w") as test_file:
-            test_file.write('{"a" : "abc"}')
+
+        f.file.seek(0)
+        f.write('{"a" : "abc"}')
+        f.file.flush()
 
         time.sleep(2)
 
@@ -46,7 +50,7 @@ class TestAbbreviationExpander():
         finally:
             loop.quit()
 
-        os.remove(test_file_path)
+        f.close()
 
     def test_auto_capitalization(self):
         self.abbr.add_rule("tm", "thay mat")
