@@ -3,6 +3,7 @@ from ibus_engine.abbr import AbbreviationExpander
 from gi.repository import GObject
 import threading
 import time
+import os
 
 
 class TestAbbreviationExpander():
@@ -23,6 +24,8 @@ class TestAbbreviationExpander():
 
     def test_watch_file_content(self):
         test_file_path = "/tmp/test_rules.json"
+        with open(test_file_path, "w") as f:
+            f.write('{}')
 
         loop = GObject.MainLoop()
 
@@ -43,8 +46,7 @@ class TestAbbreviationExpander():
         finally:
             loop.quit()
 
-        # Remove the test file
-        # ...
+        os.remove(test_file_path)
 
     def test_auto_capitalization(self):
         self.abbr.add_rule("tm", "thay mat")
