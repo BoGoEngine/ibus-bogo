@@ -41,11 +41,13 @@ install (FILES
 )
 
 add_custom_target (translations ALL
-# COMMAND pylupdate4 controller.pro
+  COMMAND pylupdate4 controller.pro
   COMMAND lrelease-qt4 controller.pro
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/config-gui
 )
 
-FILE (GLOB locales "locales/*.qm" "locales/*.png")
-
-install (FILES ${locales} DESTINATION ${BOGO_INSTALL_DIR}/config-gui/locales)  
+install (FILES 
+	locales/vi_VN.qm
+	locales/vi_VN.png
+	locales/en_US.png
+	DESTINATION ${BOGO_INSTALL_DIR}/config-gui/locales)  
