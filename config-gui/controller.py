@@ -42,13 +42,14 @@ sys.path.append(
 
 from base_config import BaseConfig
 import vncharsets
+from tablemodel import AbbreviationTableModel
 
 
 # Find the config file or create one if none exists
-_dirname = os.path.expanduser("~/.config/ibus-bogo/")
-if not os.path.exists(_dirname):
-    os.makedirs(_dirname)
-config_path = os.path.join(_dirname, "config.json")
+CONFIG_DIR = os.path.expanduser("~/.config/ibus-bogo")
+if not os.path.exists(CONFIG_DIR):
+    os.makedirs(CONFIG_DIR)
+config_path = os.path.join(CONFIG_DIR, "config.json")
 jsonData = open(config_path)
 
 # Fill in some global data
@@ -70,6 +71,11 @@ DEFAULT_LOCALE = "vi_VN"
 
 
 class Settings(BaseConfig, QObject):
+
+    """
+    Watches the settings file and allows access to it as a dictionary.
+    """
+
     # TODO: Make this thing reactive
 
     changed = pyqtSignal()
@@ -125,8 +131,33 @@ class Window(Ui_FormClass, UiFormBase):
                 self.sourceCharsetCombo.insertItem(
                     i, charsetList[i].upper())
 
+        abbr_rule_file_path = CONFIG_DIR + "/abbr_rules.json"
+        self.abbrTableModel = AbbreviationTableModel(parent=self, rule_file_path=abbr_rule_file_path)
+
+        self.abbrTable.setModel(self.abbrTableModel)
+        self.abbrTable.horizontalHeader().setStretchLastSection(True)
+
         self.setupLanguages()
         self.refreshGui()
+
+    @pyqtSlot()
+    def on_addButton_clicked(self):
+        self.abbrTableModel.addBlankRow()
+    
+    @pyqtSlot()
+    def on_removeButton_clicked(self):
+        # Get the selected row
+        # ...
+        # Remove that row
+        # ...
+        selectionModel = self.abbrTable.selectionModel()
+        if selectionModel.hasSelection():
+            index = selectionModel.currentIndex()
+            print(self.abbrTableModel.removeRow(index.row()))
+
+    @pyqtSlot(bool)
+    def on_enableAbbrCheckBox_clicked(self, state):
+        self.settings["enable-text-expansion"] = state
 
     @pyqtSlot()
     def on_closeButton_clicked(self):
@@ -151,6 +182,11 @@ class Window(Ui_FormClass, UiFormBase):
         logging.debug("skipNonVNCheckBoxChanged: %s", str(state))
         self.settings["skip-non-vietnamese"] = state
 
+    @pyqtSlot(bool)
+    def on_autocapCheckBox_clicked(self, state):
+        logging.debug("autocapCheckBox: %s", str(state))
+        self.settings["auto-capitalize-expansion"] =  state
+
     @pyqtSlot(int)
     def on_guiLanguageComboBox_activated(self, index):
         self.switchLanguage(self.guiLanguages[index][0])
@@ -161,7 +197,7 @@ class Window(Ui_FormClass, UiFormBase):
         # TODO Don't always process when the button is pressed.
         clipboard = self.app.clipboard()
         mime = clipboard.mimeData()
-        sourceEncoding = self.ui.sourceCharsetCombo.currentText().lower()
+        sourceEncoding = self.sourceCharsetCombo.currentText().lower()
         try:
             if mime.hasHtml() or mime.hasText():
                 html, text = mime.html(), mime.text()
@@ -232,6 +268,11 @@ class Window(Ui_FormClass, UiFormBase):
 
         if "gui-language" in self.settings:
             self.switchLanguage(self.settings["gui-language"])
+
+        if "auto-capitalize-expansion" in self.settings:
+            self.autocapCheckBox.setChecked(self.settings["auto-capitalize-expansion"])
+        if "enable-text-expansion" in self.settings:
+            self.enableAbbrCheckBox.setChecked(self.settings["enable-text-expansion"])
 
     def changeEvent(self, event):
         if event.type() == QEvent.LanguageChange:

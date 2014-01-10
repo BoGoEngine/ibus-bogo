@@ -31,6 +31,8 @@ import argparse
 
 from ibus_engine import Engine
 from mouse_detector import MouseDetector
+from config import Config
+from abbr import AbbreviationExpander
 
 
 current_path = os.path.dirname(os.path.abspath(__file__))
@@ -70,15 +72,52 @@ class IMApp:
         self.mainloop = GObject.MainLoop()
         self.bus = IBus.Bus()
         self.bus.connect("disconnected", self.bus_disconnected_cb)
+
+        self.engine_count = 0
         self.factory = IBus.Factory.new(self.bus.get_connection())
-        self.factory.add_engine(engine_name,
-                                GObject.type_from_name("EngineBoGo"))
+        self.factory.connect("create-engine", self.create_engine)
+
+        CONFIG_DIR = os.path.expanduser("~/.config/ibus-bogo/")
+        self.config = Config()
+        self.abbr_expander = AbbreviationExpander(config=self.config)
+        self.abbr_expander.watch_file(CONFIG_DIR + "/abbr_rules.json")
+
         if exec_by_ibus:
             self.bus.request_name("org.freedesktop.IBus.BoGoPython", 0)
         else:
             self.bus.register_component(self.component)
             self.bus.set_global_engine_async(
                 "bogo-python", -1, None, None, None)
+
+    def create_engine(self, factory, engine_name):
+        if engine_name == "bogo-python":
+            dbus_path = "/org/freedesktop/IBus/Engine/%d" % self.engine_count
+
+            # It looks like the GObject's new_with_type constructor also
+            # calls __init__ but without arguments so there will be error
+            # messages like this:
+            #
+            # TypeError: __init__() missing 1 required positional argument
+            # 
+            # We will ignore that message by temporarily redirect stderr
+            # to /dev/null
+
+            f = open('/dev/null', 'w')
+            stderr = sys.stderr
+            sys.stderr = f
+
+            engine = Engine.new_with_type(GObject.type_from_name("EngineBoGo"),
+                                          "bogo-python",
+                                          dbus_path,
+                                          self.bus.get_connection())
+
+            sys.stderr = stderr
+            f.close()
+
+            Engine.__init__(engine, self.config, self.abbr_expander)
+
+            self.engine_count += 1
+            return engine
 
     def run(self):
         mouse_detector = MouseDetector.get_instance()

@@ -6,16 +6,22 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>368</height>
+    <width>480</width>
+    <height>474</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>IBus BoGo Settings</string>
+   <string>BoGo Settings</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QTabWidget" name="tabWidget">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="tabPosition">
       <enum>QTabWidget::North</enum>
      </property>
@@ -24,9 +30,6 @@
      </property>
      <property name="currentIndex">
       <number>0</number>
-     </property>
-     <property name="elideMode">
-      <enum>Qt::ElideNone</enum>
      </property>
      <property name="usesScrollButtons">
       <bool>true</bool>
@@ -40,16 +43,13 @@
      <property name="movable">
       <bool>false</bool>
      </property>
-     <widget class="QWidget" name="tab">
+     <widget class="QWidget" name="generalTab">
       <attribute name="title">
        <string>General</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_4">
+      <layout class="QVBoxLayout" name="verticalLayout_10">
        <item>
         <layout class="QFormLayout" name="formLayout">
-         <property name="fieldGrowthPolicy">
-          <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
-         </property>
          <item row="0" column="0">
           <widget class="QLabel" name="inputMethodLabel">
            <property name="text">
@@ -59,9 +59,6 @@
             <cstring>inputMethodComboBox</cstring>
            </property>
           </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QComboBox" name="inputMethodComboBox"/>
          </item>
          <item row="1" column="0">
           <widget class="QLabel" name="outputCharsetLabel">
@@ -73,8 +70,21 @@
            </property>
           </widget>
          </item>
+         <item row="0" column="1">
+          <widget class="QComboBox" name="inputMethodComboBox"/>
+         </item>
          <item row="1" column="1">
           <widget class="QComboBox" name="charsetComboBox"/>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="enableSpellcheckingLabel">
+           <property name="text">
+            <string>Skip non-Vietnamese:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QCheckBox" name="skipNonVNCheckBox"/>
          </item>
         </layout>
        </item>
@@ -85,8 +95,8 @@
          </property>
          <property name="sizeHint" stdset="0">
           <size>
-           <width>20</width>
-           <height>40</height>
+           <width>357</width>
+           <height>0</height>
           </size>
          </property>
         </spacer>
@@ -130,33 +140,173 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_2">
-      <property name="minimumSize">
-       <size>
-        <width>378</width>
-        <height>0</height>
-       </size>
-      </property>
+     <widget class="QWidget" name="abbrTab">
       <attribute name="title">
-       <string>Spellchecking</string>
+       <string>Text Expansion</string>
       </attribute>
-      <layout class="QFormLayout" name="formLayout_2">
-       <property name="fieldGrowthPolicy">
-        <enum>QFormLayout::AllNonFixedFieldsGrow</enum>
-       </property>
-       <item row="0" column="0">
-        <widget class="QLabel" name="enableSpellcheckingLabel">
-         <property name="text">
-          <string>Skip non-Vietnamese:</string>
+      <layout class="QVBoxLayout" name="verticalLayout_5">
+       <item>
+        <widget class="QGroupBox" name="groupBox_2">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
          </property>
+         <property name="title">
+          <string>Expansion Rules</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_4">
+          <item>
+           <widget class="QLabel" name="label_4">
+            <property name="font">
+             <font>
+              <pointsize>8</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>Double click to edit.</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QGridLayout" name="gridLayout_2">
+            <item row="1" column="4">
+             <widget class="QPushButton" name="addButton">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Add</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="4">
+             <widget class="QPushButton" name="exportButton">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Export</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="4">
+             <widget class="QPushButton" name="removeButton">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Remove</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="4">
+             <widget class="QPushButton" name="importButton">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>Import</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="4">
+             <spacer name="verticalSpacer_3">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>20</width>
+                <height>40</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item row="1" column="0" rowspan="5" colspan="4">
+             <widget class="QTableView" name="abbrTable">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
         </widget>
        </item>
-       <item row="0" column="1">
-        <widget class="QCheckBox" name="skipNonVNCheckBox"/>
+       <item>
+        <widget class="QGroupBox" name="groupBox_3">
+         <property name="title">
+          <string>Behaviors</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_6">
+          <item>
+           <widget class="QCheckBox" name="enableAbbrCheckBox">
+            <property name="text">
+             <string>Expand text as you type</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="autocapCheckBox">
+            <property name="text">
+             <string>Auto capitalize expanded phrases</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_3">
+            <property name="font">
+             <font>
+              <pointsize>8</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If you have &lt;span style=&quot; font-style:italic;&quot;&gt;tm&lt;/span&gt; expanding to &lt;span style=&quot; font-style:italic;&quot;&gt;thay mặt&lt;/span&gt;, then &lt;span style=&quot; font-style:italic;&quot;&gt;Tm&lt;/span&gt; also expands to &lt;span style=&quot; font-style:italic;&quot;&gt;Thay mặt&lt;/span&gt; and &lt;span style=&quot; font-style:italic;&quot;&gt;TM&lt;/span&gt; to &lt;span style=&quot; font-style:italic;&quot;&gt;THAY MẶT&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+            <property name="margin">
+             <number>0</number>
+            </property>
+            <property name="indent">
+             <number>20</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_3">
+     <widget class="QWidget" name="toolsTab">
       <property name="enabled">
        <bool>true</bool>
       </property>

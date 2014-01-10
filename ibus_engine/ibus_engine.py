@@ -37,21 +37,11 @@ sys.path.append(
 
 import bogo
 from mouse_detector import MouseDetector
-from config import Config
 from keysyms_mapping import mapping
+from abbr import AbbreviationExpander
 import vncharsets
 
 vncharsets.init()
-
-
-# Since we don't instantiate the Engine class ourselves (IBus does), we can't
-# inject a Config object into it. Therefore, we have to resort to using a global
-# object like this.
-#
-# TODO: We should be able to subclass
-# IBusFactory and pre-apply the config object as an argument to
-# our engine's constructor.
-config = Config()
 
 
 def string_to_text(string):
@@ -81,13 +71,15 @@ class Engine(IBus.Engine):
 
     is_in_unity = check_unity()
 
-    def __init__(self):
+    def __init__(self, config, abbr_expander):
         super(Engine, self).__init__()
         logging.info("You are running ibus-bogo-python")
 
-        self.__config = config
+        self.config = config
         self.input_context_capabilities = 0
         self.setup_tool_buttons()
+
+        self.abbr_expander = abbr_expander
 
         self.reset_engine()
 
@@ -95,7 +87,7 @@ class Engine(IBus.Engine):
         mouse_detector = MouseDetector.get_instance()
         mouse_detector.add_mouse_click_listener(self.reset_engine)
 
-    # The "do_" part is PyGObject's way of overriding base's functions
+    # The "do_" part denotes a default signal handler
     def do_process_key_event(self, keyval, keycode, modifiers):
         """Implement IBus.Engine's process_key_event default signal handler.
 
@@ -115,7 +107,7 @@ class Engine(IBus.Engine):
             return False
 
         # Ignore key release events
-        event_is_key_press = (modifiers & (1 << 30)) == 0  # There's a strange
+        event_is_key_press = (modifiers & (1 << 30)) == 0
 
         # There is a strange overflow bug with python3-gi here so the above
         # line is used instead
@@ -127,11 +119,15 @@ class Engine(IBus.Engine):
         if keyval == IBus.Return:
             return self.on_return_pressed()
 
-        if keyval in [IBus.Up, IBus.Down]:
-            return self.on_updown_pressed(keyval)
-
         if keyval == IBus.BackSpace:
             return self.on_backspace_pressed()
+
+        if keyval == IBus.space:
+            if self.config["enable-text-expansion"]:
+                expanded_string = self.abbr_expander.expand(self.new_string)
+                self.commit_result(expanded_string)
+            self.reset_engine()
+            return False
 
         if self.is_processable_key(keyval, modifiers):
             logging.debug("Key pressed: %c", chr(keyval))
@@ -149,7 +145,7 @@ class Engine(IBus.Engine):
                 bogo.process_key(self.old_string,
                                  chr(keyval),
                                  fallback_sequence=self.__raw_string,
-                                 config=self.__config)
+                                 config=self.config)
 
             # Revert the brace shift
             if brace_shift and self.new_string and self.new_string[-1] in "{}":
@@ -161,7 +157,6 @@ class Engine(IBus.Engine):
 
             self.commit_result(self.new_string)
             self.old_string = self.new_string
-
             return True
 
         self.reset_engine()
@@ -244,9 +239,9 @@ class Engine(IBus.Engine):
         # 0xc2 0xb6. Field testing shows that this does not affect LibreOffice
         # Writer and Kate (when forcing the file's encoding to be latin-1)
         # though.
-        if config['output-charset'] != 'utf-8':
+        if self.config['output-charset'] != 'utf-8':
             string_to_commit = string_to_commit \
-                .encode(config['output-charset']) \
+                .encode(self.config['output-charset']) \
                 .decode('latin-1')
 
         # We cannot commit the text in Gtk since there is a bug in which
@@ -284,7 +279,8 @@ class Engine(IBus.Engine):
         # keyboards. But currently not working.
         #
         # TODO Don't assume default-input-methods
-        current_im = config['default-input-methods'][config['input-method']]
+        IMs = self.config['default-input-methods']
+        current_im = IMs[self.config['input-method']]
 
         key = chr(keyval)
         return keyval in range(33, 126) and \

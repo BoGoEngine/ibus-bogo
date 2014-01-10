@@ -44,6 +44,7 @@ install (FILES
   base_config.py
   keysyms_mapping.py
   mouse_detector.py
+  abbr.py
   DESTINATION
   ${BOGO_INSTALL_DIR}/ibus_engine
   )
@@ -60,12 +61,3 @@ install (DIRECTORY
   ${BOGO_INSTALL_DIR}/ibus_engine
 )
 
-FILE (GLOB
- bogo "bogo/*.py"
- )
-
-install (FILES
-  ${bogo}
-  DESTINATION
-  ${BOGO_INSTALL_DIR}/ibus_engine/bogo
-  )
