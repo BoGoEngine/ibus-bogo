@@ -46,13 +46,13 @@ add_custom_target (translations ALL
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/config-gui
 )
 
-FILE (GLOB
- locales "locales/*.qm"
- flags "locales/*.png"
-)
+FILE (GLOB locales "locales/*.qm")
+FILE (GLOB flags "locales/*.png")
 
-install (FILES
+install (
+FILES
   ${locales}
-  DESTINATION
+  ${flags}
+DESTINATION
   ${BOGO_INSTALL_DIR}/config-gui/locales
-  )
+)
