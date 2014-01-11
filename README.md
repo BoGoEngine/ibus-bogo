@@ -1,7 +1,6 @@
-[*English below...*](#introduction)
-
 # Bộ gõ tiếng Việt cho iBus [![Build Status](https://travis-ci.org/BoGoEngine/ibus-bogo-python.png)](https://travis-ci.org/BoGoEngine/ibus-bogo-python) [![Stories in Ready](https://badge.waffle.io/bogoengine/ibus-bogo-python.png?label=ready)](http://waffle.io/bogoengine/ibus-bogo-python)
 
+[*English below...*](#introduction)
 
 **ibus-bogo** là một chương trình xử lý gõ tiếng Việt sử dụng engine **BoGo**
 và được thiết kế để chạy cùng [iBus](http://code.google.com/p/ibus/),
