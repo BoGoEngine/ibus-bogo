@@ -1,15 +1,12 @@
-# ibus-bogo-python <br/> Bộ gõ tiếng Việt cho iBus [![Build Status](https://travis-ci.org/BoGoEngine/ibus-bogo-python.png)](https://travis-ci.org/BoGoEngine/ibus-bogo-python) [![Stories in Ready](https://badge.waffle.io/bogoengine/ibus-bogo-python.png?label=ready)](http://waffle.io/bogoengine/ibus-bogo-python)
+## Bộ gõ tiếng Việt cho iBus [![Build Status](https://travis-ci.org/BoGoEngine/ibus-bogo-python.png)](https://travis-ci.org/BoGoEngine/ibus-bogo-python) [![Stories in Ready](https://badge.waffle.io/bogoengine/ibus-bogo-python.png?label=ready)](http://waffle.io/bogoengine/ibus-bogo-python)
 
-## Giới thiệu
+### Giới thiệu
 
 **ibus-bogo-python** là một engine xử lý gõ tiếng Việt cho
 [iBus](http://code.google.com/p/ibus/), một phần mềm quản lý các bộ gõ
 trong GNU/Linux.
 
-**ibus-bogo-python** được viết bằng ngôn ngữ Python và sử dụng engine
-xử lý tiếng Việt **BoGoEngine**.
-
-## Hướng dẫn nhanh
+### Hướng dẫn nhanh
 
 1. [Cài đặt](doc/sphinx/install.rst) và sử dụng
 
@@ -25,7 +22,7 @@ xử lý tiếng Việt **BoGoEngine**.
 [2]: https://kiwiirc.com/client/chat.freenode.net/?nick=bogo-user|?&theme=basic#bogo
 [3]: doc/sphinx/contributing.rst
 
-## Giấy phép xuất bản (License)
+### Giấy phép xuất bản (License)
 
 **ibus-bogo-python** là
 [phần mềm tự do nguồn mở](http://en.wikipedia.org/wiki/Free_and_open_source_software).
