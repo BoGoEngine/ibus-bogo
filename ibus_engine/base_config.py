@@ -26,8 +26,8 @@ import bogo
 
 
 # TODO: This module needs some tests
-engine_dir = os.path.dirname(__file__)
-
+ENGINE_DIR = os.path.dirname(__file__)
+DEFAULT_CONFIG_PATH = ENGINE_DIR + "/data/default_config.json"
 
 # TODO: It's best if we can preserve comments and line order
 class BaseConfig(object):
@@ -38,8 +38,7 @@ class BaseConfig(object):
         super(BaseConfig, self).__init__()
         self._keys = {}
         self.path = path
-        f = open(path, "a")
-        f.close()
+        self.read_default_config()
         self.read_config(path)
 
     def read_config(self, path):
@@ -81,9 +80,12 @@ class BaseConfig(object):
     def keys(self):
         return self._keys.keys()
 
+    def read_default_config(self):
+        self.read_config(DEFAULT_CONFIG_PATH)
+
     def reset(self):
         # Only reset what's needed
-        self.read_config(os.path.join(engine_dir, "data", "default_config.json"))
+        self.read_default_config()
         self.write_config()
 
     def sanity_check(self):
