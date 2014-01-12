@@ -62,7 +62,7 @@ class AbbreviationExpander():
     def parseUnikeyRules(self, unikey_word):
         lines = unikey_word.split('\n')
         if lines[0] == 'DO NOT DELETE THIS LINE*** version=1 ***':
-            for line in line[1:]:
+            for line in lines[1:]:
                 abbreviated, expanded = line.split(':')
                 self.add_rule(abbreviated, expanded)
 
