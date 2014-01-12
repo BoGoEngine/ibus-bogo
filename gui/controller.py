@@ -42,7 +42,7 @@ sys.path.append(
 
 from base_config import BaseConfig
 import vncharsets
-from tablemodel import AbbreviationTableModel
+import tablemodel
 
 
 # Find the config file or create one if none exists
@@ -96,6 +96,105 @@ class Settings(BaseConfig, QObject):
             self.fileHash = h
             logging.debug("File changed")
 
+
+class TableProxy(QObject):
+
+    """
+    Proxy class to manage the text expansion rule editor table.
+    """
+
+    def __init__(self, tableWidget, rule_file_path):
+
+        super(TableProxy, self).__init__()
+
+        self.tableWidget = tableWidget
+        self.rule_file_path = rule_file_path
+
+        self.tableWidget.setColumnCount(2)
+        self.tableWidget.horizontalHeader().setStretchLastSection(True)
+        self.tableWidget.setAlternatingRowColors(True)
+        self.tableWidget.setShowGrid(False)
+        self.tableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
+
+        self.abbrRules = {}
+
+        try:
+            with open(self.rule_file_path, "r") as f:
+                rules = json.load(f)
+                self.fillData(rules)
+        except IOError:
+            pass
+
+        self.tableWidget.sortByColumn(0, Qt.AscendingOrder)
+        tableWidget.cellChanged.connect(self.on_tableWidget_cellChanged)
+
+    def extractRow(self, row):
+        try:
+            abbr = self.tableWidget.item(row, 0).text()
+            expanded = self.tableWidget.item(row, 1).text()
+        except AttributeError:
+            abbr = ""
+            expanded = ""
+
+        return (abbr, expanded)
+
+    def appendBlankRow(self):
+        self.tableWidget.insertRow(self.tableWidget.rowCount())
+
+    def on_tableWidget_cellChanged(self, row, col):
+        abbr, expanded = self.extractRow(row)
+
+        if abbr and expanded:
+            self.abbrRules[abbr] = expanded
+            self.save()
+
+    def fillData(self, dic):
+        self.tableWidget.clearContents()
+        self.tableWidget.setRowCount(0)
+        self.abbrRules.update(dic)
+
+        signalState = self.tableWidget.blockSignals(True)
+
+        for abbr, expanded in self.abbrRules.items():
+            abbrItem = QTableWidgetItem(abbr)
+            expandedItem = QTableWidgetItem(expanded)
+
+            row = self.tableWidget.rowCount()
+
+            self.tableWidget.insertRow(row)
+            self.tableWidget.setItem(row, 0, abbrItem)
+            self.tableWidget.setItem(row, 1, expandedItem)
+
+        self.tableWidget.blockSignals(signalState)
+        self.save()
+
+    def save(self):
+        try:
+            with open(self.rule_file_path, "w") as f:
+                json.dump(self.abbrRules,
+                          f,
+                          indent=4,
+                          ensure_ascii=False,
+                          sort_keys=True)
+        except IOError:
+            # FIXME: Popup an error dialog here
+            pass
+
+    def deleteSelection(self):
+        selectedRows = (item.row() for item in self.tableWidget.selectedItems())
+        selectedRows = reversed(sorted(set(selectedRows)))
+
+        for row in selectedRows:
+            abbr, _ = self.extractRow(row)
+            self.abbrRules.pop(abbr)
+
+            self.tableWidget.removeRow(row)
+
+        self.save()
+
+    def toUnikeyRules(self):
+        return tablemodel.toUnikeyRules(self.abbrRules)
+
 # Multiple-inheritance approach
 # http://pyqt.sourceforge.net/Docs/PyQt4/designer.html
 
@@ -104,6 +203,10 @@ Ui_FormClass, UiFormBase = \
 
 
 class Window(Ui_FormClass, UiFormBase):
+
+    """
+    Main program window.
+    """
 
     def __init__(self, app, settings):
         super(Window, self).__init__()
@@ -132,37 +235,28 @@ class Window(Ui_FormClass, UiFormBase):
                     i, charsetList[i].upper())
 
         abbr_rule_file_path = CONFIG_DIR + "/abbr_rules.json"
-        self.abbrTableModel = AbbreviationTableModel(parent=self, rule_file_path=abbr_rule_file_path)
+        self.tableProxy = TableProxy(self.abbrTable,
+                                     abbr_rule_file_path)
 
-        self.abbrTable.setModel(self.abbrTableModel)
-        #self.abbrTable.setSelectionBehavior(QAbstractItemView.SelectRows)
-
-        self.abbrTable.sortByColumn(0, Qt.AscendingOrder)
-        self.abbrTable.setSortingEnabled(True)
-
-        self.abbrTable.horizontalHeader().setStretchLastSection(True)
-        self.abbrTable.setAlternatingRowColors(True)
-        self.abbrTable.setShowGrid(False)
-        
         def onSelectionChanged(selected, deselected):
             hasSelection = self.abbrTable.selectionModel().hasSelection()
             self.removeButton.setEnabled(hasSelection)
 
-        self.abbrTable.selectionModel().selectionChanged.connect(onSelectionChanged)
+        self.abbrTable        \
+            .selectionModel() \
+            .selectionChanged \
+            .connect(onSelectionChanged)
 
         self.setupLanguages()
         self.refreshGui()
 
     @pyqtSlot()
     def on_addButton_clicked(self):
-        self.abbrTableModel.addBlankRow()
-    
+        self.tableProxy.appendBlankRow()
+
     @pyqtSlot()
     def on_removeButton_clicked(self):
-        selectionModel = self.abbrTable.selectionModel()
-        if selectionModel.hasSelection():
-            for index in reversed(selectionModel.selectedIndexes()):
-                self.abbrTableModel.removeRow(index.row())
+        self.tableProxy.deleteSelection()
 
     @pyqtSlot(bool)
     def on_importButton_clicked(self):
@@ -198,7 +292,7 @@ class Window(Ui_FormClass, UiFormBase):
     @pyqtSlot(bool)
     def on_autocapCheckBox_clicked(self, state):
         logging.debug("autocapCheckBox: %s", str(state))
-        self.settings["auto-capitalize-expansion"] =  state
+        self.settings["auto-capitalize-expansion"] = state
 
     @pyqtSlot(int)
     def on_guiLanguageComboBox_activated(self, index):
@@ -283,9 +377,19 @@ class Window(Ui_FormClass, UiFormBase):
             self.switchLanguage(self.settings["gui-language"])
 
         if "auto-capitalize-expansion" in self.settings:
-            self.autocapCheckBox.setChecked(self.settings["auto-capitalize-expansion"])
+            self.autocapCheckBox \
+                .setChecked(self.settings["auto-capitalize-expansion"])
+
         if "enable-text-expansion" in self.settings:
-            self.enableAbbrCheckBox.setChecked(self.settings["enable-text-expansion"])
+            self.enableAbbrCheckBox \
+                .setChecked(self.settings["enable-text-expansion"])
+
+    def retranslateUi(self, object):
+        self.abbrTable.setHorizontalHeaderLabels([
+            QCoreApplication.translate("TableProxy", "Expand", "Text expansion"),
+            QCoreApplication.translate("TableProxy", "To", "Text expansion")])
+
+        super(Window, self).retranslateUi(object)
 
     def changeEvent(self, event):
         if event.type() == QEvent.LanguageChange:
