@@ -1,7 +1,7 @@
 Tham gia phát triển
 ===================
 
-Mã nguồn ibus-bogo-python được đặt trên `Github`.
+Mã nguồn ibus-bogo được đặt trên `Github`.
 
 Để tham gia viết code bạn cần biết cách sử dụng `git`_ và lập trình bằng
 `python`_.
@@ -11,7 +11,7 @@ bên dưới), sau đó viết code và gửi chúng tôi một `pull request`_.
 tôi sẽ xem xét và commit code của bạn trong thời gian sớm nhất.
 
 Tuy nhiên, bạn cũng có thể đóng góp theo những cách đơn giản hơn như
-sử dụng phiên bản unstable và thông báo lỗi, viết hướng dẫn sử dụng, 
+sử dụng phiên bản unstable và thông báo lỗi, viết hướng dẫn sử dụng,
 viết blog, chia sẻ với bạn bè và người thân về bộ gõ tiếng Việt này.
 
 Mọi sự đóng góp của các bạn dù dưới hình thức nào cũng đều được chúng tôi
@@ -50,7 +50,7 @@ Bạn có thể tìm thấy tài liệu về cách sử dụng chúng dưới đ
 Testing
 -------
 
-Nhóm phát triển ibus-bogo-python sử dụng phương pháp TDD (test-driven
+Nhóm phát triển ibus-bogo sử dụng phương pháp TDD (test-driven
 development) để phát triển phần mềm. Khi đóng góp cho BoGo, bạn luôn phải
 viết test mỗi khi thay đổi code. Các test case có thể tìm thấy trong thư
 mục ``/test``.
@@ -58,7 +58,7 @@ mục ``/test``.
 Git Flow
 --------
 
-ibus-bogo-python được quản lý bằng Git.  Phương pháp này sử dụng có thể trình
+ibus-bogo được quản lý bằng Git.  Phương pháp này sử dụng có thể trình
 bày sơ lược như sau:
 
 - Repo chính trên Github luôn có 2 branch là ``master`` và ``develop``. ``master``
@@ -66,7 +66,7 @@ bày sơ lược như sau:
   những thay đổi mới nhất của BoGo. Tuy nhiên, thường ít khi commit trực tiếp
   vào ``develop`` ngoài những commit sửa lỗi nhỏ.
 
-- Khi thực hiện một tính năng mới thì lập trình viên tạo branch mới với 
+- Khi thực hiện một tính năng mới thì lập trình viên tạo branch mới với
   tên ``feature/<tên tính năng>``. Khi đã cảm thấy đủ chín thì merge branch
   này với ``develop`` và xóa branch ``feature/*`` đi. Từ sau trở đi tính năng
   này sẽ được maintain trong branch ``develop``.
@@ -81,8 +81,8 @@ bày sơ lược như sau:
   được merge trở lại vào ``develop``.
 
 - Sau khi release phiên bản major mà phát hiện lỗi đặc biệt nghiêm trọng
-  nào đó thì phải sửa ngay lập tức và release phiên bản minor với branch 
-  ``hotfix/v<phiên bản>``. Quy trình giống như một branch ``release/*``. 
+  nào đó thì phải sửa ngay lập tức và release phiên bản minor với branch
+  ``hotfix/v<phiên bản>``. Quy trình giống như một branch ``release/*``.
   Sau khi release phải merge lại vào ``develop``.
 
 Chi tiết về phương pháp git flow:
