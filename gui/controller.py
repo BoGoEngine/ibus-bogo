@@ -185,8 +185,11 @@ class TableProxy(QObject):
         selectedRows = reversed(sorted(set(selectedRows)))
 
         for row in selectedRows:
-            abbr, _ = self.extractRow(row)
-            self.abbrRules.pop(abbr)
+            try:
+                abbr, _ = self.extractRow(row)
+                self.abbrRules.pop(abbr)
+            except KeyError:
+                pass
 
             self.tableWidget.removeRow(row)
 
