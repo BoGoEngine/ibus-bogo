@@ -382,6 +382,6 @@ def can_undo(comps, trans_list):
         return (action[0] == Action.ADD_ACCENT and action[1] in accent_list) \
                 or (action[0] == Action.ADD_MARK and action[1] in mark_list) \
                 or (action[0] == Action.ADD_CHAR and action[1] == \
-                    accent.remove_accent_char(comps[1][-1].lower()))  # ơ, ư
+                    accent.remove_accent_char(comps[1][-1]))  # ơ, ư
 
     return any(map(atomic_check, action_list))

@@ -49,6 +49,14 @@ class TestEngine():
         engine.on_backspace_pressed()
         return self
 
+    def send_return(self, engine):
+        engine.on_return_pressed()
+        return self
+
+    def send_space(self, engine):
+        engine.do_process_key_event(ord('a'), IBus.space, 16)
+        return self
+
     def test_1_bug_117(self):
         """
         baa + bksp => {new_string: b, raw_string: b}

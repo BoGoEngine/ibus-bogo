@@ -57,8 +57,7 @@ def check_unity():
         window_type = window.get_window_type()
         logging.info("Current active window: %s" % window_name)
         if window_type == Wnck.WindowType.DOCK and \
-                (window_name == 'launcher' or
-                 window_name == 'unity-dash'):
+                  window_name in ['launcher', 'unity-dash']:
             return True
         else:
             return False
