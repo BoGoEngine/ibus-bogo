@@ -339,7 +339,7 @@ class Engine(IBus.Engine):
                     os.system("python3 " +
                               os.path.join(os.path.dirname(__file__),
                                            "..",
-                                           "config-gui/controller.py"))
+                                           "gui/controller.py"))
                     os._exit(0)
             except:
                 pass

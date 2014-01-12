@@ -35,5 +35,5 @@ ENABLE_TESTING()
 add_subdirectory (bogo)
 add_subdirectory (ibus_engine)
 add_subdirectory (vncharsets)
-add_subdirectory (config-gui)
+add_subdirectory (gui)
 

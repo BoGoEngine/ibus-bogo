@@ -19,6 +19,8 @@
 # along with ibus-bogo-python.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+set(GUI_INSTALL_DIR "${BOGO_INSTALL_DIR}/gui")
+
 install (PROGRAMS
   ibus-bogo-settings
   DESTINATION
@@ -31,7 +33,7 @@ install (FILES
   controller.ui
   charset_converter.py
   DESTINATION
-  ${BOGO_INSTALL_DIR}/config-gui
+  ${GUI_INSTALL_DIR}
   )
 
 install (FILES
@@ -43,11 +45,11 @@ install (FILES
 add_custom_target (translations ALL
   COMMAND pylupdate4 controller.pro
   COMMAND lrelease-qt4 controller.pro
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/config-gui
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/gui
 )
 
 install (FILES 
 	locales/vi_VN.qm
 	locales/vi_VN.png
 	locales/en_US.png
-	DESTINATION ${BOGO_INSTALL_DIR}/config-gui/locales)  
+	DESTINATION ${GUI_INSTALL_DIR}/locales)  
