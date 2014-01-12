@@ -66,3 +66,12 @@ class TestAbbreviationExpander():
         eq_(self.abbr.expand("tm"), "thay mat")
         eq_(self.abbr.expand("Tm"), "Thay mat")
         eq_(self.abbr.expand("TM"), "THAY MAT")
+
+    def test_parseUnikeyRules(self):
+        test =  '''\
+DO NOT DELETE THIS LINE*** version=1 ***
+kg:không
+kgcd:Không Gian Cộng Đồng
+vn:Việt Nam\
+'''
+        self.abbr.parseUnikeyRules(test)
