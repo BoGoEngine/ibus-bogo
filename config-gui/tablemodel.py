@@ -31,9 +31,9 @@ class AbbreviationTableModel(QStandardItemModel):
             self.setData(self.index(row, 1), expanded)
             row += 1
 
-        self.itemChanged.connect(self.on_item_changed)
+        self.itemChanged.connect(self.onItemChanged)
 
-    def extract_row(self, row):
+    def extractRow(self, row):
         try:
             abbr = self.item(row, 0).text()
             expanded = self.item(row, 1).text()
@@ -41,23 +41,31 @@ class AbbreviationTableModel(QStandardItemModel):
         except AttributeError:
             return "", ""
 
-    def on_item_changed(self, item):
-        abbr, expanded = self.extract_row(item.index().row())
+    def onItemChanged(self, item):
+        abbr, expanded = self.extractRow(item.index().row())
 
         if abbr != "" and expanded != "":
             self.abbrRules[abbr] = expanded
             self.save()
 
     def removeRow(self, row):
-        abbr, _ = self.extract_row(row)
+        try:
+            abbr, _ = self.extractRow(row)
 
-        self.abbrRules.pop(abbr)
-        self.save()
-        super(AbbreviationTableModel, self).removeRow(row)
+            self.abbrRules.pop(abbr)
+            self.save()
+        except KeyError:
+            pass
+        finally:
+            super(AbbreviationTableModel, self).removeRow(row)
 
     def save(self):
         with open(self.rule_file_path, "w") as f:
-            json.dump(self.abbrRules, f, indent=4, ensure_ascii=False)
+            json.dump(self.abbrRules,
+                      f,
+                      indent=4,
+                      ensure_ascii=False,
+                      sort_keys=True)
 
     def addBlankRow(self):
         self.appendRow([QStandardItem(), QStandardItem()])

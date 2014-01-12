@@ -135,7 +135,20 @@ class Window(Ui_FormClass, UiFormBase):
         self.abbrTableModel = AbbreviationTableModel(parent=self, rule_file_path=abbr_rule_file_path)
 
         self.abbrTable.setModel(self.abbrTableModel)
+        #self.abbrTable.setSelectionBehavior(QAbstractItemView.SelectRows)
+
+        self.abbrTable.sortByColumn(0, Qt.AscendingOrder)
+        self.abbrTable.setSortingEnabled(True)
+
         self.abbrTable.horizontalHeader().setStretchLastSection(True)
+        self.abbrTable.setAlternatingRowColors(True)
+        self.abbrTable.setShowGrid(False)
+        
+        def onSelectionChanged(selected, deselected):
+            hasSelection = self.abbrTable.selectionModel().hasSelection()
+            self.removeButton.setEnabled(hasSelection)
+
+        self.abbrTable.selectionModel().selectionChanged.connect(onSelectionChanged)
 
         self.setupLanguages()
         self.refreshGui()
@@ -146,14 +159,14 @@ class Window(Ui_FormClass, UiFormBase):
     
     @pyqtSlot()
     def on_removeButton_clicked(self):
-        # Get the selected row
-        # ...
-        # Remove that row
-        # ...
         selectionModel = self.abbrTable.selectionModel()
         if selectionModel.hasSelection():
-            index = selectionModel.currentIndex()
-            print(self.abbrTableModel.removeRow(index.row()))
+            for index in reversed(selectionModel.selectedIndexes()):
+                self.abbrTableModel.removeRow(index.row())
+
+    @pyqtSlot(bool)
+    def on_importButton_clicked(self):
+        pass
 
     @pyqtSlot(bool)
     def on_enableAbbrCheckBox_clicked(self, state):
