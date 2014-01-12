@@ -64,7 +64,7 @@ class IMApp:
                                  language="vi",
                                  license=license,
                                  author=author,
-                                 icon=current_path + "/data/ibus-bogo.svg",
+                                 icon=current_path + "/data/ibus-bogo-dev.svg",
                                  # icon = "ibus-bogo",
                                  layout="us")
 
