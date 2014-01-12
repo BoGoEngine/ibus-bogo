@@ -258,9 +258,26 @@ class Window(Ui_FormClass, UiFormBase):
     def on_removeButton_clicked(self):
         self.tableProxy.deleteSelection()
 
-    @pyqtSlot(bool)
+    @pyqtSlot()
     def on_importButton_clicked(self):
-        pass
+        caption = "Choose a Unikey text expansion rule file"
+        fileName = QFileDialog.getOpenFileName(parent=self,
+                                               caption=caption)
+        if fileName:
+            with open(fileName, "r") as f:
+                content = f.read()
+                rules = tablemodel.parseUnikeyRules(content)
+                self.tableProxy.fillData(rules)
+
+    @pyqtSlot()
+    def on_exportButton_clicked(self):
+        caption = "Choose a location to save expansion rule file"
+        fileName = QFileDialog.getSaveFileName(parent=self,
+                                               caption=caption)
+
+        if fileName:
+            with open(fileName, "w") as f:
+                f.write(self.tableProxy.toUnikeyRules())
 
     @pyqtSlot(bool)
     def on_enableAbbrCheckBox_clicked(self, state):
