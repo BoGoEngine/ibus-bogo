@@ -58,3 +58,13 @@ class AbbreviationExpander():
             return self.abbr_rules[abbr_word]
         else:
             return abbr_word
+
+    def parseUnikeyRules(self, unikey_word):
+        lines = unikey_word.split('\n')
+        count = 1
+        if lines[0] == 'DO NOT DELETE THIS LINE*** version=1 ***':
+            while count < len(lines):
+                key=lines[count].split(':')
+                self.add_rule(key[0],key[1])
+                print (key[0])
+                count = count+1
