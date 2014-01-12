@@ -143,6 +143,13 @@ class TestProcessSeq():
         # BUG #82
         eq_(process_seq("uorw"), "uở")
 
+    def test_bug_93(self):
+        eq_(process_seq("{{"), "{")
+        eq_(process_seq_non_vn("{{"), "{")
+
+        eq_(process_seq("}}"), "}")
+        eq_(process_seq_non_vn("}}"), "}")
+
     def test_free_key_position(self):
         eq_(process_seq('toios'), 'tối')
         eq_(process_seq('toois'), 'tối')
