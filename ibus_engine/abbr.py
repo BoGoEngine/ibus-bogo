@@ -66,3 +66,7 @@ class AbbreviationExpander():
                 abbreviated, expanded = line.split(':')
                 self.add_rule(abbreviated, expanded)
 
+    def toUnikeyRules(self):
+        items = sorted(self.abbr_rules.items())
+        new_items = "\n".join('%s:%s' % s for s in items)
+        return new_items
