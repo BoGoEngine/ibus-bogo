@@ -78,3 +78,17 @@ vn:Việt Nam\
         eq_(self.abbr.expand("kg"), "không")
         eq_(self.abbr.expand("kgcd"), "Không Gian Cộng Đồng")
         eq_(self.abbr.expand("vn"), "Việt Nam")
+
+    def  test_toUnikeyRules(self):
+        self.abbr.add_rule("vn", "Việt Nam")
+        self.abbr.add_rule("kg", "không")
+        mylist = {'vn': 'Việt Nam', 'kg': 'không'}
+        items = sorted(mylist.items())
+        new_items = "\n".join('%s:%s' % s for s in items)
+        lines = new_items.split('\n')
+        for case in lines:
+            key, value = case.split(':')
+            eq_(self.abbr.expand(key), value)
+
+
+
