@@ -38,7 +38,6 @@ sys.path.append(
 import bogo
 from mouse_detector import MouseDetector
 from keysyms_mapping import mapping
-from abbr import AbbreviationExpander
 import vncharsets
 
 vncharsets.init()
@@ -57,7 +56,7 @@ def check_unity():
         window_type = window.get_window_type()
         logging.info("Current active window: %s" % window_name)
         if window_type == Wnck.WindowType.DOCK and \
-                  window_name in ['launcher', 'unity-dash']:
+                window_name in ['launcher', 'unity-dash']:
             return True
         else:
             return False
@@ -291,7 +290,7 @@ class Engine(IBus.Engine):
         self.prop_list = IBus.PropList()
         pref_button = IBus.Property.new(key="preferences",
                                         type=IBus.PropType.NORMAL,
-                                        label=string_to_text("Pref"),
+                                        label=string_to_text("Preferences"),
                                         icon="preferences-other",
                                         tooltip=string_to_text("Preferences"),
                                         sensitive=True,
