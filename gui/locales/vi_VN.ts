@@ -39,17 +39,17 @@
         <translation>Tự động trả về tiếng Anh:</translation>
     </message>
     <message>
-        <location filename="controller.ui" line="314"/>
+        <location filename="controller.ui" line="317"/>
         <source>Tools</source>
         <translation>Công cụ</translation>
     </message>
     <message>
-        <location filename="controller.ui" line="320"/>
+        <location filename="controller.ui" line="323"/>
         <source>Charset converter</source>
         <translation>Bộ chuyển đổi bảng mã</translation>
     </message>
     <message>
-        <location filename="controller.ui" line="332"/>
+        <location filename="controller.ui" line="335"/>
         <source>Copy some text, choose the source encoding and the destination encoding and press &quot;Convert&quot;. Then paste back.</source>
         <translation>Copy một đoạn văn bản, chọn bảng mã nguồn, bảng mã đích. Ấn nút &quot;Chuyển đổi&quot; và paste trở lại.</translation>
     </message>
@@ -59,22 +59,22 @@
         <translation type="obsolete">→</translation>
     </message>
     <message>
-        <location filename="controller.ui" line="388"/>
+        <location filename="controller.ui" line="391"/>
         <source>Convert</source>
         <translation>Chuyển đổi</translation>
     </message>
     <message>
-        <location filename="controller.ui" line="435"/>
+        <location filename="controller.ui" line="438"/>
         <source>Help</source>
         <translation>Trợ giúp</translation>
     </message>
     <message>
-        <location filename="controller.ui" line="442"/>
+        <location filename="controller.ui" line="445"/>
         <source>Restore Defaults</source>
         <translation>Khôi phục thiết lập chuẩn</translation>
     </message>
     <message>
-        <location filename="controller.ui" line="462"/>
+        <location filename="controller.ui" line="465"/>
         <source>Close</source>
         <translation>Đóng</translation>
     </message>
@@ -84,7 +84,7 @@
         <translation type="obsolete">Bộ chuyển đổi bảng mã (demo)</translation>
     </message>
     <message>
-        <location filename="controller.ui" line="373"/>
+        <location filename="controller.ui" line="376"/>
         <source>UTF-8</source>
         <translation>UTF-8</translation>
     </message>
@@ -114,32 +114,32 @@
         <translation>Xuất</translation>
     </message>
     <message>
-        <location filename="controller.ui" line="212"/>
+        <location filename="controller.ui" line="215"/>
         <source>Remove</source>
         <translation>Xóa</translation>
     </message>
     <message>
-        <location filename="controller.ui" line="228"/>
+        <location filename="controller.ui" line="231"/>
         <source>Import</source>
         <translation>Nhập</translation>
     </message>
     <message>
-        <location filename="controller.ui" line="263"/>
+        <location filename="controller.ui" line="266"/>
         <source>Behaviors</source>
         <translation>Tùy chọn</translation>
     </message>
     <message>
-        <location filename="controller.ui" line="269"/>
+        <location filename="controller.ui" line="272"/>
         <source>Expand text as you type</source>
         <translation>Cho phép gõ tắt</translation>
     </message>
     <message>
-        <location filename="controller.ui" line="276"/>
+        <location filename="controller.ui" line="279"/>
         <source>Auto capitalize expanded phrases</source>
         <translation>Tự động viết hoa cụm gõ tắt</translation>
     </message>
     <message utf8="true">
-        <location filename="controller.ui" line="291"/>
+        <location filename="controller.ui" line="294"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If you have &lt;span style=&quot; font-style:italic;&quot;&gt;tm&lt;/span&gt; expanding to &lt;span style=&quot; font-style:italic;&quot;&gt;thay mặt&lt;/span&gt;, then &lt;span style=&quot; font-style:italic;&quot;&gt;Tm&lt;/span&gt; also expands to &lt;span style=&quot; font-style:italic;&quot;&gt;Thay mặt&lt;/span&gt; and &lt;span style=&quot; font-style:italic;&quot;&gt;TM&lt;/span&gt; to &lt;span style=&quot; font-style:italic;&quot;&gt;THAY MẶT&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Nếu bạn đặt luật gõ &lt;span style=&quot; font-style:italic;&quot;&gt;tm&lt;/span&gt; thành &lt;span style=&quot; font-style:italic;&quot;&gt;thay mặt&lt;/span&gt;, thì gõ &lt;span style=&quot; font-style:italic;&quot;&gt;Tm&lt;/span&gt; sẽ ra &lt;span style=&quot; font-style:italic;&quot;&gt;Thay mặt&lt;/span&gt; và &lt;span style=&quot; font-style:italic;&quot;&gt;TM&lt;/span&gt; ra &lt;span style=&quot; font-style:italic;&quot;&gt;THAY MẶT&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
@@ -147,6 +147,21 @@
         <location filename="controller.ui" line="14"/>
         <source>BoGo Settings</source>
         <translation>Thiết lập BoGo</translation>
+    </message>
+</context>
+<context>
+    <name>TableProxy</name>
+    <message>
+        <location filename="controller.py" line="385"/>
+        <source>Expand</source>
+        <comment>Text expansion</comment>
+        <translation>Thay thế</translation>
+    </message>
+    <message>
+        <location filename="controller.py" line="385"/>
+        <source>To</source>
+        <comment>Text expansion</comment>
+        <translation>Bằng</translation>
     </message>
 </context>
 <context>

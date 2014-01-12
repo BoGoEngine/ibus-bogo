@@ -29,7 +29,7 @@
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <property name="usesScrollButtons">
       <bool>true</bool>
@@ -187,7 +187,7 @@
             <item row="4" column="4">
              <widget class="QPushButton" name="exportButton">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -219,7 +219,7 @@
             <item row="3" column="4">
              <widget class="QPushButton" name="importButton">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -246,7 +246,7 @@
              </spacer>
             </item>
             <item row="1" column="0" rowspan="5" colspan="4">
-             <widget class="QTableView" name="abbrTable">
+             <widget class="QTableWidget" name="abbrTable">
               <property name="sizePolicy">
                <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
                 <horstretch>0</horstretch>
