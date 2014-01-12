@@ -135,6 +135,9 @@ class Window(Ui_FormClass, UiFormBase):
         self.abbrTableModel = AbbreviationTableModel(parent=self, rule_file_path=abbr_rule_file_path)
 
         self.abbrTable.setModel(self.abbrTableModel)
+        self.abbrTable.sortByColumn(0, Qt.AscendingOrder)
+        self.abbrTable.setSortingEnabled(True)
+
         self.abbrTable.horizontalHeader().setStretchLastSection(True)
 
         self.setupLanguages()
