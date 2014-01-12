@@ -187,7 +187,7 @@
             <item row="4" column="4">
              <widget class="QPushButton" name="exportButton">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -219,7 +219,7 @@
             <item row="3" column="4">
              <widget class="QPushButton" name="importButton">
               <property name="enabled">
-               <bool>false</bool>
+               <bool>true</bool>
               </property>
               <property name="sizePolicy">
                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
