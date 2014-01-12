@@ -78,4 +78,3 @@ vn:Việt Nam\
         eq_(self.abbr.expand("kg"), "không")
         eq_(self.abbr.expand("kgcd"), "Không Gian Cộng Đồng")
         eq_(self.abbr.expand("vn"), "Việt Nam")
-        
