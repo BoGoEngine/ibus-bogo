@@ -57,7 +57,11 @@ class AbbreviationTableModel(QStandardItemModel):
 
     def save(self):
         with open(self.rule_file_path, "w") as f:
-            json.dump(self.abbrRules, f, indent=4, ensure_ascii=False)
+            json.dump(self.abbrRules,
+                      f,
+                      indent=4,
+                      ensure_ascii=False,
+                      sort_keys=True)
 
     def addBlankRow(self):
         self.appendRow([QStandardItem(), QStandardItem()])
