@@ -1,6 +1,7 @@
 from gi.repository import Gio
 import json
 
+UNIKEY_HEADER = 'DO NOT DELETE THIS LINE*** version=1 ***'
 
 class AbbreviationExpander():
 
@@ -61,7 +62,7 @@ class AbbreviationExpander():
 
     def parseUnikeyRules(self, unikey_word):
         lines = unikey_word.split('\n')
-        if lines[0] == 'DO NOT DELETE THIS LINE*** version=1 ***':
+        if lines[0] == UNIKEY_HEADER:
             for line in lines[1:]:
                 abbreviated, expanded = line.split(':')
                 self.add_rule(abbreviated, expanded)
@@ -69,4 +70,4 @@ class AbbreviationExpander():
     def toUnikeyRules(self):
         items = sorted(self.abbr_rules.items())
         new_items = "\n".join('%s:%s' % s for s in items)
-        return new_items
+        return UNIKEY_HEADER + '\n' + new_items + '\n'
