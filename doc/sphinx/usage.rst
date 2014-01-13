@@ -65,7 +65,9 @@ các bảng mã cũ như TCVN3, VNI sang Unicode (dạng UTF-8).
 Bạn cần copy một đoạn văn bản, chọn bảng mã nguồn và nhấn nút
 **Chuyển đổi**, sau đó dán trở lại chỗ cũ.
 
-Tính năng này có một số hạn chế hiện tại như chỉ hỗ trợ bảng mã nguồn là
-TCVN3 và VNI, chỉ hỗ trợ bảng mã đích là UTF-8. Hiện tại cũng chưa đủ
-thông minh để phân tích dữ liệu XML trong clipboard của LibreOffice. Mọi
-ý kiến đóng góp luôn được hoan nghênh.
+.. note::
+
+   Tính năng này có một số hạn chế hiện tại như chỉ hỗ trợ bảng mã nguồn là
+   TCVN3 và VNI, chỉ hỗ trợ bảng mã đích là UTF-8. Hiện tại cũng chưa đủ
+   thông minh để phân tích dữ liệu XML trong clipboard của LibreOffice. Mọi
+   ý kiến đóng góp luôn được hoan nghênh.

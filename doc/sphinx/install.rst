@@ -19,16 +19,19 @@ có thể nhiều lỗi thì sử dụng lệnh sau::
 
     wget -O - http://bogoengine.github.com/debian/unstable/installer.sh | sudo sh
 
-(nội dung script là thêm repo của nhóm phát triển, sau đó cài đặt gói
-``ibus-bogo``)
+.. note::
+   
+   Nội dung script là thêm repo của nhóm phát triển, sau đó cài đặt gói ``ibus-bogo``.
 
 Người dùng Archlinux có thể cài từ `gói AUR stable`_ hoặc `develop`_ do bạn `Ngô Huy`_ cung cấp.
 
 Fan của Fedora có thể cài gói RPM từ `RPM repo`_ của anh `Trương Anh Tuấn`_.
 
-**NOTE** Nếu bạn muốn đóng gói BoGo cho các bản phân phối khác thì đừng
-ngần ngại thông báo với chúng tôi để trang hướng dẫn này được cập nhật
-liên tục cho các bản phân phối mới nhất. :D
+.. note::
+
+   Nếu bạn muốn đóng gói BoGo cho các bản phân phối khác thì đừng
+   ngần ngại thông báo với chúng tôi để trang hướng dẫn này được cập nhật
+   liên tục cho các bản phân phối mới nhất. :D
 
 .. _file deb: https://bogoengine.github.com/debian/stable/pool/universe/i/ibus-bogo
 .. _gói AUR stable: https://aur.archlinux.org/packages/ibus-bogo/
@@ -59,13 +62,18 @@ Lệnh sau sẽ cài đặt tất cả các gói cần thiết::
     sudo apt-get install python3 ibus cmake python3-gi pyqt4-dev-tools \
     gir1.2-ibus-1.0 gir1.2-wnck-3.0 python3-pyqt4 qt4-linguist-tools
 
+.. versionchanged:: 0.4
+   Từ bản 0.4 thì ibus-bogo sử dụng PyQt4 thay vì PySide.
+
 Tải mã nguồn tại https://github.com/BoGoEngine/ibus-bogo-python/releases rồi giải nén
 hoặc dùng::
 
     git clone https://github.com/BoGoEngine/ibus-bogo-python.git
 
-Nếu bạn dùng git clone thì chạy thêm lệnh ``git submodule init && git submodule update``
-trong thư mục mã nguồn.
+.. note::
+
+   Nếu bạn dùng git clone thì chạy thêm lệnh ``git submodule init && git submodule update``
+   trong thư mục mã nguồn.
 
 Chạy lệnh sau để cài đặt::
 
@@ -109,10 +117,12 @@ BoGo như video dưới đây:
 
     <iframe style="margin-left:auto;margin-right:auto;display:block;" width="640" height="480" src="//www.youtube.com/embed/39OfkV-aEpo" frameborder="0" allowfullscreen></iframe>
 
-Để đảm bảo chương trình vận hành như ý muốn, bạn thêm các dòng sau vào
-file ~/.profile sau đó logout và login::
+.. note::
 
-    export GTK_IM_MODULE=ibus
-    export XMODIFIERS=@im=ibus
-    export QT4_IM_MODULE=xim
-    export QT_IM_MODULE=xim
+   Để đảm bảo chương trình vận hành như ý muốn, bạn thêm các dòng sau vào
+   file ~/.profile sau đó logout và login::
+
+       export GTK_IM_MODULE=ibus
+       export XMODIFIERS=@im=ibus
+       export QT4_IM_MODULE=xim
+       export QT_IM_MODULE=xim

@@ -52,8 +52,25 @@ Testing
 
 Nhóm phát triển ibus-bogo sử dụng phương pháp TDD (test-driven
 development) để phát triển phần mềm. Khi đóng góp cho BoGo, bạn luôn phải
-viết test mỗi khi thay đổi code. Các test case có thể tìm thấy trong thư
-mục ``/test``.
+viết test mỗi khi thay đổi code. Các test case có thể tìm thấy trong thư con
+mục ``test`` nằm trong mỗi thư mục lớn của dự án.
+
+Để chạy test, bạn cần cài **nosetests** cho Python 3 và chạy lệnh sau ở thư mục
+ngoài cùng:
+::
+
+    nosetests
+    
+Nosetests sẽ tự tìm, chạy tất cả các test và in kết quả ra màn hình.
+
+.. note::
+
+   Lệnh trên sẽ chạy tất cả các test trong dự án (khoảng 37000 test) nên tốn khoảng
+   2 đến 3 phút mới chạy xong. Bạn có thể skip các test được đánh dấu là chạy chậm
+   bằng lệnh sau:
+   ::
+   
+       nosetests --attr "!slow"
 
 Git Flow
 --------
