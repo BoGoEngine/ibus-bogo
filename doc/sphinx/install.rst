@@ -43,9 +43,13 @@ Fan của Fedora có thể cài gói RPM từ `RPM repo`_ của anh `Trương An
 Từ mã nguồn
 -----------
 
-ibus-bogo có sử dụng các thành phần sau, hãy chắc
-chắn rằng các thành phần này đã được cài trên máy nếu bạn cần cài đặt
-từ mã nguồn (theo tên gói cài đặt của Debian/Ubuntu):
+.. warning::
+
+   Nếu bạn chưa thành thạo Linux và chỉ muốn sử dụng BoGo thì không nên
+   cài đặt từ mã nguồn.
+
+ibus-bogo có sử dụng các phần mềm sau, hãy chắc chắn rằng chúng đã được 
+cài trên máy (theo tên gói cài đặt của Debian/Ubuntu):
 
 * ibus 1.4.x
 * python 3.2+
@@ -62,11 +66,12 @@ Lệnh sau sẽ cài đặt tất cả các gói cần thiết::
     sudo apt-get install python3 ibus cmake python3-gi pyqt4-dev-tools \
     gir1.2-ibus-1.0 gir1.2-wnck-3.0 python3-pyqt4 qt4-linguist-tools
 
-.. versionchanged:: 0.4
+.. note::
+
    Từ bản 0.4 thì ibus-bogo sử dụng PyQt4 thay vì PySide.
 
-Tải mã nguồn tại https://github.com/BoGoEngine/ibus-bogo-python/releases rồi giải nén
-hoặc dùng::
+Sau đó bạn tải mã nguồn tại https://github.com/BoGoEngine/ibus-bogo-python/releases
+rồi giải nén. Hoặc dùng::
 
     git clone https://github.com/BoGoEngine/ibus-bogo-python.git
 
@@ -115,14 +120,14 @@ BoGo như video dưới đây:
 
 .. raw:: html
 
-    <iframe style="margin-left:auto;margin-right:auto;display:block;" width="640" height="480" src="//www.youtube.com/embed/39OfkV-aEpo" frameborder="0" allowfullscreen></iframe>
+    <iframe style="margin-left:auto;margin-right:auto;display:block;margin-bottom:24px" width="640" height="480" src="//www.youtube.com/embed/39OfkV-aEpo" frameborder="0" allowfullscreen></iframe>
 
 .. note::
 
-   Để đảm bảo chương trình vận hành như ý muốn, bạn thêm các dòng sau vào
-   file ~/.profile sau đó logout và login::
+   Nếu không gõ tiếng Việt được trong Skype hay các chương trình viết bằng Qt,
+   bạn thêm các dòng sau vào file ``~/.profile`` sau đó logout và login::
 
        export GTK_IM_MODULE=ibus
-       export XMODIFIERS=@im=ibus
        export QT4_IM_MODULE=xim
        export QT_IM_MODULE=xim
+       export XMODIFIERS=@im=ibus
