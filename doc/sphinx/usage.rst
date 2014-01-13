@@ -50,6 +50,9 @@ Tính năng này đã được thêm vào từ bản 0.4. Bạn cần tạo lu�
 BoGo còn có thể tự động viết hoa cụm gõ tắt giúp bạn. Rất tiện khi
 gõ ở tiêu đề văn bản.
 
+.. image:: _static/img/auto_capitalize.gif
+   :align: center
+
 Chuyển đổi bảng mã trong clipboard
 ----------------------------------
 
