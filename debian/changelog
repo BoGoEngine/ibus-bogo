@@ -1,3 +1,11 @@
+ibus-bogo (0.4.0-1ubuntu1) unstable; urgency=low
+
+  * New upstream release
+
+  * Depends on PyQt4 instead of PySide
+
+ -- Trung Ngo <ndtrung4419@gmail.com>  Mon, 13 Jan 2014 23:25:25 +0700
+
 ibus-bogo (0.3.0-2) precise; urgency=low
 
   * Add ibus, libnotify, gir1.2-notify as runtime dependency
