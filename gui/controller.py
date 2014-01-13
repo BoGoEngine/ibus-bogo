@@ -250,6 +250,8 @@ class Window(Ui_FormClass, UiFormBase):
             .selectionChanged \
             .connect(onSelectionChanged)
 
+        self.logoLabel.setPixmap(QIcon.fromTheme("ibus-bogo").pixmap(48, 48))
+
         self.setupLanguages()
         self.refreshGui()
 
@@ -405,11 +407,14 @@ class Window(Ui_FormClass, UiFormBase):
                 .setChecked(self.settings["enable-text-expansion"])
 
     def retranslateUi(self, object):
+        super(Window, self).retranslateUi(object)
+
         self.abbrTable.setHorizontalHeaderLabels([
             QCoreApplication.translate("TableProxy", "Expand", "Text expansion"),
             QCoreApplication.translate("TableProxy", "To", "Text expansion")])
 
-        super(Window, self).retranslateUi(object)
+        infoLabelText = self.infoLabel.text()
+        self.infoLabel.setText(infoLabelText.format(version=0.4))
 
     def changeEvent(self, event):
         if event.type() == QEvent.LanguageChange:
