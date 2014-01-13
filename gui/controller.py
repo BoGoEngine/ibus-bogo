@@ -25,7 +25,6 @@ import sys
 import os
 import subprocess
 import logging
-import hashlib
 import json
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -84,17 +83,13 @@ class Settings(BaseConfig, QObject):
         BaseConfig.__init__(self, config_path)
         # QObject.__init__()
 
-        self.fileHash = hashlib.md5(str(self.keys).encode('utf-8')).hexdigest()
-        self.watcher = QFileSystemWatcher([path])
+        self.watcher = QFileSystemWatcher([os.path.dirname(path), path])
         self.watcher.fileChanged.connect(self._on_file_changed)
+        self.watcher.directoryChanged.connect(self._on_file_changed)
 
     def _on_file_changed(self, path):
         self.read_config(path)
-        h = hashlib.md5(str(self.keys).encode('utf-8')).hexdigest()
-        if h != self.fileHash:
-            self.changed.emit()
-            self.fileHash = h
-            logging.debug("File changed")
+        self.changed.emit()
 
 
 class TableProxy(QObject):
@@ -386,6 +381,7 @@ class Window(Ui_FormClass, UiFormBase):
         self.guiLanguageComboBox.setCurrentIndex(index)
 
     def refreshGui(self):
+        logging.debug("Refreshing GUI")
         self.inputMethodComboBox.setCurrentIndex(
             inputMethodList.index(self.settings["input-method"]))
 
@@ -431,8 +427,10 @@ def main():
     win = Window(app, settings)
     win.show()
 
+    import signal
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
+
     app.exec_()
-    sys.exit()
 
 
 if __name__ == '__main__':

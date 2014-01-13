@@ -49,16 +49,14 @@ class BaseConfig(object):
             f.close()
         except:
             logging.debug("Config file corrupted or not exists.")
-            self.reset()
         finally:
             tmp = self._keys
-            self._keys = bogo.default_config.copy()
             self._keys.update(tmp)
-            self.sanity_check()
+            # self.sanity_check()
 
     def write_config(self):
         f = open(self.path, "w")
-        f.write(json.dumps(self._keys, indent=4, ensure_ascii=False))
+        f.write(json.dumps(self._keys, indent=4, ensure_ascii=False, sort_keys=True))
         f.close()
 
     def __setitem__(self, key, value):
@@ -84,7 +82,7 @@ class BaseConfig(object):
         self.read_config(DEFAULT_CONFIG_PATH)
 
     def reset(self):
-        # Only reset what's needed
+        self._key = {}
         self.read_default_config()
         self.write_config()
 
