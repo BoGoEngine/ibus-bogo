@@ -1,7 +1,7 @@
 Tham gia phát triển
 ===================
 
-Mã nguồn ibus-bogo được đặt trên `Github`.
+Mã nguồn ibus-bogo được đặt trên `Github` ở địa chỉ: https://github.com/BoGoEngine/ibus-bogo-python
 
 Để tham gia viết code bạn cần biết cách sử dụng `git`_ và lập trình bằng
 `python`_.
@@ -14,8 +14,9 @@ Tuy nhiên, bạn cũng có thể đóng góp theo những cách đơn giản h�
 sử dụng phiên bản unstable và thông báo lỗi, viết hướng dẫn sử dụng,
 viết blog, chia sẻ với bạn bè và người thân về bộ gõ tiếng Việt này.
 
-Mọi sự đóng góp của các bạn dù dưới hình thức nào cũng đều được chúng tôi
-hết sức trân trọng.
+Hãy trò chuyện với chúng tôi thông qua IRC ở kênh ``#bogo`` trên mạng Freenode
+nếu bạn có mong muốn giúp sức. Mọi sự đóng góp của các bạn dù dưới hình thức
+nào cũng đều được chúng tôi hết sức trân trọng.
 
 .. _Github: https://github.com/BoGoEngine/ibus-bogo-python
 .. _git: http://git-scm.com/book
@@ -29,7 +30,7 @@ Chúng tôi cố gắng module hóa phần mềm để dễ dàng chuyển sang 
 khác nên BoGo được chia làm 2 thành phần là IBus engine và BoGo engine.
 BoGo engine là phần xử lý tiếng Việt chính nằm trong thư mục ``/bogo``
 có API đơn giản (hàm ``process_key()``). Còn IBus engine là phần giao tiếp
-với IBus, gồm tất cả các file và thư mục con trong ``/engine`` có nhiệm vụ
+với IBus, gồm tất cả các file và thư mục con trong ``/ibus_engine`` có nhiệm vụ
 gọi hàm `process_key`, đưa kết quả cho người dùng và tạo giao diện tinh
 chỉnh phương pháp gõ.
 
