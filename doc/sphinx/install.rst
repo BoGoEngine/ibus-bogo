@@ -109,7 +109,7 @@ BoGo như video dưới đây:
 
     <iframe style="margin-left:auto;margin-right:auto;display:block;" width="640" height="480" src="//www.youtube.com/embed/39OfkV-aEpo" frameborder="0" allowfullscreen></iframe>
 
-Để đảm bảo chương trình vận hành như ý muốn. Thêm các dòng sau vào
+Để đảm bảo chương trình vận hành như ý muốn, bạn thêm các dòng sau vào
 file ~/.profile sau đó logout và login::
 
     export GTK_IM_MODULE=ibus
