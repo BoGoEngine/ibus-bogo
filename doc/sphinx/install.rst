@@ -59,7 +59,7 @@ Lệnh sau sẽ cài đặt tất cả các gói cần thiết::
     sudo apt-get install python3 ibus cmake python3-gi pyqt4-dev-tools \
     gir1.2-ibus-1.0 gir1.2-wnck-3.0 python3-pyqt4 qt4-linguist-tools
 
-Tải mã nguồn tại https://github.com/BoGoEngine/ibus-bogo-python/tags rồi giải nén
+Tải mã nguồn tại https://github.com/BoGoEngine/ibus-bogo-python/releases rồi giải nén
 hoặc dùng::
 
     git clone https://github.com/BoGoEngine/ibus-bogo-python.git
