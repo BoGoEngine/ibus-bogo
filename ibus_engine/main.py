@@ -41,8 +41,8 @@ current_path = os.path.dirname(os.path.abspath(__file__))
 class IMApp:
 
     def __init__(self, exec_by_ibus):
-        engine_name = "bogo-python"
-        long_engine_name = "bogo-python"
+        engine_name = "bogo"
+        long_engine_name = "BoGo"
         author = "BoGo Development Team <bogoengine-dev@googlegroups.com>"
         description = "ibus-bogo for IBus"
         version = "0.4"
@@ -87,10 +87,10 @@ class IMApp:
         else:
             self.bus.register_component(self.component)
             self.bus.set_global_engine_async(
-                "bogo-python", -1, None, None, None)
+                "bogo", -1, None, None, None)
 
     def create_engine(self, factory, engine_name):
-        if engine_name == "bogo-python":
+        if engine_name == "bogo":
             dbus_path = "/org/freedesktop/IBus/Engine/%d" % self.engine_count
 
             # It looks like the GObject's new_with_type constructor also
