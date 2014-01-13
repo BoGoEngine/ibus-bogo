@@ -59,13 +59,13 @@ Lệnh sau sẽ cài đặt tất cả các gói cần thiết::
     sudo apt-get install python3 ibus cmake python3-gi pyqt4-dev-tools \
     gir1.2-ibus-1.0 gir1.2-wnck-3.0 python3-pyqt4 qt4-linguist-tools
 
-| Tải mã nguồn tại https://github.com/BoGoEngine/ibus-bogo-python/tags rồi giải nén
-| hoặc dùng
-::
+Tải mã nguồn tại https://github.com/BoGoEngine/ibus-bogo-python/tags rồi giải nén
+hoặc dùng::
 
     git clone https://github.com/BoGoEngine/ibus-bogo-python.git
 
-Nếu bạn dùng git clone thì chạy thêm lệnh :code:`git submodule init && git submodule update` trong thư mục mã nguồn
+Nếu bạn dùng git clone thì chạy thêm lệnh ``git submodule init && git submodule update``
+trong thư mục mã nguồn.
 
 Chạy lệnh sau để cài đặt::
 
@@ -101,10 +101,9 @@ ibus-bogo làm bộ gõ mặc định:
 .. image:: _static/img/set_default.png
    :align: center
 
-Với Ubuntu 13.10, trước hết bạn logout/login hoặc chạy lệnh
-:code:`ibus-daemon -xdr` để khởi động lại IBus.
-Sau đó bạn sử dụng mục Text Entry trong Settings để thêm BoGo như video
-dưới đây:
+Với Ubuntu 13.10, trước hết bạn logout/login hoặc chạy lệnh ``ibus-daemon -xdr``
+để khởi động lại IBus. Sau đó bạn sử dụng mục Text Entry trong Settings để thêm
+BoGo như video dưới đây:
 
 .. raw:: html
 
