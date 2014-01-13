@@ -1,22 +1,22 @@
 #
-# This file is part of ibus-bogo-python project.
+# This file is part of ibus-bogo project.
 #
 # Copyright (C) 2012 Long T. Dam <longdt90@gmail.com>
 # Copyright (C) 2012-2013 Trung Ngo <ndtrung4419@gmail.com>
 # Copyright (C) 2013 Duong H. Nguyen <cmpitg@gmail.com>
 #
-# ibus-bogo-python is free software: you can redistribute it and/or modify
+# ibus-bogo is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# ibus-bogo-python is distributed in the hope that it will be useful,
+# ibus-bogo is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with ibus-bogo-python.  If not, see <http://www.gnu.org/licenses/>.
+# along with ibus-bogo.  If not, see <http://www.gnu.org/licenses/>.
 #
 
 import logging
@@ -26,8 +26,8 @@ import bogo
 
 
 # TODO: This module needs some tests
-engine_dir = os.path.dirname(__file__)
-
+ENGINE_DIR = os.path.dirname(__file__)
+DEFAULT_CONFIG_PATH = ENGINE_DIR + "/data/default_config.json"
 
 # TODO: It's best if we can preserve comments and line order
 class BaseConfig(object):
@@ -38,8 +38,7 @@ class BaseConfig(object):
         super(BaseConfig, self).__init__()
         self._keys = {}
         self.path = path
-        f = open(path, "a")
-        f.close()
+        self.read_default_config()
         self.read_config(path)
 
     def read_config(self, path):
@@ -81,9 +80,12 @@ class BaseConfig(object):
     def keys(self):
         return self._keys.keys()
 
+    def read_default_config(self):
+        self.read_config(DEFAULT_CONFIG_PATH)
+
     def reset(self):
         # Only reset what's needed
-        self.read_config(os.path.join(engine_dir, "data", "default_config.json"))
+        self.read_default_config()
         self.write_config()
 
     def sanity_check(self):

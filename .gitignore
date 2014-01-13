@@ -1,3 +1,4 @@
+*.swp
 *.pyc
 build
 obj-*-linux-gnu
@@ -7,5 +8,5 @@ obj-*-linux-gnu
 /debian/ibus-bogo.postinst.debhelper
 /debian/ibus-bogo.prerm.debhelper
 /debian/ibus-bogo.substvars
-/config-gui/locales/*.qm
+/gui/locales/*.qm
 /doc/sphinx/_build

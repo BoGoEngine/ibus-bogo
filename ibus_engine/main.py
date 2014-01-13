@@ -1,22 +1,22 @@
 #
-# This file is part of ibus-bogo-python project.
+# This file is part of ibus-bogo project.
 #
 # Copyright (C) 2012 Long T. Dam <longdt90@gmail.com>
 # Copyright (C) 2012-2013 Trung Ngo <ndtrung4419@gmail.com>
 # Copyright (C) 2013 Duong H. Nguyen <cmpitg@gmail.com>
 #
-# ibus-bogo-python is free software: you can redistribute it and/or modify
+# ibus-bogo is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# ibus-bogo-python is distributed in the hope that it will be useful,
+# ibus-bogo is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with ibus-bogo-python.  If not, see <http://www.gnu.org/licenses/>.
+# along with ibus-bogo.  If not, see <http://www.gnu.org/licenses/>.
 #
 
 from gi.repository import IBus
@@ -30,6 +30,9 @@ import logging
 import argparse
 
 from ibus_engine import Engine
+from mouse_detector import MouseDetector
+from config import Config
+from abbr import AbbreviationExpander
 
 
 current_path = os.path.dirname(os.path.abspath(__file__))
@@ -41,17 +44,17 @@ class IMApp:
         engine_name = "bogo-python"
         long_engine_name = "bogo-python"
         author = "BoGo Development Team <bogoengine-dev@googlegroups.com>"
-        description = "ibus-bogo-python for IBus"
-        version = "0.3"
+        description = "ibus-bogo for IBus"
+        version = "0.4"
         license = "GPLv3"
 
         self.component = \
-            IBus.Component.new("org.freedesktop.IBus.BoGoPython",
+            IBus.Component.new("org.freedesktop.IBus.BoGo",
                                description,
                                version,
                                license,
                                author,
-                               "https://github.com/BoGoEngine/ibus-bogo-python",
+                               "https://github.com/BoGoEngine/ibus-bogo",
                                "/usr/bin/exec",
                                "ibus-bogo")
 
@@ -61,7 +64,7 @@ class IMApp:
                                  language="vi",
                                  license=license,
                                  author=author,
-                                 icon=current_path + "/data/ibus-bogo.svg",
+                                 icon=current_path + "/data/ibus-bogo-dev.svg",
                                  # icon = "ibus-bogo",
                                  layout="us")
 
@@ -69,18 +72,60 @@ class IMApp:
         self.mainloop = GObject.MainLoop()
         self.bus = IBus.Bus()
         self.bus.connect("disconnected", self.bus_disconnected_cb)
+
+        self.engine_count = 0
         self.factory = IBus.Factory.new(self.bus.get_connection())
-        self.factory.add_engine(engine_name,
-                                GObject.type_from_name("EngineBoGo"))
+        self.factory.connect("create-engine", self.create_engine)
+
+        CONFIG_DIR = os.path.expanduser("~/.config/ibus-bogo/")
+        self.config = Config()
+        self.abbr_expander = AbbreviationExpander(config=self.config)
+        self.abbr_expander.watch_file(CONFIG_DIR + "/abbr_rules.json")
+
         if exec_by_ibus:
-            self.bus.request_name("org.freedesktop.IBus.BoGoPython", 0)
+            self.bus.request_name("org.freedesktop.IBus.BoGo", 0)
         else:
             self.bus.register_component(self.component)
             self.bus.set_global_engine_async(
                 "bogo-python", -1, None, None, None)
 
+    def create_engine(self, factory, engine_name):
+        if engine_name == "bogo-python":
+            dbus_path = "/org/freedesktop/IBus/Engine/%d" % self.engine_count
+
+            # It looks like the GObject's new_with_type constructor also
+            # calls __init__ but without arguments so there will be error
+            # messages like this:
+            #
+            # TypeError: __init__() missing 1 required positional argument
+            #
+            # We will ignore that message by temporarily redirect stderr
+            # to /dev/null
+
+            f = open('/dev/null', 'w')
+            stderr = sys.stderr
+            sys.stderr = f
+
+            engine = Engine.new_with_type(GObject.type_from_name("EngineBoGo"),
+                                          "bogo-python",
+                                          dbus_path,
+                                          self.bus.get_connection())
+
+            sys.stderr = stderr
+            f.close()
+
+            Engine.__init__(engine, self.config, self.abbr_expander)
+
+            self.engine_count += 1
+            return engine
+
     def run(self):
-        self.mainloop.run()
+        mouse_detector = MouseDetector.get_instance()
+        mouse_detector.start()
+        try:
+            self.mainloop.run()
+        finally:
+            mouse_detector.terminate()
 
     def bus_disconnected_cb(self, bus):
         self.mainloop.quit()

@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 2.6)
-project (ibus-bogo)
+project (ibus-bogo NONE)
 
 list (APPEND CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake)
 
@@ -35,5 +35,5 @@ ENABLE_TESTING()
 add_subdirectory (bogo)
 add_subdirectory (ibus_engine)
 add_subdirectory (vncharsets)
-add_subdirectory (config-gui)
+add_subdirectory (gui)
 

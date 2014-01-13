@@ -1,23 +1,24 @@
 #
-# This file is part of ibus-bogo-python project.
+# This file is part of ibus-bogo project.
 #
 # Copyright (C) 2012 Long T. Dam <longdt90@gmail.com>
 # Copyright (C) 2012-2013 Trung Ngo <ndtrung4419@gmail.com>
 # Copyright (C) 2013 Duong H. Nguyen <cmpitg@gmail.com>
 # Copyright (C) 2013 Hai P. Nguyen <hainp2604@gmail.com>
+# Copyright (C) 2013-2014 Hai T. Nguyen <phaikawl@gmail.com>
 #
-# ibus-bogo-python is free software: you can redistribute it and/or modify
+# ibus-bogo is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# ibus-bogo-python is distributed in the hope that it will be useful,
+# ibus-bogo is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with ibus-bogo-python.  If not, see <http://www.gnu.org/licenses/>.
+# along with ibus-bogo.  If not, see <http://www.gnu.org/licenses/>.
 #
 
 from gi.repository import GObject
@@ -27,28 +28,19 @@ from gi.repository import Wnck
 import time
 import logging
 import subprocess
-import sys
 import os
+import sys
 
+ENGINE_PATH = os.path.dirname(__file__)
 sys.path.append(
-    os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+    os.path.abspath(os.path.join(ENGINE_PATH, "..")))
 
 import bogo
-from config import Config
+from mouse_detector import MouseDetector
 from keysyms_mapping import mapping
-
 import vncharsets
+
 vncharsets.init()
-
-
-# Since we don't instantiate the Engine class ourselves (IBus does), we can't
-# inject a Config object into it. Therefore, we have to resort to using a global
-# object like this.
-#
-# TODO: We should be able to subclass
-# IBusFactory and pre-apply the config object as an argument to
-# our engine's constructor.
-config = Config()
 
 
 def string_to_text(string):
@@ -64,8 +56,7 @@ def check_unity():
         window_type = window.get_window_type()
         logging.info("Current active window: %s" % window_name)
         if window_type == Wnck.WindowType.DOCK and \
-                (window_name == 'launcher' or
-                 window_name == 'unity-dash'):
+                window_name in ['launcher', 'unity-dash']:
             return True
         else:
             return False
@@ -76,25 +67,25 @@ def check_unity():
 class Engine(IBus.Engine):
     __gtype_name__ = 'EngineBoGo'
 
-    def __init__(self):
+    is_in_unity = check_unity()
+
+    def __init__(self, config, abbr_expander):
         super(Engine, self).__init__()
-        logging.info("You are running ibus-bogo-python")
+        logging.info("You are running ibus-bogo")
 
-        self.__config = config
+        self.config = config
         self.input_context_capabilities = 0
-        self.is_in_unity = check_unity()
-
-        self.lookup_table = IBus.LookupTable()
-        self.lookup_table.set_page_size(4)
-        self.lookup_table.set_orientation(1)
-        self.lookup_table.set_cursor_visible(True)
-        self.is_lookup_table_shown = False
-
         self.setup_tool_buttons()
+
+        self.abbr_expander = abbr_expander
 
         self.reset_engine()
 
-    # The "do_" part is PyGObject's way of overriding base's functions
+        # Create a new thread to detect mouse clicks
+        mouse_detector = MouseDetector.get_instance()
+        mouse_detector.add_mouse_click_listener(self.reset_engine)
+
+    # The "do_" part denotes a default signal handler
     def do_process_key_event(self, keyval, keycode, modifiers):
         """Implement IBus.Engine's process_key_event default signal handler.
 
@@ -110,11 +101,11 @@ class Engine(IBus.Engine):
 
         This function gets called whenever a key is pressed.
         """
-        if self.is_in_unity is True:
+        if Engine.is_in_unity is True:
             return False
 
         # Ignore key release events
-        event_is_key_press = (modifiers & (1 << 30)) == 0  # There's a strange
+        event_is_key_press = (modifiers & (1 << 30)) == 0
 
         # There is a strange overflow bug with python3-gi here so the above
         # line is used instead
@@ -126,11 +117,15 @@ class Engine(IBus.Engine):
         if keyval == IBus.Return:
             return self.on_return_pressed()
 
-        if keyval in [IBus.Up, IBus.Down]:
-            return self.on_updown_pressed(keyval)
-
         if keyval == IBus.BackSpace:
             return self.on_backspace_pressed()
+
+        if keyval == IBus.space:
+            if self.config["enable-text-expansion"]:
+                expanded_string = self.abbr_expander.expand(self.new_string)
+                self.commit_result(expanded_string)
+            self.reset_engine()
+            return False
 
         if self.is_processable_key(keyval, modifiers):
             logging.debug("Key pressed: %c", chr(keyval))
@@ -148,47 +143,7 @@ class Engine(IBus.Engine):
                 bogo.process_key(self.old_string,
                                  chr(keyval),
                                  fallback_sequence=self.__raw_string,
-                                 config=self.__config)
-
-            if self.__config['skip-non-vietnamese']:
-                # Detect if the raw input sequence can produce a syntactically
-                # legitimate Vietnamese word by putting it through
-                # bogo.process_key() twice, first with skip-non-vietnamese on,
-                # then with that setting off. If the two results differ then
-                # the sequence cannot produce a correct Vietnamse word.
-                #
-                # Eg:
-                #   `system` -> system != sýtem   | bad
-                #   `ba`     -> ba     == ba      | good
-                #   `meof`   -> mèo    == mèo     | good
-                if not self.stubborn_old_string:
-                    self.stubborn_old_string = self.old_string
-                else:
-                    self.stubborn_old_string = self.stubborn_new_string
-                stubborn_config = dict(self.__config.items())
-                stubborn_config['skip-non-vietnamese'] = False
-                self.stubborn_new_string = \
-                    bogo.process_key(self.stubborn_old_string,
-                                     chr(keyval),
-                                     config=stubborn_config)[0]
-
-                if self.stubborn_new_string != self.new_string:
-                    # The key sequence cannot generate a correct Vietnamese
-                    # word. But we will offer the user the incorrect word
-                    # as an option.
-                    self.lookup_table.clear()
-                    self.lookup_table.append_candidate(
-                        string_to_text(self.new_string))
-                    self.lookup_table.append_candidate(
-                        string_to_text(self.stubborn_new_string))
-
-                    # Urge IBus to put the lookup table at the correct location.
-                    # Despite this call, no pre-editing is shown.
-                    self.show_preedit_text()
-
-                    self.update_lookup_table(self.lookup_table, True)
-                    self.show_lookup_table()
-                    self.is_lookup_table_shown = True
+                                 config=self.config)
 
             # Revert the brace shift
             if brace_shift and self.new_string and self.new_string[-1] in "{}":
@@ -200,7 +155,6 @@ class Engine(IBus.Engine):
 
             self.commit_result(self.new_string)
             self.old_string = self.new_string
-
             return True
 
         self.reset_engine()
@@ -229,14 +183,6 @@ class Engine(IBus.Engine):
         self.new_string = ""
         self.old_string = ""
         self.__raw_string = ""
-        self.stubborn_old_string = ""
-        self.stubborn_new_string = ""
-        self.current_shown_text = ""
-        self.hide_lookup_table()
-        self.hide_preedit_text()
-        self.lookup_table.clear()
-        self.is_lookup_table_shown = False
-        self.is_table_dirty = False
 
     def commit_result(self, string):
         def get_nbackspace_and_string_to_commit(old_string, new_string):
@@ -252,7 +198,8 @@ class Engine(IBus.Engine):
                 return 0, new_string
 
         number_fake_backspace, string_to_commit = \
-            get_nbackspace_and_string_to_commit(self.current_shown_text, string)
+            get_nbackspace_and_string_to_commit(self.old_string,
+                                                string)
 
         logging.debug("Number of fake backspace: %d", number_fake_backspace)
         logging.debug("String to commit: %s", string_to_commit)
@@ -267,7 +214,7 @@ class Engine(IBus.Engine):
         # lewtds@github:
         #   Any key except a backspace should work either.
         #
-        # [1]: https://github.com/BoGoEngine/ibus-bogo-python/issues/73
+        # [1]: https://github.com/BoGoEngine/ibus-bogo/issues/73
         #
         self.forward_key_event(IBus.grave, 41, 0)
         for i in range(number_fake_backspace + 1):
@@ -290,9 +237,9 @@ class Engine(IBus.Engine):
         # 0xc2 0xb6. Field testing shows that this does not affect LibreOffice
         # Writer and Kate (when forcing the file's encoding to be latin-1)
         # though.
-        if config['output-charset'] != 'utf-8':
+        if self.config['output-charset'] != 'utf-8':
             string_to_commit = string_to_commit \
-                .encode(config['output-charset']) \
+                .encode(self.config['output-charset']) \
                 .decode('latin-1')
 
         # We cannot commit the text in Gtk since there is a bug in which
@@ -330,7 +277,8 @@ class Engine(IBus.Engine):
         # keyboards. But currently not working.
         #
         # TODO Don't assume default-input-methods
-        current_im = config['default-input-methods'][config['input-method']]
+        IMs = self.config['default-input-methods']
+        current_im = IMs[self.config['input-method']]
 
         key = chr(keyval)
         return keyval in range(33, 126) and \
@@ -342,7 +290,7 @@ class Engine(IBus.Engine):
         self.prop_list = IBus.PropList()
         pref_button = IBus.Property.new(key="preferences",
                                         type=IBus.PropType.NORMAL,
-                                        label=string_to_text("Pref"),
+                                        label=string_to_text("Preferences"),
                                         icon="preferences-other",
                                         tooltip=string_to_text("Preferences"),
                                         sensitive=True,
@@ -365,7 +313,7 @@ class Engine(IBus.Engine):
         pass
 
     def do_disable(self):
-        pass
+        self.reset_engine()
 
     def do_focus_in(self):
         """Implements IBus.Engine's focus_in's default signal handler.
@@ -390,7 +338,7 @@ class Engine(IBus.Engine):
                     os.system("python3 " +
                               os.path.join(os.path.dirname(__file__),
                                            "..",
-                                           "config-gui/controller.py"))
+                                           "gui/controller.py"))
                     os._exit(0)
             except:
                 pass
@@ -402,46 +350,26 @@ class Engine(IBus.Engine):
     def do_set_capabilities(self, caps):
         self.input_context_capabilities = caps
 
-    def do_candidate_clicked(self):
-        pass
-
     def on_return_pressed(self):
-        if self.stubborn_new_string and \
-                self.is_lookup_table_shown and \
-                self.is_table_dirty:
-            self.old_string = self.new_string
-            self.commit_result(self.lookup_table.get_candidate(
-                self.lookup_table.get_cursor_pos()).get_text())
-            self.reset_engine()
-            return True
-        else:
-            self.reset_engine()
-            return False
-
-    def on_updown_pressed(self, key):
-        key = {IBus.Up: "up", IBus.Down: "down"}[key]
-        if self.is_lookup_table_shown:
-            getattr(self.lookup_table, "cursor_" + key)()
-            self.update_lookup_table(self.lookup_table, True)
-            self.commit_result(self.lookup_table.get_candidate(
-                self.lookup_table.get_cursor_pos()).get_text())
-            self.is_table_dirty = True
-            return True
-        else:
-            return False
+        self.reset_engine()
+        return False
 
     def on_backspace_pressed(self):
         logging.debug("Getting a backspace")
+        if self.new_string == "":
+            return False
+
         deleted_char = self.new_string[-1]
         self.new_string = self.new_string[:-1]
         self.current_shown_text = self.new_string
         self.old_string = self.new_string
-        # TODO A char in __raw_string doesn't equal a char in new_string
+
         if len(self.new_string) == 0:
             self.reset_engine()
         else:
             index = self.__raw_string.rfind(deleted_char)
             self.__raw_string = self.__raw_string[:-2] if index < 0 else \
-                                    self.__raw_string[:index] + \
-                                    self.__raw_string[(index + 1):]
+                self.__raw_string[:index] + \
+                self.__raw_string[(index + 1):]
+
         return False

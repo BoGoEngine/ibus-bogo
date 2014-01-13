@@ -1,7 +1,7 @@
 Tham gia phát triển
 ===================
 
-Mã nguồn ibus-bogo-python được đặt trên `Github`.
+Mã nguồn ibus-bogo được đặt trên `Github` ở địa chỉ: https://github.com/BoGoEngine/ibus-bogo-python
 
 Để tham gia viết code bạn cần biết cách sử dụng `git`_ và lập trình bằng
 `python`_.
@@ -11,11 +11,12 @@ bên dưới), sau đó viết code và gửi chúng tôi một `pull request`_.
 tôi sẽ xem xét và commit code của bạn trong thời gian sớm nhất.
 
 Tuy nhiên, bạn cũng có thể đóng góp theo những cách đơn giản hơn như
-sử dụng phiên bản unstable và thông báo lỗi, viết hướng dẫn sử dụng, 
+sử dụng phiên bản unstable và thông báo lỗi, viết hướng dẫn sử dụng,
 viết blog, chia sẻ với bạn bè và người thân về bộ gõ tiếng Việt này.
 
-Mọi sự đóng góp của các bạn dù dưới hình thức nào cũng đều được chúng tôi
-hết sức trân trọng.
+Hãy trò chuyện với chúng tôi thông qua IRC ở kênh ``#bogo`` trên mạng Freenode
+nếu bạn có mong muốn giúp sức. Mọi sự đóng góp của các bạn dù dưới hình thức
+nào cũng đều được chúng tôi hết sức trân trọng.
 
 .. _Github: https://github.com/BoGoEngine/ibus-bogo-python
 .. _git: http://git-scm.com/book
@@ -29,7 +30,7 @@ Chúng tôi cố gắng module hóa phần mềm để dễ dàng chuyển sang 
 khác nên BoGo được chia làm 2 thành phần là IBus engine và BoGo engine.
 BoGo engine là phần xử lý tiếng Việt chính nằm trong thư mục ``/bogo``
 có API đơn giản (hàm ``process_key()``). Còn IBus engine là phần giao tiếp
-với IBus, gồm tất cả các file và thư mục con trong ``/engine`` có nhiệm vụ
+với IBus, gồm tất cả các file và thư mục con trong ``/ibus_engine`` có nhiệm vụ
 gọi hàm `process_key`, đưa kết quả cho người dùng và tạo giao diện tinh
 chỉnh phương pháp gõ.
 
@@ -50,15 +51,32 @@ Bạn có thể tìm thấy tài liệu về cách sử dụng chúng dưới đ
 Testing
 -------
 
-Nhóm phát triển ibus-bogo-python sử dụng phương pháp TDD (test-driven
+Nhóm phát triển ibus-bogo sử dụng phương pháp TDD (test-driven
 development) để phát triển phần mềm. Khi đóng góp cho BoGo, bạn luôn phải
-viết test mỗi khi thay đổi code. Các test case có thể tìm thấy trong thư
-mục ``/test``.
+viết test mỗi khi thay đổi code. Các test case có thể tìm thấy trong thư con
+mục ``test`` nằm trong mỗi thư mục lớn của dự án.
+
+Để chạy test, bạn cần cài **nosetests** cho Python 3 và chạy lệnh sau ở thư mục
+ngoài cùng:
+::
+
+    nosetests
+    
+Nosetests sẽ tự tìm, chạy tất cả các test và in kết quả ra màn hình.
+
+.. note::
+
+   Lệnh trên sẽ chạy tất cả các test trong dự án (khoảng 37000 test) nên tốn khoảng
+   2 đến 3 phút mới chạy xong. Bạn có thể skip các test được đánh dấu là chạy chậm
+   bằng lệnh sau:
+   ::
+   
+       nosetests --attr "!slow"
 
 Git Flow
 --------
 
-ibus-bogo-python được quản lý bằng Git.  Phương pháp này sử dụng có thể trình
+ibus-bogo được quản lý bằng Git.  Phương pháp này sử dụng có thể trình
 bày sơ lược như sau:
 
 - Repo chính trên Github luôn có 2 branch là ``master`` và ``develop``. ``master``
@@ -66,7 +84,7 @@ bày sơ lược như sau:
   những thay đổi mới nhất của BoGo. Tuy nhiên, thường ít khi commit trực tiếp
   vào ``develop`` ngoài những commit sửa lỗi nhỏ.
 
-- Khi thực hiện một tính năng mới thì lập trình viên tạo branch mới với 
+- Khi thực hiện một tính năng mới thì lập trình viên tạo branch mới với
   tên ``feature/<tên tính năng>``. Khi đã cảm thấy đủ chín thì merge branch
   này với ``develop`` và xóa branch ``feature/*`` đi. Từ sau trở đi tính năng
   này sẽ được maintain trong branch ``develop``.
@@ -81,8 +99,8 @@ bày sơ lược như sau:
   được merge trở lại vào ``develop``.
 
 - Sau khi release phiên bản major mà phát hiện lỗi đặc biệt nghiêm trọng
-  nào đó thì phải sửa ngay lập tức và release phiên bản minor với branch 
-  ``hotfix/v<phiên bản>``. Quy trình giống như một branch ``release/*``. 
+  nào đó thì phải sửa ngay lập tức và release phiên bản minor với branch
+  ``hotfix/v<phiên bản>``. Quy trình giống như một branch ``release/*``.
   Sau khi release phải merge lại vào ``develop``.
 
 Chi tiết về phương pháp git flow:

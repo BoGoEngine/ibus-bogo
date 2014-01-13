@@ -6,7 +6,7 @@ Checklist những việc cần làm trước khi release một phiên bản mớ
 - Viết NEWS, tóm tắt những thay đổi ảnh hưởng đến người dùng; nên tìm cả trong
   git history và trong Github issue.
 - Chạy `dch --increment`, list những thay đổi trong NEWS nào đấy.
-- Kiểm tra lại tất cả dependency xem có gì thay đổi phải báo với package maintainer 
+- Kiểm tra lại tất cả dependency xem có gì thay đổi phải báo với package maintainer
 
 
 Những việc cần làm để release bản beta:
@@ -33,10 +33,10 @@ Bump version: tạm thời làm bằng tay. Sửa file ibus_engine/data/bogo.xml
 <version> và file ibus_engine/main.py:
 
     IBus.Component.new("org.freedesktop.IBus.BoGoPython",
-                       "ibus-bogo-python for IBus",
+                       "ibus-bogo for IBus",
                        "0.2",  # sửa ở đây
                        "GPLv3",
-                       "ibus-bogo-python Development Team <bogoengine-dev@googlegroups.com>",
-                       "https://github.com/BoGoEngine/ibus-bogo-python",
+                       "ibus-bogo Development Team <bogoengine-dev@googlegroups.com>",
+                       "https://github.com/BoGoEngine/ibus-bogo",
                        "/usr/bin/exec",
                        "ibus-bogo")

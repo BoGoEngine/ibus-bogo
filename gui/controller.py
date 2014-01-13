@@ -1,24 +1,24 @@
 #!/usr/bin/env python3
 
 #
-# This file is part of ibus-bogo-python project.
+# This file is part of ibus-bogo project.
 #
 # Copyright (C) 2012 Long T. Dam <longdt90@gmail.com>
 # Copyright (C) 2012-2013 Trung Ngo <ndtrung4419@gmail.com>
 # Copyright (C) 2013 Duong H. Nguyen <cmpitg@gmail.com>
 #
-# ibus-bogo-python is free software: you can redistribute it and/or modify
+# ibus-bogo is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# ibus-bogo-python is distributed in the hope that it will be useful,
+# ibus-bogo is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with ibus-bogo-python.  If not, see <http://www.gnu.org/licenses/>.
+# along with ibus-bogo.  If not, see <http://www.gnu.org/licenses/>.
 #
 
 import sys
@@ -42,13 +42,14 @@ sys.path.append(
 
 from base_config import BaseConfig
 import vncharsets
+import tablemodel
 
 
 # Find the config file or create one if none exists
-_dirname = os.path.expanduser("~/.config/ibus-bogo/")
-if not os.path.exists(_dirname):
-    os.makedirs(_dirname)
-config_path = os.path.join(_dirname, "config.json")
+CONFIG_DIR = os.path.expanduser("~/.config/ibus-bogo")
+if not os.path.exists(CONFIG_DIR):
+    os.makedirs(CONFIG_DIR)
+config_path = os.path.join(CONFIG_DIR, "config.json")
 jsonData = open(config_path)
 
 # Fill in some global data
@@ -70,6 +71,11 @@ DEFAULT_LOCALE = "vi_VN"
 
 
 class Settings(BaseConfig, QObject):
+
+    """
+    Watches the settings file and allows access to it as a dictionary.
+    """
+
     # TODO: Make this thing reactive
 
     changed = pyqtSignal()
@@ -90,6 +96,108 @@ class Settings(BaseConfig, QObject):
             self.fileHash = h
             logging.debug("File changed")
 
+
+class TableProxy(QObject):
+
+    """
+    Proxy class to manage the text expansion rule editor table.
+    """
+
+    def __init__(self, tableWidget, rule_file_path):
+
+        super(TableProxy, self).__init__()
+
+        self.tableWidget = tableWidget
+        self.rule_file_path = rule_file_path
+
+        self.tableWidget.setColumnCount(2)
+        self.tableWidget.horizontalHeader().setStretchLastSection(True)
+        self.tableWidget.setAlternatingRowColors(True)
+        self.tableWidget.setShowGrid(False)
+        self.tableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
+
+        self.abbrRules = {}
+
+        try:
+            with open(self.rule_file_path, "r") as f:
+                rules = json.load(f)
+                self.fillData(rules)
+        except IOError:
+            pass
+
+        self.tableWidget.sortByColumn(0, Qt.AscendingOrder)
+        tableWidget.cellChanged.connect(self.on_tableWidget_cellChanged)
+
+    def extractRow(self, row):
+        try:
+            abbr = self.tableWidget.item(row, 0).text()
+            expanded = self.tableWidget.item(row, 1).text()
+        except AttributeError:
+            abbr = ""
+            expanded = ""
+
+        return (abbr, expanded)
+
+    def appendBlankRow(self):
+        self.tableWidget.insertRow(self.tableWidget.rowCount())
+
+    def on_tableWidget_cellChanged(self, row, col):
+        abbr, expanded = self.extractRow(row)
+
+        if abbr and expanded:
+            self.abbrRules[abbr] = expanded
+            self.save()
+
+    def fillData(self, dic):
+        self.tableWidget.clearContents()
+        self.tableWidget.setRowCount(0)
+        self.abbrRules.update(dic)
+
+        signalState = self.tableWidget.blockSignals(True)
+
+        for abbr, expanded in self.abbrRules.items():
+            abbrItem = QTableWidgetItem(abbr)
+            expandedItem = QTableWidgetItem(expanded)
+
+            row = self.tableWidget.rowCount()
+
+            self.tableWidget.insertRow(row)
+            self.tableWidget.setItem(row, 0, abbrItem)
+            self.tableWidget.setItem(row, 1, expandedItem)
+
+        self.tableWidget.blockSignals(signalState)
+        self.save()
+
+    def save(self):
+        try:
+            with open(self.rule_file_path, "w") as f:
+                json.dump(self.abbrRules,
+                          f,
+                          indent=4,
+                          ensure_ascii=False,
+                          sort_keys=True)
+        except IOError:
+            # FIXME: Popup an error dialog here
+            pass
+
+    def deleteSelection(self):
+        selectedRows = (item.row() for item in self.tableWidget.selectedItems())
+        selectedRows = reversed(sorted(set(selectedRows)))
+
+        for row in selectedRows:
+            try:
+                abbr, _ = self.extractRow(row)
+                self.abbrRules.pop(abbr)
+            except KeyError:
+                pass
+
+            self.tableWidget.removeRow(row)
+
+        self.save()
+
+    def toUnikeyRules(self):
+        return tablemodel.toUnikeyRules(self.abbrRules)
+
 # Multiple-inheritance approach
 # http://pyqt.sourceforge.net/Docs/PyQt4/designer.html
 
@@ -98,6 +206,10 @@ Ui_FormClass, UiFormBase = \
 
 
 class Window(Ui_FormClass, UiFormBase):
+
+    """
+    Main program window.
+    """
 
     def __init__(self, app, settings):
         super(Window, self).__init__()
@@ -125,8 +237,56 @@ class Window(Ui_FormClass, UiFormBase):
                 self.sourceCharsetCombo.insertItem(
                     i, charsetList[i].upper())
 
+        abbr_rule_file_path = CONFIG_DIR + "/abbr_rules.json"
+        self.tableProxy = TableProxy(self.abbrTable,
+                                     abbr_rule_file_path)
+
+        def onSelectionChanged(selected, deselected):
+            hasSelection = self.abbrTable.selectionModel().hasSelection()
+            self.removeButton.setEnabled(hasSelection)
+
+        self.abbrTable        \
+            .selectionModel() \
+            .selectionChanged \
+            .connect(onSelectionChanged)
+
+        self.logoLabel.setPixmap(QIcon.fromTheme("ibus-bogo").pixmap(48, 48))
+
         self.setupLanguages()
         self.refreshGui()
+
+    @pyqtSlot()
+    def on_addButton_clicked(self):
+        self.tableProxy.appendBlankRow()
+
+    @pyqtSlot()
+    def on_removeButton_clicked(self):
+        self.tableProxy.deleteSelection()
+
+    @pyqtSlot()
+    def on_importButton_clicked(self):
+        caption = "Choose a Unikey text expansion rule file"
+        fileName = QFileDialog.getOpenFileName(parent=self,
+                                               caption=caption)
+        if fileName:
+            with open(fileName, "r") as f:
+                content = f.read()
+                rules = tablemodel.parseUnikeyRules(content)
+                self.tableProxy.fillData(rules)
+
+    @pyqtSlot()
+    def on_exportButton_clicked(self):
+        caption = "Choose a location to save expansion rule file"
+        fileName = QFileDialog.getSaveFileName(parent=self,
+                                               caption=caption)
+
+        if fileName:
+            with open(fileName, "w") as f:
+                f.write(self.tableProxy.toUnikeyRules())
+
+    @pyqtSlot(bool)
+    def on_enableAbbrCheckBox_clicked(self, state):
+        self.settings["enable-text-expansion"] = state
 
     @pyqtSlot()
     def on_closeButton_clicked(self):
@@ -151,6 +311,11 @@ class Window(Ui_FormClass, UiFormBase):
         logging.debug("skipNonVNCheckBoxChanged: %s", str(state))
         self.settings["skip-non-vietnamese"] = state
 
+    @pyqtSlot(bool)
+    def on_autocapCheckBox_clicked(self, state):
+        logging.debug("autocapCheckBox: %s", str(state))
+        self.settings["auto-capitalize-expansion"] = state
+
     @pyqtSlot(int)
     def on_guiLanguageComboBox_activated(self, index):
         self.switchLanguage(self.guiLanguages[index][0])
@@ -161,7 +326,7 @@ class Window(Ui_FormClass, UiFormBase):
         # TODO Don't always process when the button is pressed.
         clipboard = self.app.clipboard()
         mime = clipboard.mimeData()
-        sourceEncoding = self.ui.sourceCharsetCombo.currentText().lower()
+        sourceEncoding = self.sourceCharsetCombo.currentText().lower()
         try:
             if mime.hasHtml() or mime.hasText():
                 html, text = mime.html(), mime.text()
@@ -232,6 +397,24 @@ class Window(Ui_FormClass, UiFormBase):
 
         if "gui-language" in self.settings:
             self.switchLanguage(self.settings["gui-language"])
+
+        if "auto-capitalize-expansion" in self.settings:
+            self.autocapCheckBox \
+                .setChecked(self.settings["auto-capitalize-expansion"])
+
+        if "enable-text-expansion" in self.settings:
+            self.enableAbbrCheckBox \
+                .setChecked(self.settings["enable-text-expansion"])
+
+    def retranslateUi(self, object):
+        super(Window, self).retranslateUi(object)
+
+        self.abbrTable.setHorizontalHeaderLabels([
+            QCoreApplication.translate("TableProxy", "Expand", "Text expansion"),
+            QCoreApplication.translate("TableProxy", "To", "Text expansion")])
+
+        infoLabelText = self.infoLabel.text()
+        self.infoLabel.setText(infoLabelText.format(version="0.4"))
 
     def changeEvent(self, event):
         if event.type() == QEvent.LanguageChange:
