@@ -45,7 +45,7 @@ class IMApp:
         long_engine_name = "bogo-python"
         author = "BoGo Development Team <bogoengine-dev@googlegroups.com>"
         description = "ibus-bogo for IBus"
-        version = "0.3"
+        version = "0.4"
         license = "GPLv3"
 
         self.component = \

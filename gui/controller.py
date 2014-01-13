@@ -414,7 +414,7 @@ class Window(Ui_FormClass, UiFormBase):
             QCoreApplication.translate("TableProxy", "To", "Text expansion")])
 
         infoLabelText = self.infoLabel.text()
-        self.infoLabel.setText(infoLabelText.format(version=0.4))
+        self.infoLabel.setText(infoLabelText.format(version="0.4"))
 
     def changeEvent(self, event):
         if event.type() == QEvent.LanguageChange:
