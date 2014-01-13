@@ -343,7 +343,7 @@ class Engine(IBus.Engine):
             except:
                 pass
         elif prop_key == "help":
-            link = "http://ibus-bogo-python.readthedocs.org/en/latest/usage.html"
+            link = "http://ibus-bogo.readthedocs.org/en/latest/usage.html"
             subprocess.call("xdg-open " + link, shell=True)
         self.reset_engine()
 
