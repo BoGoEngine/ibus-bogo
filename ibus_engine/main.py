@@ -49,7 +49,7 @@ class IMApp:
         license = "GPLv3"
 
         self.component = \
-            IBus.Component.new("org.freedesktop.IBus.BoGoPython",
+            IBus.Component.new("org.freedesktop.IBus.BoGo",
                                description,
                                version,
                                license,
@@ -83,7 +83,7 @@ class IMApp:
         self.abbr_expander.watch_file(CONFIG_DIR + "/abbr_rules.json")
 
         if exec_by_ibus:
-            self.bus.request_name("org.freedesktop.IBus.BoGoPython", 0)
+            self.bus.request_name("org.freedesktop.IBus.BoGo", 0)
         else:
             self.bus.register_component(self.component)
             self.bus.set_global_engine_async(

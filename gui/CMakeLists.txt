@@ -37,7 +37,7 @@ install (FILES
   )
 
 install (FILES
-  ibus-bogo-settings.desktop
+  ibus-setup-bogo.desktop
   DESTINATION
   share/applications
 )
