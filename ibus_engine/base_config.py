@@ -49,6 +49,7 @@ class BaseConfig(object):
             f.close()
         except:
             logging.debug("Config file corrupted or not exists.")
+            self.reset()
         finally:
             tmp = self._keys
             self._keys.update(tmp)
