@@ -47,7 +47,10 @@ def string_to_text(string):
     return IBus.Text.new_from_string(string)
 
 
-def check_unity():
+def is_in_unity():
+    return os.environ["XDG_CURRENT_DESKTOP"] == "Unity"
+
+def is_in_unity_dash():
     try:
         screen = Wnck.Screen.get_default()
         screen.force_update()
@@ -66,8 +69,6 @@ def check_unity():
 
 class Engine(IBus.Engine):
     __gtype_name__ = 'EngineBoGo'
-
-    is_in_unity = check_unity()
 
     def __init__(self, config, abbr_expander):
         super(Engine, self).__init__()
@@ -101,7 +102,7 @@ class Engine(IBus.Engine):
 
         This function gets called whenever a key is pressed.
         """
-        if Engine.is_in_unity is True:
+        if is_in_unity() and is_in_unity_dash():
             return False
 
         # Ignore key release events
