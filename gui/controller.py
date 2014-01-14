@@ -396,8 +396,12 @@ class Window(Ui_FormClass, UiFormBase):
                 .setChecked(self.settings["auto-capitalize-expansion"])
 
         if "enable-text-expansion" in self.settings:
+            isEnabled = self.settings["enable-text-expansion"]
             self.enableAbbrCheckBox \
-                .setChecked(self.settings["enable-text-expansion"])
+                .setChecked(isEnabled)
+
+            self.autocapCheckBox.setEnabled(isEnabled)
+            self.ruleEditorGroupBox.setEnabled(isEnabled)
 
     def retranslateUi(self, object):
         super(Window, self).retranslateUi(object)

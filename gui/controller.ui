@@ -29,7 +29,7 @@
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <property name="usesScrollButtons">
       <bool>true</bool>
@@ -146,7 +146,63 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_5">
        <item>
-        <widget class="QGroupBox" name="groupBox_2">
+        <widget class="QGroupBox" name="groupBox_3">
+         <property name="title">
+          <string>Behaviors</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_6">
+          <item>
+           <widget class="QCheckBox" name="enableAbbrCheckBox">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="text">
+             <string>Expand text as you type</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="autocapCheckBox">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
+            <property name="text">
+             <string>Auto capitalize expanded phrases</string>
+            </property>
+            <property name="checkable">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_3">
+            <property name="font">
+             <font>
+              <pointsize>8</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If you have &lt;span style=&quot; font-style:italic;&quot;&gt;tm&lt;/span&gt; expanding to &lt;span style=&quot; font-style:italic;&quot;&gt;thay mặt&lt;/span&gt;, then &lt;span style=&quot; font-style:italic;&quot;&gt;Tm&lt;/span&gt; also expands to &lt;span style=&quot; font-style:italic;&quot;&gt;Thay mặt&lt;/span&gt; and &lt;span style=&quot; font-style:italic;&quot;&gt;TM&lt;/span&gt; to &lt;span style=&quot; font-style:italic;&quot;&gt;THAY MẶT&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+            <property name="margin">
+             <number>0</number>
+            </property>
+            <property name="indent">
+             <number>20</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="ruleEditorGroupBox">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
          <property name="sizePolicy">
           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
            <horstretch>0</horstretch>
@@ -159,6 +215,9 @@
          <layout class="QVBoxLayout" name="verticalLayout_4">
           <item>
            <widget class="QLabel" name="label_4">
+            <property name="enabled">
+             <bool>true</bool>
+            </property>
             <property name="font">
              <font>
               <pointsize>8</pointsize>
@@ -256,53 +315,6 @@
              </widget>
             </item>
            </layout>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QGroupBox" name="groupBox_3">
-         <property name="title">
-          <string>Behaviors</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_6">
-          <item>
-           <widget class="QCheckBox" name="enableAbbrCheckBox">
-            <property name="text">
-             <string>Expand text as you type</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="autocapCheckBox">
-            <property name="text">
-             <string>Auto capitalize expanded phrases</string>
-            </property>
-            <property name="checkable">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="label_3">
-            <property name="font">
-             <font>
-              <pointsize>8</pointsize>
-             </font>
-            </property>
-            <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If you have &lt;span style=&quot; font-style:italic;&quot;&gt;tm&lt;/span&gt; expanding to &lt;span style=&quot; font-style:italic;&quot;&gt;thay mặt&lt;/span&gt;, then &lt;span style=&quot; font-style:italic;&quot;&gt;Tm&lt;/span&gt; also expands to &lt;span style=&quot; font-style:italic;&quot;&gt;Thay mặt&lt;/span&gt; and &lt;span style=&quot; font-style:italic;&quot;&gt;TM&lt;/span&gt; to &lt;span style=&quot; font-style:italic;&quot;&gt;THAY MẶT&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="wordWrap">
-             <bool>true</bool>
-            </property>
-            <property name="margin">
-             <number>0</number>
-            </property>
-            <property name="indent">
-             <number>20</number>
-            </property>
-           </widget>
           </item>
          </layout>
         </widget>
