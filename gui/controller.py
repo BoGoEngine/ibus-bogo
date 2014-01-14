@@ -44,21 +44,10 @@ import vncharsets
 import tablemodel
 
 
-# Find the config file or create one if none exists
 CONFIG_DIR = os.path.expanduser("~/.config/ibus-bogo")
+CONFIG_PATH = os.path.join(CONFIG_DIR, "config.json")
 if not os.path.exists(CONFIG_DIR):
     os.makedirs(CONFIG_DIR)
-config_path = os.path.join(CONFIG_DIR, "config.json")
-jsonData = open(config_path)
-
-# Fill in some global data
-config = json.load(jsonData)
-inputMethodList = list(config["default-input-methods"].keys())
-
-if "custom-input-methods" in config:
-    inputMethodList += list(config["custom-input-methods"].keys())
-
-
 
 DEFAULT_LOCALE = "vi_VN"
 
@@ -76,7 +65,7 @@ class Settings(BaseConfig, QObject):
     changed = pyqtSignal()
 
     def __init__(self, path):
-        BaseConfig.__init__(self, config_path)
+        BaseConfig.__init__(self, CONFIG_PATH)
         # QObject.__init__()
 
         self.watcher = QFileSystemWatcher([os.path.dirname(path), path])
@@ -370,6 +359,9 @@ class Window(Ui_FormClass, UiFormBase):
         logging.debug("Refreshing GUI")
 
         inputMethodList = list(self.settings["default-input-methods"].keys())
+        if "custom-input-methods" in self.settings:
+            inputMethodList += list(self.settings["custom-input-methods"].keys())
+
         charsetList = [
             "utf-8",
             "tcvn3",
@@ -427,7 +419,7 @@ def main():
     Notify.init("IBus BoGo Settings")
     app = QApplication(sys.argv)
 
-    settings = Settings(config_path)
+    settings = Settings(CONFIG_PATH)
 
     win = Window(app, settings)
     win.show()
