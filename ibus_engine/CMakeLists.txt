@@ -49,11 +49,11 @@ install (FILES
   ${BOGO_INSTALL_DIR}/ibus_engine
   )
 
-install (FILES
-  data/default_config.json
-  DESTINATION
-  ${BOGO_INSTALL_DIR}/ibus_engine/data
-)
+# install (FILES
+#   data/default_config.json
+#   DESTINATION
+#   ${BOGO_INSTALL_DIR}/ibus_engine/data
+# )
 
 install (DIRECTORY
   libs

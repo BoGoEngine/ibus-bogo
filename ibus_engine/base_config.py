@@ -27,7 +27,6 @@ import bogo
 
 # TODO: This module needs some tests
 ENGINE_DIR = os.path.dirname(__file__)
-DEFAULT_CONFIG_PATH = ENGINE_DIR + "/data/default_config.json"
 
 # TODO: It's best if we can preserve comments and line order
 class BaseConfig(object):
@@ -57,7 +56,10 @@ class BaseConfig(object):
 
     def write_config(self):
         f = open(self.path, "w")
-        f.write(json.dumps(self._keys, indent=4, ensure_ascii=False, sort_keys=True))
+        f.write(json.dumps(self._keys,
+                           indent=4,
+                           ensure_ascii=False,
+                           sort_keys=True))
         f.close()
 
     def __setitem__(self, key, value):
@@ -80,10 +82,10 @@ class BaseConfig(object):
         return self._keys.keys()
 
     def read_default_config(self):
-        self.read_config(DEFAULT_CONFIG_PATH)
+        self._keys = bogo.get_default_config()
 
     def reset(self):
-        self._key = {}
+        self._keys = {}
         self.read_default_config()
         self.write_config()
 
@@ -93,4 +95,3 @@ class BaseConfig(object):
                 "custom-input-methods" in self._keys and \
                 self._keys["input-method"] not in self._keys["custom-input-methods"]:
             raise ValueError
-

@@ -22,6 +22,7 @@
 from .valid_vietnamese import is_valid_combination
 from . import utils, accent, mark
 import logging
+import copy
 
 
 Mark = mark.Mark
@@ -39,6 +40,8 @@ default_config = {
     "input-method": "telex",
     "output-charset": "utf-8",
     "skip-non-vietnamese": True,
+    "enable-text-expansion": False,
+    "auto-capitalize-expansion": False,
     "default-input-methods": {
         "simple-telex": {
             "a": "a^",
@@ -81,6 +84,10 @@ default_config = {
         }
     }
 }
+
+
+def get_default_config():
+    return copy.deepcopy(default_config)
 
 
 def is_processable(comps):

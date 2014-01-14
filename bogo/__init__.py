@@ -1,1 +1,1 @@
-from .bogo import process_key, default_config
+from .bogo import process_key, get_default_config
