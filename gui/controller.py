@@ -58,11 +58,7 @@ inputMethodList = list(config["default-input-methods"].keys())
 if "custom-input-methods" in config:
     inputMethodList += list(config["custom-input-methods"].keys())
 
-charsetList = [
-    "utf-8",
-    "tcvn3",
-    "vni"
-]
+
 
 DEFAULT_LOCALE = "vi_VN"
 
@@ -222,16 +218,6 @@ class Window(Ui_FormClass, UiFormBase):
         self.translator.load(os.path.join(current_dir, "locales", locale))
         app.installTranslator(self.translator)
 
-        # Set the combo boxes' initial values
-        for i in range(len(inputMethodList)):
-            self.inputMethodComboBox.insertItem(i, inputMethodList[i])
-
-        for i in range(len(charsetList)):
-            self.charsetComboBox.insertItem(i, charsetList[i])
-            if charsetList[i] != "utf-8":
-                self.sourceCharsetCombo.insertItem(
-                    i, charsetList[i].upper())
-
         abbr_rule_file_path = CONFIG_DIR + "/abbr_rules.json"
         self.tableProxy = TableProxy(self.abbrTable,
                                      abbr_rule_file_path)
@@ -382,6 +368,25 @@ class Window(Ui_FormClass, UiFormBase):
 
     def refreshGui(self):
         logging.debug("Refreshing GUI")
+
+        inputMethodList = list(self.settings["default-input-methods"].keys())
+        charsetList = [
+            "utf-8",
+            "tcvn3",
+            "vni"
+        ]
+
+        # Set the combo boxes' initial values
+        self.inputMethodComboBox.clear()
+        for i in range(len(inputMethodList)):
+            self.inputMethodComboBox.insertItem(i, inputMethodList[i])
+
+        self.charsetComboBox.clear()
+        for i in range(len(charsetList)):
+            self.charsetComboBox.insertItem(i, charsetList[i])
+            if charsetList[i] != "utf-8":
+                self.sourceCharsetCombo.insertItem(i, charsetList[i].upper())
+
         self.inputMethodComboBox.setCurrentIndex(
             inputMethodList.index(self.settings["input-method"]))
 
