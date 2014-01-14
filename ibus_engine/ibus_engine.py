@@ -48,7 +48,10 @@ def string_to_text(string):
 
 
 def is_in_unity():
-    return os.environ["XDG_CURRENT_DESKTOP"] == "Unity"
+    try:
+        return os.environ["XDG_CURRENT_DESKTOP"] == "Unity"
+    except KeyError:
+        return False
 
 def is_in_unity_dash():
     try:
