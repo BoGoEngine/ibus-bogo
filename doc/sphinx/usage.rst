@@ -17,7 +17,12 @@ dụng công cụ thiết lập đi kèm với ibus-bogo.
 
 Để mở công cụ này thì bạn có thể tìm kiếm từ **BoGo** trong mục tìm
 kiếm phần mềm (Dash Launcher, GNOME Do...) hoặc tìm trong menu
-**Applications/Utility**. Hoặc nếu ibus-bogo đang chạy thì bạn có thể
+**Applications/Utility**.
+
+.. image:: _static/img/launch_bogo_settings.png
+   :align: center
+
+Hoặc nếu ibus-bogo đang chạy thì bạn có thể
 nhấn nút **Preferences** hình hộp dụng cụ trên menu của IBus.
 
 .. image:: _static/img/ibus_menu.png
