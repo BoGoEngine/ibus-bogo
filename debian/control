@@ -13,7 +13,7 @@ Vcs-Git: git://github.com/BoGoEngine/ibus-bogo-python.git
 
 Package: ibus-bogo
 Architecture: all
-Depends: ${python3:Depends},
+Depends: python3:any (>= 3.2),
  ${misc:Depends},
  python3-gi,
  gir1.2-ibus-1.0,
