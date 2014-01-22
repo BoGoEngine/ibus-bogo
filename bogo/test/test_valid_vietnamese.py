@@ -42,6 +42,18 @@ def test_ch_ending():
     assert is_valid_string("ãch", final_form=True) is False
 
 
+def test_ng_ending():
+    assert is_valid_string("thing", final_form=True) is False
+    assert is_valid_string("thinh", final_form=True) is True
+
+    assert is_valid_string("thương", final_form=True) is True
+    assert is_valid_string("thơng", final_form=True) is False
+
+
+def test_nh_ending():
+    pass
+
+
 def test_non_final():
     assert is_valid_string("thuyen", final_form=False)
     assert is_valid_string("thuyen", final_form=True) is False
@@ -51,3 +63,22 @@ def test_non_final():
 
     assert is_valid_string("ảch", final_form=False) is True
     assert is_valid_string("ảch", final_form=True) is False
+
+    assert is_valid_string("ưoi", final_form=False)
+    assert is_valid_string("ưoi", final_form=True) is False
+
+
+def test_single_consonant():
+    assert is_valid_string("d")
+    assert is_valid_string("b")
+    assert is_valid_string("c")
+    assert is_valid_string("kh")
+    assert is_valid_string("ng")
+    assert is_valid_string("đ")
+
+    assert is_valid_string("đm") is False
+
+
+def test_non_terminal_vowels():
+    assert is_valid_string("bang")
+    assert is_valid_string("baing") is False
