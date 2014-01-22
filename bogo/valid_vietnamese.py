@@ -146,6 +146,12 @@ def is_valid_sound_tuple(sound_tuple, final_form=True):
             vowel_wo_accent in ('i', 'ơ'):
         return False
 
+    # 'nh' can only go after a, ê, uy, i, oa, quy
+    if sound_tuple.last_consonant == 'nh' and \
+            (not vowel_wo_accent in {'a', 'ê', 'i', 'uy', 'oa', 'uê', 'y'} or
+            (vowel_wo_accent == 'y' and sound_tuple.first_consonant != 'qu')):
+        return False
+
     # Get the first accent
     akzent = Accent.NONE
     for i in range(len(sound_tuple.vowel)):
