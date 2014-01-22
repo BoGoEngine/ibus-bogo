@@ -36,6 +36,7 @@ def test_ch_ending():
     assert is_valid_string("ích", final_form=True)
 
     assert is_valid_string("ech", final_form=True) is False
+    assert is_valid_string("och", final_form=True) is False
 
     assert is_valid_string("ìch", final_form=True) is False
     assert is_valid_string("ãch", final_form=True) is False

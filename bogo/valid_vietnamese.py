@@ -133,7 +133,7 @@ def is_valid_sound_tuple(sound_tuple, final_form=True):
 
     # 'ch' can only go after a, ê, i
     if sound_tuple.last_consonant == 'ch' and \
-            (vowel_wo_accent in 'ăâeôơuư' or
+            (vowel_wo_accent in ('ă', 'â', 'e', 'ô', 'o', 'ơ', 'u', 'ư') or
                 (vowel_wo_accent in NON_TERMINAL_VOWELS - TERMINAL_VOWELS)):
         return False
 
