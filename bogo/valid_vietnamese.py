@@ -131,7 +131,7 @@ def is_valid_sound_tuple(sound_tuple, final_form=True):
             vowel_wo_accent in TERMINAL_VOWELS - NON_TERMINAL_VOWELS:
         return False
 
-    # 'ch' can only goes after a, ê, i
+    # 'ch' can only go after a, ê, i
     if sound_tuple.last_consonant == 'ch' and \
             (vowel_wo_accent in 'ăâeôơuư' or
                 (vowel_wo_accent in NON_TERMINAL_VOWELS - TERMINAL_VOWELS)):
@@ -142,9 +142,10 @@ def is_valid_sound_tuple(sound_tuple, final_form=True):
             vowel_wo_accent in ('i', 'ơ'):
         return False
 
-    # Not sure why I wrote this. (Chin)
-    # if final_form and comps[2] == 'c' and vowel in 'ê':
-    #     return False
+    # 'c' can't go after 'i'
+    if final_form and sound_tuple.last_consonant == 'c' and \
+            vowel_wo_accent == 'i':
+        return False
 
     # Get the first accent
     akzent = Accent.NONE
