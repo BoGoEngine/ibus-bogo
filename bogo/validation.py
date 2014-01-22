@@ -103,10 +103,12 @@ def is_valid_sound_tuple(sound_tuple, final_form=True):
     if not final_form:
         # If the sound_tuple is not complete, we only care whether its vowel
         # position can be transformed into a legit vowel.
-        #
-        # TODO: It's also good to check compatibility with the last consonant
+
         stripped_vowel = mark.strip(vowel_wo_accent)
-        return stripped_vowel in STRIPPED_VOWELS
+        if sound_tuple.last_consonant != '':
+            return stripped_vowel in STRIPPED_VOWELS - STRIPPED_TERMINAL_VOWELS
+        else:
+            return stripped_vowel in STRIPPED_VOWELS
 
     if not (vowel_wo_accent in VOWELS):
         return False
