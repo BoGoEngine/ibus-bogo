@@ -82,33 +82,48 @@ def is_valid_sound_tuple(sound_tuple, final_form=True):
     # We only work with lower case
     sound_tuple = SoundTuple._make(map(str.lower, sound_tuple))
 
-    # Check if our start sound is a proper consonant
-    # and if our ending sound is a proper ending consonant
-    if (sound_tuple.first_consonant != "" and
-            not sound_tuple.first_consonant in CONSONANTS) or \
-        (sound_tuple.last_consonant != "" and
-            not sound_tuple.last_consonant in TERMINAL_CONSONANTS):
-        return False
+    # Words with no vowel are always valid
+    if not sound_tuple.vowel:
+        return True
 
+    if final_form:
+        result = \
+            has_valid_consonants(sound_tuple) and \
+            has_valid_vowel(sound_tuple) and \
+            has_valid_accent(sound_tuple)
+    else:
+        result = \
+            has_valid_consonants(sound_tuple) and \
+            has_valid_vowel_non_final(sound_tuple)
+
+    return result
+
+
+def has_valid_consonants(sound_tuple):
+    # Check if our start sound is a proper consonant
+    # and if our ending sound is a proper ending consonant.
+
+    return not (sound_tuple.first_consonant != "" and
+                not sound_tuple.first_consonant in CONSONANTS) or \
+        (sound_tuple.last_consonant != "" and
+         not sound_tuple.last_consonant in TERMINAL_CONSONANTS)
+
+
+def has_valid_vowel_non_final(sound_tuple):
+    # If the sound_tuple is not complete, we only care whether its vowel
+    # position can be transformed into a legit vowel.
+
+    stripped_vowel = mark.strip(sound_tuple.vowel)
+    if sound_tuple.last_consonant != '':
+        return stripped_vowel in STRIPPED_VOWELS - STRIPPED_TERMINAL_VOWELS
+    else:
+        return stripped_vowel in STRIPPED_VOWELS
+
+
+def has_valid_vowel(sound_tuple):
     # Check our vowel.
     # First remove all accents
     vowel_wo_accent = accent.remove_accent_string(sound_tuple.vowel)
-
-    # We consider words with only a recognized consonant valid.
-    # After this test, we can rest assured that vowel_wo_accent is not
-    # empty.
-    if not vowel_wo_accent:
-        return True
-
-    if not final_form:
-        # If the sound_tuple is not complete, we only care whether its vowel
-        # position can be transformed into a legit vowel.
-
-        stripped_vowel = mark.strip(vowel_wo_accent)
-        if sound_tuple.last_consonant != '':
-            return stripped_vowel in STRIPPED_VOWELS - STRIPPED_TERMINAL_VOWELS
-        else:
-            return stripped_vowel in STRIPPED_VOWELS
 
     if not (vowel_wo_accent in VOWELS):
         return False
@@ -123,7 +138,7 @@ def is_valid_sound_tuple(sound_tuple, final_form=True):
         return False
 
     # 'c' can't go after 'i' or 'ơ'
-    if final_form and sound_tuple.last_consonant == 'c' and \
+    if sound_tuple.last_consonant == 'c' and \
             vowel_wo_accent in {'i', 'ơ'}:
         return False
 
@@ -138,6 +153,10 @@ def is_valid_sound_tuple(sound_tuple, final_form=True):
             (vowel_wo_accent == 'y' and sound_tuple.first_consonant != 'qu')):
         return False
 
+    return True
+
+
+def has_valid_accent(sound_tuple):
     # Get the first accent
     akzent = Accent.NONE
     for i in range(len(sound_tuple.vowel)):

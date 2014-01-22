@@ -97,6 +97,9 @@ def test_non_final():
     assert is_valid_string("ưoi", final_form=False)
     assert is_valid_string("ưoi", final_form=True) is False
 
+    assert is_valid_string("aun", final_form=False) is False
+    assert is_valid_string("uoin", final_form=False) is False
+
 
 def test_single_consonant():
     assert is_valid_string("d")
@@ -105,8 +108,9 @@ def test_single_consonant():
     assert is_valid_string("kh")
     assert is_valid_string("ng")
     assert is_valid_string("đ")
-
-    assert is_valid_string("đm") is False
+    assert is_valid_string("đm")
+    assert is_valid_string("đc")
+    assert is_valid_string("kgcd")
 
 
 def test_non_terminal_vowels():
