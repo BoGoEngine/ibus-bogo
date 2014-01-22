@@ -62,7 +62,7 @@ environments.
 
 ## Getting started
 
-1. [Install](doc/INSTALL.md) and use just like any other IBus engine
+1. [Install](doc/sphinx/install.rst) and use just like any other IBus engine
 
 2. Share
 
@@ -76,10 +76,8 @@ environments.
 
 ## License
 
-**ibus-bogo** is [free and open source software][1]
+**ibus-bogo** is [free and open source software](http://en.wikipedia.org/wiki/Free_and_open_source_software)
 and is released under the GNU General Public License v3.0.
-
-[1]: http://en.wikipedia.org/wiki/Free_and_open_source_software
 
 ## Credits
 
