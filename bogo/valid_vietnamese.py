@@ -50,14 +50,11 @@ TERMINAL_VOWELS = {
 }
 
 
-STRIPPED_VOWELS = set([mark.strip(vowel)
-                       for vowel in NON_TERMINAL_VOWELS | TERMINAL_VOWELS])
+STRIPPED_VOWELS = set(map(mark.strip, NON_TERMINAL_VOWELS | TERMINAL_VOWELS))
 
-STRIPPED_NON_TERMINAL_VOWELS = set(
-    [mark.strip(vowel) for vowel in NON_TERMINAL_VOWELS])
+STRIPPED_NON_TERMINAL_VOWELS = set(map(mark.strip, NON_TERMINAL_VOWELS))
 
-STRIPPED_TERMINAL_VOWELS = set(
-    [mark.strip(vowel) for vowel in TERMINAL_VOWELS])
+STRIPPED_TERMINAL_VOWELS = set(map(mark.strip, TERMINAL_VOWELS))
 
 
 SoundTuple = \
