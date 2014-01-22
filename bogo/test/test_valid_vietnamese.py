@@ -1,6 +1,5 @@
-from bogo.valid_vietnamese import is_valid_combination, is_valid_string
-from bogo.utils import separate
-
+from bogo.valid_vietnamese import is_valid_string
+from nose.tools import ok_
 import os
 
 
