@@ -5,6 +5,9 @@ import os
 
 
 def test_from_dict():
+    """
+    Comprehensive testing with a dictionary.
+    """
     def atomic(word):
         try:
             assert is_valid_combination(separate(word))
