@@ -129,27 +129,27 @@ def has_valid_vowel(sound_tuple):
     # First remove all accents
     vowel_wo_accent = accent.remove_accent_string(sound_tuple.vowel)
 
-    def tuple_has_valid_vowel_form():
+    def has_valid_vowel_form():
         return vowel_wo_accent in VOWELS and not \
             (sound_tuple.last_consonant != '' and
                 vowel_wo_accent in TERMINAL_VOWELS)
 
-    def tuple_has_valid_ch_ending():
+    def has_valid_ch_ending():
         # 'ch' can only go after a, ê, uê, i, uy, oa
         return not (sound_tuple.last_consonant == 'ch' and
                     not vowel_wo_accent in {'a', 'ê', 'uê', 'i', 'uy', 'oa'})
 
-    def tuple_has_valid_c_ending():
+    def has_valid_c_ending():
         # 'c' can't go after 'i' or 'ơ'
         return not (sound_tuple.last_consonant == 'c' and
                     vowel_wo_accent in {'i', 'ơ'})
 
-    def tuple_has_valid_ng_ending():
+    def has_valid_ng_ending():
         # 'ng' can't go after i, ơ
         return not (sound_tuple.last_consonant == 'ng' and
                     vowel_wo_accent in {'i', 'ơ'})
 
-    def tuple_has_valid_nh_ending():
+    def has_valid_nh_ending():
         # 'nh' can only go after a, ê, uy, i, oa, quy
         has_y_but_is_not_quynh = vowel_wo_accent == 'y' and \
             sound_tuple.first_consonant != 'qu'
@@ -162,11 +162,11 @@ def has_valid_vowel(sound_tuple):
                 (has_invalid_vowel or has_y_but_is_not_quynh))
 
     return \
-        tuple_has_valid_vowel_form() and \
-        tuple_has_valid_ch_ending() and \
-        tuple_has_valid_c_ending() and \
-        tuple_has_valid_ng_ending() and \
-        tuple_has_valid_nh_ending()
+        has_valid_vowel_form() and \
+        has_valid_ch_ending() and \
+        has_valid_c_ending() and \
+        has_valid_ng_ending() and \
+        has_valid_nh_ending()
 
 
 def has_valid_accent(sound_tuple):
