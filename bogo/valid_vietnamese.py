@@ -37,23 +37,21 @@ TERMINAL_CONSONANTS = {
     'c', 'ch', 'm', 'n', 'ng', 'nh', 'p', 't'
 }
 
-NON_TERMINAL_VOWELS = {
-    'a', 'e', 'i', 'iê', 'o', 'oa', 'oe', 'oo', 'oă', 'u', 'uy', 'uyê', 'uâ',
-    'uê', 'uô', 'y', 'yê', 'â', 'ê', 'ô', 'ă', 'ơ', 'ư', 'ươ'
+VOWELS = {
+    'a', 'ai', 'ao', 'au', 'ay', 'e', 'eo', 'i', 'ia', 'iu', 'iê', 'iêu',
+    'o', 'oa', 'oai', 'oao', 'oay', 'oe', 'oeo', 'oi', 'oo', 'oă', 'u', 'ua',
+    'ui', 'uy', 'uya', 'uyu', 'uyê', 'uâ', 'uây', 'uê', 'uô', 'uôi', 'uơ', 'y',
+    'yê', 'yêu', 'â', 'âu', 'ây', 'ê', 'êu', 'ô', 'ôi', 'ă', 'ơ', 'ơi', 'ư',
+    'ưa', 'ưi', 'ưu', 'ươ', 'ươi', 'ươu'
 }
 
 TERMINAL_VOWELS = {
-    'a', 'ai', 'ao', 'au', 'ay', 'e', 'eo', 'i', 'ia', 'iu', 'iêu', 'o', 'oa',
-    'oai', 'oao', 'oay', 'oe', 'oeo', 'oi', 'u', 'ua', 'ui', 'uy', 'uya', 'uyu',
-    'uây', 'uê', 'uôi', 'uơ', 'y', 'yêu', 'âu', 'ây', 'ê', 'êu', 'ô', 'ôi', 'ơ',
-    'ơi', 'ư', 'ưa', 'ưi', 'ưu', 'ươi', 'ươu'
+    'ai', 'ao', 'au', 'ay', 'eo', 'ia', 'iu', 'iêu', 'oai', 'oao', 'oay', 'oeo',
+    'oi', 'ua', 'ui', 'uya', 'uyu', 'uây', 'uôi', 'uơ', 'yêu', 'âu', 'ây', 'êu',
+    'ôi', 'ơi', 'ưa', 'ưi', 'ưu', 'ươi', 'ươu'
 }
 
-VOWELS = NON_TERMINAL_VOWELS | TERMINAL_VOWELS
-
 STRIPPED_VOWELS = set(map(mark.strip, VOWELS))
-
-STRIPPED_NON_TERMINAL_VOWELS = set(map(mark.strip, NON_TERMINAL_VOWELS))
 
 STRIPPED_TERMINAL_VOWELS = set(map(mark.strip, TERMINAL_VOWELS))
 
@@ -103,30 +101,18 @@ def is_valid_sound_tuple(sound_tuple, final_form=True):
         return True
 
     if not final_form:
-        # good_vowel = False
-        # if comps[2]:
-        #     vowel_list = NON_TERMINAL_VOWELS
-        #     test = lambda a, b: a == b or mark.remove_mark_string(a) == b
-        # else:
-        #     vowel_list = TERMINAL_VOWELS + NON_TERMINAL_VOWELS
-        #     test = lambda a, b: a == b or a.startswith(b) or mark.remove_mark_string(a).startswith(b)
-        # for v in vowel_list:
-        #     if test(v, vowel):
-        #         good_vowel = True
-        #         break
-        # if not good_vowel:
-        #     return False
-
         # If the sound_tuple is not complete, we only care whether its vowel
         # position can be transformed into a legit vowel.
+        #
+        # TODO: It's also good to check compatibility with the last consonant
         stripped_vowel = mark.strip(vowel_wo_accent)
         return stripped_vowel in STRIPPED_VOWELS
 
-    if not (vowel_wo_accent in NON_TERMINAL_VOWELS | TERMINAL_VOWELS):
+    if not (vowel_wo_accent in VOWELS):
         return False
 
     if sound_tuple.last_consonant != '' and \
-            vowel_wo_accent in TERMINAL_VOWELS - NON_TERMINAL_VOWELS:
+            vowel_wo_accent in TERMINAL_VOWELS:
         return False
 
     # 'ch' can only go after a, ê, uê, i, uy, oa
