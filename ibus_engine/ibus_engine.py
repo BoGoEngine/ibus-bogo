@@ -132,8 +132,17 @@ class Engine(IBus.Engine):
 
         if keyval == IBus.space:
             if self.config["enable-text-expansion"]:
-                expanded_string = self.abbr_expander.expand(self.new_string)
-                self.commit_result(expanded_string)
+                expanded_string = self.abbr_expander.expand(self.old_string)
+
+                if expanded_string != self.old_string:
+                    self.commit_result(expanded_string)
+                    self.reset_engine()
+                    return False
+
+            if self.config['skip-non-vietnamese'] and \
+                    not bogo.validation.is_valid_string(self.old_string):
+                self.commit_result(self.raw_string)
+
             self.reset_engine()
             return False
 
