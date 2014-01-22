@@ -154,9 +154,9 @@ def is_valid_sound_tuple(sound_tuple, final_form=True):
             akzent = a
             break
 
-    # These consonants can only go with ACUTE, DOT or NONE accents
+    # These consonants can only go with ACUTE, DOT accents
     if sound_tuple.last_consonant in ('c', 'p', 't', 'ch') and \
-            not akzent in (Accent.NONE, Accent.ACUTE, Accent.DOT):
+            not akzent in (Accent.ACUTE, Accent.DOT):
         return False
 
     return True
