@@ -100,13 +100,17 @@ def is_valid_sound_tuple(sound_tuple, final_form=True):
 
 
 def has_valid_consonants(sound_tuple):
-    # Check if our start sound is a proper consonant
-    # and if our ending sound is a proper ending consonant.
 
-    return not (sound_tuple.first_consonant != "" and
-                not sound_tuple.first_consonant in CONSONANTS) or \
-        (sound_tuple.last_consonant != "" and
-         not sound_tuple.last_consonant in TERMINAL_CONSONANTS)
+    def has_invalid_first_consonant():
+        return (sound_tuple.first_consonant != "" and
+                not sound_tuple.first_consonant in CONSONANTS)
+
+    def has_invalid_last_consonant():
+        return (sound_tuple.last_consonant != "" and
+                not sound_tuple.last_consonant in TERMINAL_CONSONANTS)
+
+    return not (has_invalid_first_consonant() or
+                has_invalid_last_consonant())
 
 
 def has_valid_vowel_non_final(sound_tuple):
@@ -125,35 +129,42 @@ def has_valid_vowel(sound_tuple):
     # First remove all accents
     vowel_wo_accent = accent.remove_accent_string(sound_tuple.vowel)
 
-    if not (vowel_wo_accent in VOWELS):
-        return False
+    def tuple_has_valid_vowel_form():
+        return vowel_wo_accent in VOWELS and not \
+            (sound_tuple.last_consonant != '' and
+                vowel_wo_accent in TERMINAL_VOWELS)
 
-    if sound_tuple.last_consonant != '' and \
-            vowel_wo_accent in TERMINAL_VOWELS:
-        return False
+    def tuple_has_valid_ch_ending():
+        # 'ch' can only go after a, ê, uê, i, uy, oa
+        return not (sound_tuple.last_consonant == 'ch' and
+                    not vowel_wo_accent in {'a', 'ê', 'uê', 'i', 'uy', 'oa'})
 
-    # 'ch' can only go after a, ê, uê, i, uy, oa
-    if sound_tuple.last_consonant == 'ch' and \
-            not vowel_wo_accent in {'a', 'ê', 'uê', 'i', 'uy', 'oa'}:
-        return False
+    def tuple_has_valid_c_ending():
+        # 'c' can't go after 'i' or 'ơ'
+        return not (sound_tuple.last_consonant == 'c' and
+                    vowel_wo_accent in {'i', 'ơ'})
 
-    # 'c' can't go after 'i' or 'ơ'
-    if sound_tuple.last_consonant == 'c' and \
-            vowel_wo_accent in {'i', 'ơ'}:
-        return False
+    def tuple_has_valid_ng_ending():
+        # 'ng' can't go after i, ơ
+        return not (sound_tuple.last_consonant == 'ng' and
+                    vowel_wo_accent in {'i', 'ơ'})
 
-    # 'ng' can't go after i, ơ
-    if sound_tuple.last_consonant == 'ng' and \
-            vowel_wo_accent in {'i', 'ơ'}:
-        return False
+    def tuple_has_valid_nh_ending():
+        # 'nh' can only go after a, ê, uy, i, oa, quy
+        has_y_but_is_not_quynh = vowel_wo_accent == 'y' and \
+            sound_tuple.first_consonant != 'qu'
 
-    # 'nh' can only go after a, ê, uy, i, oa, quy
-    if sound_tuple.last_consonant == 'nh' and \
+        return not \
+            (sound_tuple.last_consonant == 'nh' and
             (not vowel_wo_accent in {'a', 'ê', 'i', 'uy', 'oa', 'uê', 'y'} or
-            (vowel_wo_accent == 'y' and sound_tuple.first_consonant != 'qu')):
-        return False
+             has_y_but_is_not_quynh))
 
-    return True
+    return \
+        tuple_has_valid_vowel_form() and \
+        tuple_has_valid_ch_ending() and \
+        tuple_has_valid_c_ending() and \
+        tuple_has_valid_ng_ending() and \
+        tuple_has_valid_nh_ending()
 
 
 def has_valid_accent(sound_tuple):
