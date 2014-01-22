@@ -1,4 +1,4 @@
-from bogo.valid_vietnamese import is_valid_string
+from bogo.validation import is_valid_string
 from nose.tools import ok_
 import os
 
