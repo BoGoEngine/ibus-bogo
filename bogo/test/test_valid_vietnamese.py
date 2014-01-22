@@ -28,14 +28,13 @@ def test_from_dict():
 
 
 def test_c_ending():
-    assert is_valid_string("ec", final_form=True)
-    assert is_valid_string("ac", final_form=True)
-    assert is_valid_string("uc", final_form=True)
-    assert is_valid_string("oc", final_form=True)
-    assert is_valid_string("ơc", final_form=True)
+    assert is_valid_string("éc", final_form=True)
+    assert is_valid_string("ác", final_form=True)
+    assert is_valid_string("úc", final_form=True)
+    assert is_valid_string("óc", final_form=True)
 
+    assert is_valid_string("thớc", final_form=True) is False
     assert is_valid_string("ic", final_form=True) is False
-    assert is_valid_string("ic", final_form=False) is True
 
 
 def test_ch_ending():

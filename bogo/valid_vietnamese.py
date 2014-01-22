@@ -141,9 +141,9 @@ def is_valid_sound_tuple(sound_tuple, final_form=True):
             vowel_wo_accent in ('i', 'ơ'):
         return False
 
-    # 'c' can't go after 'i'
+    # 'c' can't go after 'i' or 'ơ'
     if final_form and sound_tuple.last_consonant == 'c' and \
-            vowel_wo_accent == 'i':
+            vowel_wo_accent in {'i', 'ơ'}:
         return False
 
     # Get the first accent
