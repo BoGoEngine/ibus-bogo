@@ -34,15 +34,25 @@ def test_c_ending():
 
 
 def test_ch_ending():
+    # Good
     assert is_valid_string("ếch", final_form=True)
-    assert is_valid_string("ách", final_form=True)
+    assert is_valid_string("thách", final_form=True)
     assert is_valid_string("ích", final_form=True)
+    assert is_valid_string("khuếch", final_form=True) is True
+    assert is_valid_string("huỵch", final_form=True) is True
+    assert is_valid_string("hoạch", final_form=True) is True
 
+    # Wrong vowels
     assert is_valid_string("ech", final_form=True) is False
     assert is_valid_string("och", final_form=True) is False
 
-    assert is_valid_string("ìch", final_form=True) is False
-    assert is_valid_string("ãch", final_form=True) is False
+    # Wrong tones
+    assert is_valid_string("ềch", final_form=True) is False
+    assert is_valid_string("thảch", final_form=True) is False
+    assert is_valid_string("ĩch", final_form=True) is False
+    assert is_valid_string("khuêch", final_form=True) is False
+    assert is_valid_string("huỳch", final_form=True) is False
+    assert is_valid_string("hoảch", final_form=True) is False
 
 
 def test_ng_ending():
