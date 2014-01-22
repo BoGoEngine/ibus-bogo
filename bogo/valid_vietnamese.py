@@ -99,7 +99,7 @@ def is_valid_sound_tuple(sound_tuple, final_form=True):
     vowel_wo_accent = accent.remove_accent_string(sound_tuple.vowel)
 
     # We consider words with only a recognized consonant valid.
-    # After this test, we can rest asured that vowel_wo_accent is not
+    # After this test, we can rest assured that vowel_wo_accent is not
     # empty.
     if not vowel_wo_accent:
         return True
