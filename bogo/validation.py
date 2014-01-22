@@ -154,10 +154,12 @@ def has_valid_vowel(sound_tuple):
         has_y_but_is_not_quynh = vowel_wo_accent == 'y' and \
             sound_tuple.first_consonant != 'qu'
 
+        has_invalid_vowel = not vowel_wo_accent in \
+            {'a', 'ê', 'i', 'uy', 'oa', 'uê', 'y'}
+
         return not \
             (sound_tuple.last_consonant == 'nh' and
-            (not vowel_wo_accent in {'a', 'ê', 'i', 'uy', 'oa', 'uê', 'y'} or
-             has_y_but_is_not_quynh))
+                (has_invalid_vowel or has_y_but_is_not_quynh))
 
     return \
         tuple_has_valid_vowel_form() and \
