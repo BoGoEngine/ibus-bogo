@@ -28,26 +28,26 @@ Accent = accent.Accent
 
 # Auto-generated list from dictionary
 # TODO Think about words composed entirely of vowels
-CONSONANTS = set((
+CONSONANTS = {
     'b', 'c', 'ch', 'd', 'g', 'gh', 'gi', 'h', 'k', 'kh', 'l', 'm', 'n', 'ng',
     'ngh', 'nh', 'p', 'ph', 'qu', 'r', 's', 't', 'th', 'tr', 'v', 'x', 'đ'
-))
+}
 
-TERMINAL_CONSONANTS = set((
+TERMINAL_CONSONANTS = {
     'c', 'ch', 'm', 'n', 'ng', 'nh', 'p', 't'
-))
+}
 
-NON_TERMINAL_VOWELS = set((
+NON_TERMINAL_VOWELS = {
     'a', 'e', 'i', 'iê', 'o', 'oa', 'oe', 'oo', 'oă', 'u', 'uy', 'uyê', 'uâ',
     'uê', 'uô', 'y', 'yê', 'â', 'ê', 'ô', 'ă', 'ơ', 'ư', 'ươ'
-))
+}
 
-TERMINAL_VOWELS = set((
+TERMINAL_VOWELS = {
     'a', 'ai', 'ao', 'au', 'ay', 'e', 'eo', 'i', 'ia', 'iu', 'iêu', 'o', 'oa',
     'oai', 'oao', 'oay', 'oe', 'oeo', 'oi', 'u', 'ua', 'ui', 'uy', 'uya', 'uyu',
     'uây', 'uê', 'uôi', 'uơ', 'y', 'yêu', 'âu', 'ây', 'ê', 'êu', 'ô', 'ôi', 'ơ',
     'ơi', 'ư', 'ưa', 'ưi', 'ưu', 'ươi', 'ươu'
-))
+}
 
 
 STRIPPED_VOWELS = set([mark.strip(vowel)
@@ -143,7 +143,7 @@ def is_valid_sound_tuple(sound_tuple, final_form=True):
 
     # 'ng' can't go after i, ơ
     if sound_tuple.last_consonant == 'ng' and \
-            vowel_wo_accent in ('i', 'ơ'):
+            vowel_wo_accent in {'i', 'ơ'}:
         return False
 
     # 'nh' can only go after a, ê, uy, i, oa, quy
@@ -161,8 +161,8 @@ def is_valid_sound_tuple(sound_tuple, final_form=True):
             break
 
     # These consonants can only go with ACUTE, DOT accents
-    if sound_tuple.last_consonant in ('c', 'p', 't', 'ch') and \
-            not akzent in (Accent.ACUTE, Accent.DOT):
+    if sound_tuple.last_consonant in {'c', 'p', 't', 'ch'} and \
+            not akzent in {Accent.ACUTE, Accent.DOT}:
         return False
 
     return True
