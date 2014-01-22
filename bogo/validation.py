@@ -83,6 +83,7 @@ def is_valid_sound_tuple(sound_tuple, final_form=True):
     sound_tuple = SoundTuple._make(map(str.lower, sound_tuple))
 
     # Words with no vowel are always valid
+    # FIXME: This looks like it should be toggled by a config key.
     if not sound_tuple.vowel:
         return True
 
