@@ -93,7 +93,7 @@ class Engine(IBus.Engine):
     def reset_engine(self):
         self.new_string = ""
         self.old_string = ""
-        self.__raw_string = ""
+        self.raw_string = ""
 
     # The "do_" part denotes a default signal handler
     def do_process_key_event(self, keyval, keycode, modifiers):
@@ -139,7 +139,7 @@ class Engine(IBus.Engine):
 
         if self.is_processable_key(keyval, modifiers):
             logging.debug("Key pressed: %c", chr(keyval))
-            logging.debug("Raw string: %s", self.__raw_string)
+            logging.debug("Raw string: %s", self.raw_string)
             logging.debug("Old string: %s", self.old_string)
 
             # Brace shift for TELEX's ][ keys.
@@ -149,10 +149,10 @@ class Engine(IBus.Engine):
             keyval, brace_shift = self.do_brace_shift(keyval, modifiers)
 
             # Call Bogo engine to process the input
-            self.new_string, self.__raw_string = \
+            self.new_string, self.raw_string = \
                 bogo.process_key(self.old_string,
                                  chr(keyval),
-                                 fallback_sequence=self.__raw_string,
+                                 fallback_sequence=self.raw_string,
                                  config=self.config)
 
             # Revert the brace shift
@@ -372,9 +372,9 @@ class Engine(IBus.Engine):
         if len(self.new_string) == 0:
             self.reset_engine()
         else:
-            index = self.__raw_string.rfind(deleted_char)
-            self.__raw_string = self.__raw_string[:-2] if index < 0 else \
-                self.__raw_string[:index] + \
-                self.__raw_string[(index + 1):]
+            index = self.raw_string.rfind(deleted_char)
+            self.raw_string = self.raw_string[:-2] if index < 0 else \
+                self.raw_string[:index] + \
+                self.raw_string[(index + 1):]
 
         return False
