@@ -53,6 +53,7 @@ def is_in_unity():
     except KeyError:
         return False
 
+
 def is_in_unity_dash():
     try:
         screen = Wnck.Screen.get_default()
@@ -88,6 +89,11 @@ class Engine(IBus.Engine):
         # Create a new thread to detect mouse clicks
         mouse_detector = MouseDetector.get_instance()
         mouse_detector.add_mouse_click_listener(self.reset_engine)
+
+    def reset_engine(self):
+        self.new_string = ""
+        self.old_string = ""
+        self.__raw_string = ""
 
     # The "do_" part denotes a default signal handler
     def do_process_key_event(self, keyval, keycode, modifiers):
@@ -182,11 +188,6 @@ class Engine(IBus.Engine):
     # def do_reset(self):
     #     logging.debug("Reset signal")
     #     self.reset_engine()
-
-    def reset_engine(self):
-        self.new_string = ""
-        self.old_string = ""
-        self.__raw_string = ""
 
     def commit_result(self, string):
         def get_nbackspace_and_string_to_commit(old_string, new_string):
