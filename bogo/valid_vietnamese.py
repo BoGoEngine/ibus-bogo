@@ -49,8 +49,9 @@ TERMINAL_VOWELS = {
     'ơi', 'ư', 'ưa', 'ưi', 'ưu', 'ươi', 'ươu'
 }
 
+VOWELS = NON_TERMINAL_VOWELS | TERMINAL_VOWELS
 
-STRIPPED_VOWELS = set(map(mark.strip, NON_TERMINAL_VOWELS | TERMINAL_VOWELS))
+STRIPPED_VOWELS = set(map(mark.strip, VOWELS))
 
 STRIPPED_NON_TERMINAL_VOWELS = set(map(mark.strip, NON_TERMINAL_VOWELS))
 
