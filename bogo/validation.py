@@ -171,17 +171,8 @@ def has_valid_vowel(sound_tuple):
 
 
 def has_valid_accent(sound_tuple):
-    # Get the first accent
-    akzent = Accent.NONE
-    for i in range(len(sound_tuple.vowel)):
-        a = accent.get_accent_char(sound_tuple.vowel[i])
-        if a != Accent.NONE:
-            akzent = a
-            break
+    akzent = accent.get_accent_string(sound_tuple.vowel)
 
     # These consonants can only go with ACUTE, DOT accents
-    if sound_tuple.last_consonant in {'c', 'p', 't', 'ch'} and \
-            not akzent in {Accent.ACUTE, Accent.DOT}:
-        return False
-
-    return True
+    return not (sound_tuple.last_consonant in {'c', 'p', 't', 'ch'} and
+                not akzent in {Accent.ACUTE, Accent.DOT})
