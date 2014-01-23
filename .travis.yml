@@ -17,3 +17,11 @@ before_script:
 
 # command to run tests
 script: nosetests --attr '!skip-travis'
+
+notifications:
+  irc:
+    channels:
+      - "chat.freenode.net#bogo"
+  on_success: change
+  on_failure: always
+  skip_join: true
