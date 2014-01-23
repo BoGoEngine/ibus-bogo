@@ -76,7 +76,9 @@ def is_valid_combination(comp, final_form=True):
 
 
 def is_valid_sound_tuple(sound_tuple, final_form=True):
-    """Check if a character combination complies to Vietnamese spelling.
+    """
+    Check if a character combination complies to Vietnamese phonology.
+    The basic idea is that if one can pronunce a sound_tuple then it's valid.
 
     Input:
         sound_tuple - a SoundTuple
