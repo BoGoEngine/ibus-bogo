@@ -19,7 +19,7 @@
 # along with ibus-bogo.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from .valid_vietnamese import is_valid_combination
+from .validation import is_valid_combination
 from . import utils, accent, mark
 import logging
 import copy

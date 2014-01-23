@@ -53,6 +53,7 @@ def is_in_unity():
     except KeyError:
         return False
 
+
 def is_in_unity_dash():
     try:
         screen = Wnck.Screen.get_default()
@@ -88,6 +89,11 @@ class Engine(IBus.Engine):
         # Create a new thread to detect mouse clicks
         mouse_detector = MouseDetector.get_instance()
         mouse_detector.add_mouse_click_listener(self.reset_engine)
+
+    def reset_engine(self):
+        self.new_string = ""
+        self.old_string = ""
+        self.raw_string = ""
 
     # The "do_" part denotes a default signal handler
     def do_process_key_event(self, keyval, keycode, modifiers):
@@ -126,14 +132,23 @@ class Engine(IBus.Engine):
 
         if keyval == IBus.space:
             if self.config["enable-text-expansion"]:
-                expanded_string = self.abbr_expander.expand(self.new_string)
-                self.commit_result(expanded_string)
+                expanded_string = self.abbr_expander.expand(self.old_string)
+
+                if expanded_string != self.old_string:
+                    self.commit_result(expanded_string)
+                    self.reset_engine()
+                    return False
+
+            if self.config['skip-non-vietnamese'] and \
+                    not bogo.validation.is_valid_string(self.old_string):
+                self.commit_result(self.raw_string)
+
             self.reset_engine()
             return False
 
         if self.is_processable_key(keyval, modifiers):
             logging.debug("Key pressed: %c", chr(keyval))
-            logging.debug("Raw string: %s", self.__raw_string)
+            logging.debug("Raw string: %s", self.raw_string)
             logging.debug("Old string: %s", self.old_string)
 
             # Brace shift for TELEX's ][ keys.
@@ -143,10 +158,10 @@ class Engine(IBus.Engine):
             keyval, brace_shift = self.do_brace_shift(keyval, modifiers)
 
             # Call Bogo engine to process the input
-            self.new_string, self.__raw_string = \
+            self.new_string, self.raw_string = \
                 bogo.process_key(self.old_string,
                                  chr(keyval),
-                                 fallback_sequence=self.__raw_string,
+                                 fallback_sequence=self.raw_string,
                                  config=self.config)
 
             # Revert the brace shift
@@ -182,11 +197,6 @@ class Engine(IBus.Engine):
     # def do_reset(self):
     #     logging.debug("Reset signal")
     #     self.reset_engine()
-
-    def reset_engine(self):
-        self.new_string = ""
-        self.old_string = ""
-        self.__raw_string = ""
 
     def commit_result(self, string):
         def get_nbackspace_and_string_to_commit(old_string, new_string):
@@ -371,9 +381,9 @@ class Engine(IBus.Engine):
         if len(self.new_string) == 0:
             self.reset_engine()
         else:
-            index = self.__raw_string.rfind(deleted_char)
-            self.__raw_string = self.__raw_string[:-2] if index < 0 else \
-                self.__raw_string[:index] + \
-                self.__raw_string[(index + 1):]
+            index = self.raw_string.rfind(deleted_char)
+            self.raw_string = self.raw_string[:-2] if index < 0 else \
+                self.raw_string[:index] + \
+                self.raw_string[(index + 1):]
 
         return False

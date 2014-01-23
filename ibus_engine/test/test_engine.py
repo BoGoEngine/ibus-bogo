@@ -65,7 +65,7 @@ class TestEngine():
         self.send_keys("baa", self.eng).send_bksp(self.eng)
 
         eq_(self.eng.new_string, 'b')
-        eq_(self.eng._Engine__raw_string, 'b')
+        eq_(self.eng.raw_string, 'b')
 
     def test_2_bug_117(self):
         """
@@ -75,7 +75,7 @@ class TestEngine():
         self.send_keys("bana", self.eng).send_bksp(self.eng)
 
         eq_(self.eng.new_string, 'bâ')
-        eq_(self.eng._Engine__raw_string, 'baa')
+        eq_(self.eng.raw_string, 'baa')
 
     def test_3_bug_117(self):
         """
@@ -86,7 +86,7 @@ class TestEngine():
             .send_bksp(self.eng).send_keys("a", self.eng)
 
         eq_(self.eng.new_string, 'ba')
-        eq_(self.eng._Engine__raw_string, 'ba')
+        eq_(self.eng.raw_string, 'ba')
 
     def test_4_bug_117(self):
         """
@@ -96,7 +96,7 @@ class TestEngine():
         self.send_keys("thuow", self.eng).send_bksp(self.eng)
 
         eq_(self.eng.new_string, 'thu')
-        eq_(self.eng._Engine__raw_string, 'thu')
+        eq_(self.eng.raw_string, 'thu')
 
     def test_bug_123(self):
         """
