@@ -59,7 +59,7 @@ STRIPPED_TERMINAL_VOWELS = set(map(mark.strip, TERMINAL_VOWELS)) - {'uo'}
 
 SoundTuple = \
     collections.namedtuple('SoundTuple',
-                           'first_consonant vowel last_consonant')
+                           ['first_consonant', 'vowel', 'last_consonant'])
 
 
 def is_valid_string(string, final_form=True):
