@@ -58,30 +58,30 @@ def test_ch_ending():
     assert is_valid_string("hoảch", final_form=True) is False
 
 
-def test_ng_ending():
-    assert is_valid_string("thing", final_form=True) is False
-    assert is_valid_string("thinh", final_form=True) is True
+# def test_ng_ending():
+#     assert is_valid_string("thing", final_form=True) is False
+#     assert is_valid_string("thinh", final_form=True) is True
 
-    assert is_valid_string("thương", final_form=True) is True
-    assert is_valid_string("thơng", final_form=True) is False
+#     assert is_valid_string("thương", final_form=True) is True
+#     assert is_valid_string("thơng", final_form=True) is False
 
 
-def test_nh_ending():
-    assert is_valid_string("nhanh")
-    assert is_valid_string("lênh")
-    assert is_valid_string("huỳnh")
-    assert is_valid_string("tỉnh")
-    assert is_valid_string("hoành")
-    assert is_valid_string("xuềnh")
-    assert is_valid_string("quỳnh")
+# def test_nh_ending():
+#     assert is_valid_string("nhanh")
+#     assert is_valid_string("lênh")
+#     assert is_valid_string("huỳnh")
+#     assert is_valid_string("tỉnh")
+#     assert is_valid_string("hoành")
+#     assert is_valid_string("xuềnh")
+#     assert is_valid_string("quỳnh")
 
-    assert is_valid_string("ỳnh") is False
-    assert is_valid_string("nhănh") is False
-    assert is_valid_string("nhânh") is False
-    assert is_valid_string("nhenh") is False
-    assert is_valid_string("nhơnh") is False
-    assert is_valid_string("nhunh") is False
-    assert is_valid_string("nhưnh") is False
+#     assert is_valid_string("ỳnh") is False
+#     assert is_valid_string("nhănh") is False
+#     assert is_valid_string("nhânh") is False
+#     assert is_valid_string("nhenh") is False
+#     assert is_valid_string("nhơnh") is False
+#     assert is_valid_string("nhunh") is False
+#     assert is_valid_string("nhưnh") is False
 
 
 def test_non_final():
