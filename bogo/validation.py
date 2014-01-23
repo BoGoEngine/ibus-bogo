@@ -53,7 +53,8 @@ TERMINAL_VOWELS = {
 
 STRIPPED_VOWELS = set(map(mark.strip, VOWELS))
 
-STRIPPED_TERMINAL_VOWELS = set(map(mark.strip, TERMINAL_VOWELS))
+# 'uo' may clash with 'ươ' and prevent typing 'thương'
+STRIPPED_TERMINAL_VOWELS = set(map(mark.strip, TERMINAL_VOWELS)) - {'uo'}
 
 
 SoundTuple = \
