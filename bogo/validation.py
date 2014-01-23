@@ -167,12 +167,16 @@ def has_valid_vowel(sound_tuple):
             (sound_tuple.last_consonant == 'nh' and
                 (has_invalid_vowel or has_y_but_is_not_quynh))
 
+    # The ng and nh rules are not really phonetic but spelling rules.
+    # Including them may hinder typing freedom and may prevent typing
+    # unique local names.
+    # FIXME: Config key, anyone?
     return \
         has_valid_vowel_form() and \
         has_valid_ch_ending() and \
-        has_valid_c_ending() and \
-        has_valid_ng_ending() and \
-        has_valid_nh_ending()
+        has_valid_c_ending()
+        # has_valid_ng_ending() and \
+        # has_valid_nh_ending()
 
 
 def has_valid_accent(sound_tuple):
