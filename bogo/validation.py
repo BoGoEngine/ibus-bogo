@@ -26,8 +26,12 @@ from . import utils
 Accent = accent.Accent
 
 
-# Auto-generated list from dictionary
-# TODO Think about words composed entirely of vowels
+# Auto-generated lists from dictionary
+
+# FIXME:
+# Think about words composed entirely of vowels, like 'yá'.
+# Perhaps let the user customize these lists?
+
 CONSONANTS = {
     'b', 'c', 'ch', 'd', 'g', 'gh', 'gi', 'h', 'k', 'kh', 'l', 'm', 'n', 'ng',
     'ngh', 'nh', 'p', 'ph', 'qu', 'r', 's', 't', 'th', 'tr', 'v', 'x', 'đ'
