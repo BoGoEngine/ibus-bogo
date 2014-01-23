@@ -30,7 +30,7 @@ import logging
 import argparse
 
 from ibus_engine import Engine
-from mouse_detector import MouseDetector
+# from mouse_detector import MouseDetector
 from config import Config
 from abbr import AbbreviationExpander
 
@@ -120,12 +120,13 @@ class IMApp:
             return engine
 
     def run(self):
-        mouse_detector = MouseDetector.get_instance()
-        mouse_detector.start()
+        # mouse_detector = MouseDetector.get_instance()
+        # mouse_detector.start()
         try:
             self.mainloop.run()
         finally:
-            mouse_detector.terminate()
+            pass
+            # mouse_detector.terminate()
 
     def bus_disconnected_cb(self, bus):
         self.mainloop.quit()

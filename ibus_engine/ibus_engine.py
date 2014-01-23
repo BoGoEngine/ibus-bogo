@@ -36,7 +36,7 @@ sys.path.append(
     os.path.abspath(os.path.join(ENGINE_PATH, "..")))
 
 import bogo
-from mouse_detector import MouseDetector
+# from mouse_detector import MouseDetector
 from keysyms_mapping import mapping
 import vncharsets
 
@@ -86,8 +86,8 @@ class Engine(IBus.Engine):
         self.reset_engine()
 
         # Create a new thread to detect mouse clicks
-        mouse_detector = MouseDetector.get_instance()
-        mouse_detector.add_mouse_click_listener(self.reset_engine)
+        # mouse_detector = MouseDetector.get_instance()
+        # mouse_detector.add_mouse_click_listener(self.reset_engine)
 
     # The "do_" part denotes a default signal handler
     def do_process_key_event(self, keyval, keycode, modifiers):
