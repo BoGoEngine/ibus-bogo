@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #
 # This file is part of ibus-bogo project.
 #
@@ -71,7 +72,7 @@ def add_accent(components, accent):
     raw_string = remove_accent_string(vowel).lower()
     new_vowel = ""
     # Highest priority for ê and ơ
-    index = max(raw_string.find("ê"), raw_string.find("ơ"))
+    index = max(raw_string.find(u"ê"), raw_string.find(u"ơ"))
     if index != -1:
         new_vowel = vowel[:index] + add_accent_char(vowel[index], accent) + vowel[index+1:]
     elif len(vowel) == 1 or (len(vowel) == 2 and last_consonant == ""):
@@ -87,7 +88,7 @@ def add_accent_char(char, accent):
     Accent
     """
     if char == "":
-        return "";
+        return ""
     case = char.isupper()
     char = char.lower()
     index = utils.VOWELS.find(char)
@@ -97,7 +98,7 @@ def add_accent_char(char, accent):
     return utils.change_case(char, case)
 
 
-def add_accent_at(string, accent):
+def add_accent_at(string, accent, index):
     """
     Add mark to the index-th character of the given string.  Return
     the new string after applying change.
@@ -106,8 +107,9 @@ def add_accent_at(string, accent):
     if index == -1:
         return string
     # Python can handle the case which index is out of range of given string
-    return string[:index] + accent.accent.add_accent_char(string[index], accent) \
-        + string[index+1:]
+    return string[:index] + \
+        accent.accent.add_accent_char(string[index], accent) + \
+        string[index+1:]
 
 
 def remove_accent_char(char):

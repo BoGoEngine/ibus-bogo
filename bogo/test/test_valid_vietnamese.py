@@ -1,6 +1,9 @@
+# -*- coding: utf-8 -*-
+
 from bogo.validation import is_valid_string
 from nose.tools import ok_
 import os
+import codecs
 
 
 def test_from_dict():
@@ -8,7 +11,7 @@ def test_from_dict():
     exception = {
         'ping',
         'xit',
-        'têt',
+        u'têt',
         'gip'
     }
 
@@ -21,41 +24,43 @@ def test_from_dict():
             else:
                 raise
 
-    dic = open(os.path.join(os.path.dirname(__file__), 'sequences/vi.dic'))
+    dic = codecs.open(os.path.join(os.path.dirname(__file__),
+                                   'sequences/vi.dic'),
+                      encoding="utf-8")
     for line in dic:
         yield atomic, line.rstrip()
 
 
 def test_c_ending():
-    assert is_valid_string("éc", final_form=True)
-    assert is_valid_string("ác", final_form=True)
-    assert is_valid_string("úc", final_form=True)
-    assert is_valid_string("óc", final_form=True)
+    assert is_valid_string(u"éc", final_form=True)
+    assert is_valid_string(u"ác", final_form=True)
+    assert is_valid_string(u"úc", final_form=True)
+    assert is_valid_string(u"óc", final_form=True)
 
-    assert is_valid_string("thớc", final_form=True) is False
+    assert is_valid_string(u"thớc", final_form=True) is False
     assert is_valid_string("ic", final_form=True) is False
 
 
 def test_ch_ending():
     # Good
-    assert is_valid_string("ếch", final_form=True)
-    assert is_valid_string("thách", final_form=True)
-    assert is_valid_string("ích", final_form=True)
-    assert is_valid_string("khuếch", final_form=True) is True
-    assert is_valid_string("huỵch", final_form=True) is True
-    assert is_valid_string("hoạch", final_form=True) is True
+    assert is_valid_string(u"ếch", final_form=True)
+    assert is_valid_string(u"thách", final_form=True)
+    assert is_valid_string(u"ích", final_form=True)
+    assert is_valid_string(u"khuếch", final_form=True) is True
+    assert is_valid_string(u"huỵch", final_form=True) is True
+    assert is_valid_string(u"hoạch", final_form=True) is True
 
     # Wrong vowels
     assert is_valid_string("ech", final_form=True) is False
     assert is_valid_string("och", final_form=True) is False
 
     # Wrong tones
-    assert is_valid_string("ềch", final_form=True) is False
-    assert is_valid_string("thảch", final_form=True) is False
-    assert is_valid_string("ĩch", final_form=True) is False
-    assert is_valid_string("khuêch", final_form=True) is False
-    assert is_valid_string("huỳch", final_form=True) is False
-    assert is_valid_string("hoảch", final_form=True) is False
+    assert is_valid_string(u"ềch", final_form=True) is False
+    assert is_valid_string(u"thảch", final_form=True) is False
+    assert is_valid_string(u"ĩch", final_form=True) is False
+    assert is_valid_string(u"khuêch", final_form=True) is False
+    assert is_valid_string(u"huỳch", final_form=True) is False
+    assert is_valid_string(u"hoảch", final_form=True) is False
 
 
 # def test_ng_ending():
@@ -91,11 +96,11 @@ def test_non_final():
     assert is_valid_string("thuyeen", final_form=False) is False
     assert is_valid_string("thuyeeng", final_form=False) is False
 
-    assert is_valid_string("ảch", final_form=False) is True
-    assert is_valid_string("ảch", final_form=True) is False
+    assert is_valid_string(u"ảch", final_form=False) is True
+    assert is_valid_string(u"ảch", final_form=True) is False
 
-    assert is_valid_string("ưoi", final_form=False)
-    assert is_valid_string("ưoi", final_form=True) is False
+    assert is_valid_string(u"ưoi", final_form=False)
+    assert is_valid_string(u"ưoi", final_form=True) is False
 
     assert is_valid_string("aun", final_form=False) is False
     assert is_valid_string("uoin", final_form=False) is False
@@ -107,9 +112,9 @@ def test_single_consonant():
     assert is_valid_string("c")
     assert is_valid_string("kh")
     assert is_valid_string("ng")
-    assert is_valid_string("đ")
-    assert is_valid_string("đm")
-    assert is_valid_string("đc")
+    assert is_valid_string(u"đ")
+    assert is_valid_string(u"đm")
+    assert is_valid_string(u"đc")
     assert is_valid_string("kgcd")
 
 

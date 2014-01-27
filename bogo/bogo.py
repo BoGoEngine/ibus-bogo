@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #
 # This file is part of ibus-bogo project.
 #
@@ -59,17 +60,17 @@ default_config = {
             "a": "a^",
             "o": "o^",
             "e": "e^",
-            "w": ["u*", "o*", "a+", "<ư"],
+            "w": ["u*", "o*", "a+", u"<ư"],
             "d": "d-",
             "f": "\\",
             "s": "/",
             "r": "?",
             "x": "~",
             "j": ".",
-            "]": "<ư",
-            "[": "<ơ",
-            "}": "<Ư",
-            "{": "<Ơ"
+            "]": u"<ư",
+            "[": u"<ơ",
+            "}": u"<Ư",
+            "{": u"<Ơ"
         },
         "vni": {
             "6": ["a^", "o^", "e^"],
@@ -283,8 +284,10 @@ def transform(comps, trans):
         action, parameter = Action.ADD_CHAR, trans[0]
 
     if action == Action.ADD_ACCENT:
+        logging.debug("add_accent(%s, %s)", components, parameter)
         components = accent.add_accent(components, parameter)
     elif action == Action.ADD_MARK and mark.is_valid_mark(components, trans):
+        logging.debug("add_mark(%s, %s)", components, parameter)
         components = mark.add_mark(components, parameter)
 
         # Handle uơ in "huơ", "thuở", "quở"
@@ -295,7 +298,7 @@ def transform(comps, trans):
         #
         # NOTE: In the dictionary, these are the only words having this strange
         # vowel so we don't need to worry about other cases.
-        if accent.remove_accent_string(components[1]).lower() == "ươ" and \
+        if accent.remove_accent_string(components[1]).lower() == u"ươ" and \
                 not components[2] and components[0].lower() in ["", "h", "th", "kh"]:
             # Backup accents
             ac = accent.get_accent_string(components[1])
@@ -313,15 +316,15 @@ def transform(comps, trans):
                     components[0] += components[1]
                     components[1] = ''
                 if not components[1] or \
-                        (components[1].lower(), trans[1].lower()) == ('ư', 'ơ'):
+                        (components[1].lower(), trans[1].lower()) == (u'ư', u'ơ'):
                     components[1] += trans[1]
         else:
             components = utils.append_comps(components, parameter)
             if parameter.isalpha() and \
-                    accent.remove_accent_string(components[1]).lower().startswith("uơ"):
+                    accent.remove_accent_string(components[1]).lower().startswith(u"uơ"):
                 ac = accent.get_accent_string(components[1])
-                components[1] = ('ư', 'Ư')[components[1][0].isupper()] + \
-                    ('ơ', 'Ơ')[components[1][1].isupper()] + components[1][2:]
+                components[1] = (u'ư', u'Ư')[components[1][0].isupper()] + \
+                    (u'ơ', u'Ơ')[components[1][1].isupper()] + components[1][2:]
                 components = accent.add_accent(components, ac)
     elif action == Action.UNDO:
         components = reverse(components, trans[1:])

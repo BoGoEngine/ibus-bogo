@@ -1,5 +1,8 @@
+# -*- coding: utf-8 -*-
+
 from nose.tools import eq_
 from bogo.utils import *
+
 
 def test_separate():
     eq_(separate(''), ['', '', ''])
@@ -30,16 +33,16 @@ def test_separate():
     eq_(separate('long'), ['l', 'o', 'ng'])
     eq_(separate('HoA'), ['H', 'oA', ''])
     eq_(separate('TruoNg'), ['Tr', 'uo', 'Ng'])
-    eq_(separate('QuyÊn'), ['Qu', 'yÊ', 'n'])
-    eq_(separate('Trùng'), ['Tr', 'ù', 'ng'])
-    eq_(separate('uông'), ['', 'uô', 'ng'])
-    eq_(separate('giƯờng'), ['gi', 'Ườ', 'ng'])
+    eq_(separate(u'QuyÊn'), ['Qu', u'yÊ', 'n'])
+    eq_(separate(u'Trùng'), ['Tr', u'ù', 'ng'])
+    eq_(separate(u'uông'), ['', u'uô', 'ng'])
+    eq_(separate(u'giƯờng'), ['gi', u'Ườ', 'ng'])
     eq_(separate('gi'), ['g', 'i', ''])
     eq_(separate('aoe'), ['', 'aoe', ''])
     eq_(separate('uo'), ['', 'uo', ''])
     eq_(separate('uong'), ['', 'uo', 'ng'])
-    eq_(separate('nhếch'), ['nh', 'ế', 'ch'])
-    eq_(separate('ếch'), ['', 'ế', 'ch'])
-    eq_(separate('xẻng'), ['x', 'ẻ', 'ng'])
-    eq_(separate('xoáy'), ['x', 'oáy', ''])
-    eq_(separate('quây'), ['qu', 'ây', ''])
+    eq_(separate(u'nhếch'), ['nh', u'ế', 'ch'])
+    eq_(separate(u'ếch'), ['', u'ế', 'ch'])
+    eq_(separate(u'xẻng'), ['x', u'ẻ', 'ng'])
+    eq_(separate(u'xoáy'), ['x', u'oáy', ''])
+    eq_(separate(u'quây'), ['qu', u'ây', ''])
