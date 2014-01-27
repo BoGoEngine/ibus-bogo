@@ -1,7 +1,7 @@
 language: python
 python:
-  - "2.7"
   - "3.3"
+# - "2.7"
 # whitelist
 branches:
   only:
@@ -23,6 +23,6 @@ notifications:
   irc:
     channels:
       - "chat.freenode.net#bogo"
-  on_success: change
-  on_failure: always
-  skip_join: true
+    on_success: change
+    on_failure: always
+    skip_join: true
