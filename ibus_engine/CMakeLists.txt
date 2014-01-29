@@ -45,6 +45,7 @@ install (FILES
   keysyms_mapping.py
   mouse_detector.py
   abbr.py
+  focus_tracker.py
   DESTINATION
   ${BOGO_INSTALL_DIR}/ibus_engine
   )

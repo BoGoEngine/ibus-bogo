@@ -25,7 +25,7 @@ install (FILES
   __init__.py
   mark.py
   utils.py
-  valid_vietnamese.py
+  validation.py
   DESTINATION
   ${BOGO_INSTALL_DIR}/bogo
   )
