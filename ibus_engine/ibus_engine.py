@@ -76,7 +76,7 @@ class Engine(IBus.Engine):
 
     def reset_engine(self):
         self.new_string = ""
-        self.old_string = ""
+        self.prev_string = ""
         self.raw_string = ""
         self.first_time_sending_backspace = True
 
@@ -118,7 +118,7 @@ class Engine(IBus.Engine):
         if self.is_processable_key(keyval, modifiers):
             logging.debug("Key pressed: %c", chr(keyval))
             logging.debug("Raw string: %s", self.raw_string)
-            logging.debug("Old string: %s", self.old_string)
+            logging.debug("Old string: %s", self.prev_string)
 
             # Brace shift for TELEX's ][ keys.
             # When typing with capslock on, ][ won't get shifted to }{ resulting
@@ -128,7 +128,7 @@ class Engine(IBus.Engine):
 
             # Invoke BoGo to process the input
             self.new_string, self.raw_string = \
-                bogo.process_key(string=self.old_string,
+                bogo.process_key(string=self.prev_string,
                                  key=chr(keyval),
                                  fallback_sequence=self.raw_string,
                                  config=self.config)
@@ -142,7 +142,7 @@ class Engine(IBus.Engine):
             logging.debug("New string: %s", self.new_string)
 
             self.commit_result(self.new_string)
-            self.old_string = self.new_string
+            self.prev_string = self.new_string
             return True
 
         self.reset_engine()
@@ -256,19 +256,19 @@ class Engine(IBus.Engine):
             (key.isalpha() or key in current_im.keys())
 
     def check_surrounding_text(self):
-        length = len(self.old_string)
+        length = len(self.prev_string)
 
         text, cursor_pos, anchor_pos = self.get_surrounding_text()
         surrounding_text = ibus_text_to_string(text)
 
-        if surrounding_text.endswith(self.old_string):
+        if surrounding_text.endswith(self.prev_string):
             self.delete_surrounding_text(offset=-length, nchars=length)
 
             text, cursor_pos, anchor_pos = self.get_surrounding_text()
             surrounding_text = ibus_text_to_string(text)
 
-            if not surrounding_text.endswith(self.old_string):
-                self.commit_text(string_to_ibus_text(self.old_string))
+            if not surrounding_text.endswith(self.prev_string):
+                self.commit_text(string_to_ibus_text(self.prev_string))
                 return True
             else:
                 return False
@@ -381,7 +381,7 @@ class Engine(IBus.Engine):
             deleted_char = self.new_string[-1]
             self.new_string = self.new_string[:-1]
             self.current_shown_text = self.new_string
-            self.old_string = self.new_string
+            self.prev_string = self.new_string
 
             if len(self.new_string) == 0:
                 self.reset_engine()
@@ -395,15 +395,15 @@ class Engine(IBus.Engine):
 
         if keyval == IBus.space:
             if self.config["enable-text-expansion"]:
-                expanded_string = self.abbr_expander.expand(self.old_string)
+                expanded_string = self.abbr_expander.expand(self.prev_string)
 
-                if expanded_string != self.old_string:
+                if expanded_string != self.prev_string:
                     self.commit_result(expanded_string)
                     self.reset_engine()
                     return False
 
             if self.config['skip-non-vietnamese'] and \
-                    not bogo.validation.is_valid_string(self.old_string):
+                    not bogo.validation.is_valid_string(self.prev_string):
                 self.commit_result(self.raw_string)
 
             self.reset_engine()
