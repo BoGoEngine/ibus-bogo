@@ -75,6 +75,14 @@ def is_in_unity_dash():
         return False
 
 
+def is_in_firefox():
+    return True
+
+
+def is_in_chrome():
+    return True
+
+
 class Engine(IBus.Engine):
     __gtype_name__ = 'EngineBoGo'
 
@@ -100,6 +108,7 @@ class Engine(IBus.Engine):
         self.new_string = ""
         self.old_string = ""
         self.raw_string = ""
+        self.first_time_sending_backspace = True
 
     # The "do_" part denotes a default signal handler
     def do_process_key_event(self, keyval, keycode, modifiers):
@@ -322,6 +331,19 @@ class Engine(IBus.Engine):
                 return False
 
     def delete_prev_chars_with_backspaces(self, count):
+        if self.first_time_sending_backspace and \
+                (is_in_firefox() or is_in_chrome()):
+            # Sending a dead space key to dismiss the
+            # autocomplete box in Firefox and Chrome's
+            # address bar. See:
+            # https://github.com/BoGoEngine/ibus-bogo-python/pull/109
+            logging.debug("Dismissing autocomplete...")
+
+            self.forward_key_event(IBus.space, 0, 0)
+            self.forward_key_event(IBus.BackSpace, 14, 0)
+
+            self.first_time_sending_backspace = False
+
         for i in range(count):
             self.forward_key_event(IBus.BackSpace, 14, 0)
 
