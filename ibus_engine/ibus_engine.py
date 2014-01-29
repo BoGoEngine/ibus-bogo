@@ -299,7 +299,7 @@ class Engine(IBus.Engine):
         #
         # [1]: https://github.com/BoGoEngine/ibus-bogo/issues/73
         #
-        self.forward_key_event(IBus.Space, 41, 0)
+        self.forward_key_event(IBus.space, 41, 0)
         for i in range(count + 1):
             self.forward_key_event(IBus.BackSpace, 14, 0)
 
