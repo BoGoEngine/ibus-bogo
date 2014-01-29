@@ -23,6 +23,7 @@
 # TODO: add is_valid_accent() to be on par with mark.py and use it
 # at the end of new_bogo_engine.transform()
 
+from __future__ import unicode_literals
 from . import utils
 
 

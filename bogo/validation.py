@@ -20,6 +20,7 @@
 # along with ibus-bogo.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+from __future__ import unicode_literals
 import collections
 from . import accent
 from . import mark
@@ -35,7 +36,7 @@ Accent = accent.Accent
 
 CONSONANTS = {
     'b', 'c', 'ch', 'd', 'g', 'gh', 'gi', 'h', 'k', 'kh', 'l', 'm', 'n', 'ng',
-    'ngh', 'nh', 'p', 'ph', 'qu', 'r', 's', 't', 'th', 'tr', 'v', 'x', u'đ'
+    'ngh', 'nh', 'p', 'ph', 'qu', 'r', 's', 't', 'th', 'tr', 'v', 'x', 'đ'
 }
 
 TERMINAL_CONSONANTS = {
@@ -43,17 +44,17 @@ TERMINAL_CONSONANTS = {
 }
 
 VOWELS = {
-    'a', 'ai', 'ao', 'au', 'ay', 'e', 'eo', 'i', 'ia', 'iu', u'iê', u'iêu',
-    'o', 'oa', 'oai', 'oao', 'oay', 'oe', 'oeo', 'oi', 'oo', u'oă', 'u', 'ua',
-    'ui', 'uy', 'uya', 'uyu', u'uyê', u'uâ', u'uây', u'uê', u'uô', u'uôi',
-    u'uơ', 'y', u'yê', u'yêu', u'â', u'âu', u'ây', u'ê', u'êu', u'ô', u'ôi',
-    u'ă', u'ơ', u'ơi', u'ư', u'ưa', u'ưi', u'ưu', u'ươ', u'ươi', u'ươu'
+    'a', 'ai', 'ao', 'au', 'ay', 'e', 'eo', 'i', 'ia', 'iu', 'iê', 'iêu',
+    'o', 'oa', 'oai', 'oao', 'oay', 'oe', 'oeo', 'oi', 'oo', 'oă', 'u', 'ua',
+    'ui', 'uy', 'uya', 'uyu', 'uyê', 'uâ', 'uây', 'uê', 'uô', 'uôi',
+    'uơ', 'y', 'yê', 'yêu', 'â', 'âu', 'ây', 'ê', 'êu', 'ô', 'ôi',
+    'ă', 'ơ', 'ơi', 'ư', 'ưa', 'ưi', 'ưu', 'ươ', 'ươi', 'ươu'
 }
 
 TERMINAL_VOWELS = {
-    'ai', 'ao', 'au', 'ay', 'eo', 'ia', 'iu', u'iêu', 'oai', 'oao', 'oay',
-    'oeo', 'oi', 'ua', 'ui', 'uya', 'uyu', u'uây', u'uôi', u'uơ', u'yêu', u'âu',
-    u'ây', u'êu', u'ôi', u'ơi', u'ưa', u'ưi', u'ưu', u'ươi', u'ươu'
+    'ai', 'ao', 'au', 'ay', 'eo', 'ia', 'iu', 'iêu', 'oai', 'oao', 'oay',
+    'oeo', 'oi', 'ua', 'ui', 'uya', 'uyu', 'uây', 'uôi', 'uơ', 'yêu', 'âu',
+    'ây', 'êu', 'ôi', 'ơi', 'ưa', 'ưi', 'ưu', 'ươi', 'ươu'
 }
 
 STRIPPED_VOWELS = set(map(mark.strip, VOWELS))
@@ -148,17 +149,17 @@ def has_valid_vowel(sound_tuple):
     def has_valid_ch_ending():
         # 'ch' can only go after a, ê, uê, i, uy, oa
         return not (sound_tuple.last_consonant == 'ch' and
-                    not vowel_wo_accent in {'a', u'ê', u'uê', 'i', 'uy', 'oa'})
+                    not vowel_wo_accent in {'a', 'ê', 'uê', 'i', 'uy', 'oa'})
 
     def has_valid_c_ending():
         # 'c' can't go after 'i' or 'ơ'
         return not (sound_tuple.last_consonant == 'c' and
-                    vowel_wo_accent in {'i', u'ơ'})
+                    vowel_wo_accent in {'i', 'ơ'})
 
     def has_valid_ng_ending():
         # 'ng' can't go after i, ơ
         return not (sound_tuple.last_consonant == 'ng' and
-                    vowel_wo_accent in {'i', u'ơ'})
+                    vowel_wo_accent in {'i', 'ơ'})
 
     def has_valid_nh_ending():
         # 'nh' can only go after a, ê, uy, i, oa, quy
@@ -166,7 +167,7 @@ def has_valid_vowel(sound_tuple):
             sound_tuple.first_consonant != 'qu'
 
         has_invalid_vowel = not vowel_wo_accent in \
-            {'a', u'ê', 'i', 'uy', 'oa', u'uê', 'y'}
+            {'a', 'ê', 'i', 'uy', 'oa', 'uê', 'y'}
 
         return not \
             (sound_tuple.last_consonant == 'nh' and

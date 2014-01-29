@@ -20,6 +20,8 @@
 # along with ibus-bogo.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+from __future__ import unicode_literals
+
 from . import accent, utils
 Accent = accent.Accent
 
@@ -32,11 +34,11 @@ class Mark:
     NONE = 0
 
 
-FAMILY_A = u"aăâ"
-FAMILY_E = u"eê"
-FAMILY_O = u"oơô"
-FAMILY_U = u"uư"
-FAMILY_D = u"dđ"
+FAMILY_A = "aăâ"
+FAMILY_E = "eê"
+FAMILY_O = "oơô"
+FAMILY_U = "uư"
+FAMILY_D = "dđ"
 
 
 def get_mark_char(char):
@@ -46,13 +48,13 @@ def get_mark_char(char):
     char = accent.remove_accent_char(char.lower())
     if char == "":
         return Mark.NONE
-    if char == u"đ":
+    if char == "đ":
         return Mark.BAR
-    if char in u"ă":
+    if char in "ă":
         return Mark.BREVE
-    if char in u"ơư":
+    if char in "ơư":
         return Mark.HORN
-    if char in u"âêô":
+    if char in "âêô":
         return Mark.HAT
     return Mark.NONE
 
@@ -84,7 +86,7 @@ def add_mark(components, mark):
     if mark == Mark.NONE:
         if not raw_vowel == comp[1].lower():
             comp[1] = raw_vowel
-        elif comp[0] and comp[0][-1] == u"đ":
+        elif comp[0] and comp[0][-1] == "đ":
             comp[0] = comp[0][:-1] + "d"
     return comp
 
@@ -112,33 +114,33 @@ def add_mark_char(char, mark):
     new_char = char
     if mark == Mark.HAT:
         if char in FAMILY_A:
-            new_char = u"â"
+            new_char = "â"
         elif char in FAMILY_O:
-            new_char = u"ô"
+            new_char = "ô"
         elif char in FAMILY_E:
-            new_char = u"ê"
+            new_char = "ê"
     elif mark == Mark.HORN:
         if char in FAMILY_O:
-            new_char = u"ơ"
+            new_char = "ơ"
         elif char in FAMILY_U:
-            new_char = u"ư"
+            new_char = "ư"
     elif mark == Mark.BREVE:
         if char in FAMILY_A:
-            new_char = u"ă"
+            new_char = "ă"
     elif mark == Mark.BAR:
         if char in FAMILY_D:
-            new_char = u"đ"
+            new_char = "đ"
     elif mark == Mark.NONE:
         if char in FAMILY_A:
-            new_char = u"a"
+            new_char = "a"
         elif char in FAMILY_E:
-            new_char = u"e"
+            new_char = "e"
         elif char in FAMILY_O:
-            new_char = u"o"
+            new_char = "o"
         elif char in FAMILY_U:
-            new_char = u"u"
+            new_char = "u"
         elif char in FAMILY_D:
-            new_char = u"d"
+            new_char = "d"
 
     new_char = accent.add_accent_char(new_char, ac)
     return utils.change_case(new_char, case)
@@ -153,7 +155,7 @@ def is_valid_mark(comps, mark_trans):
     components = list(comps)
 
     if mark_trans[0] == 'd' and components[0] \
-            and components[0][-1].lower() in ("d", u"đ"):
+            and components[0][-1].lower() in ("d", "đ"):
         return True
     elif components[1] != "" and \
             strip(components[1]).lower().find(mark_trans[0]) != -1:

@@ -20,8 +20,11 @@
 # along with ibus-bogo.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-VOWELS = u"àáảãạaằắẳẵặăầấẩẫậâèéẻẽẹeềếểễệêìíỉĩịi" + \
-         u"òóỏõọoồốổỗộôờớởỡợơùúủũụuừứửữựưỳýỷỹỵy"
+from __future__ import unicode_literals
+
+
+VOWELS = "àáảãạaằắẳẵặăầấẩẫậâèéẻẽẹeềếểễệêìíỉĩịi" + \
+         "òóỏõọoồốổỗộôờớởỡợơùúủũụuừứửữựưỳýỷỹỵy"
 
 
 def join(alist):
@@ -107,11 +110,11 @@ def separate(string):
             return atomic_separate(string[:-1],
                                    string[-1] + last_chars, last_is_vowel)
 
-    head, last_consonant = atomic_separate(string, u"", False)
-    first_consonant, vowel = atomic_separate(head, u"", True)
+    head, last_consonant = atomic_separate(string, "", False)
+    first_consonant, vowel = atomic_separate(head, "", True)
 
     if last_consonant and not (vowel + first_consonant):
-        comps = [last_consonant, u'', u'']  # ['', '', b] -> ['b', '', '']
+        comps = [last_consonant, '', '']  # ['', '', b] -> ['b', '', '']
     else:
         comps = [first_consonant, vowel, last_consonant]
 

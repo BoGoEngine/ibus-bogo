@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import unicode_literals
 from nose.tools import eq_
 from nose.plugins.attrib import attr
 from functools import partial
@@ -58,44 +59,44 @@ class TestHelpers():
 class TestProcessSeq():
     def test_normal_typing(self):
         eq_(process_seq('v'),     'v')
-        eq_(process_seq('aw'),   u'ă')
-        eq_(process_seq('w'),    u'ư')
-        eq_(process_seq('ow'),   u'ơ')
-        eq_(process_seq('oo'),   u'ô')
-        eq_(process_seq('Oo'),   u'Ô')
-        eq_(process_seq('dd'),   u'đ')
-        eq_(process_seq('muaf'), u'mùa')
-        eq_(process_seq('Doongd'), u'Đông')
-        eq_(process_seq('gif'),  u'gì')
-        eq_(process_seq('loAnj'), u'loẠn')
-        eq_(process_seq('muongw'), u'mương')
+        eq_(process_seq('aw'),   'ă')
+        eq_(process_seq('w'),    'ư')
+        eq_(process_seq('ow'),   'ơ')
+        eq_(process_seq('oo'),   'ô')
+        eq_(process_seq('Oo'),   'Ô')
+        eq_(process_seq('dd'),   'đ')
+        eq_(process_seq('muaf'), 'mùa')
+        eq_(process_seq('Doongd'), 'Đông')
+        eq_(process_seq('gif'),  'gì')
+        eq_(process_seq('loAnj'), 'loẠn')
+        eq_(process_seq('muongw'), 'mương')
         eq_(process_seq('qur'), 'qur')
-        eq_(process_seq('Tosan'), u'Toán')
-        eq_(process_seq('tusnw'), u'tứn')
-        eq_(process_seq('dee'), u'dê')
-        eq_(process_seq('mowis'), u'mới')
-        eq_(process_seq('uwa'), u'ưa')
-        eq_(process_seq('uwo'), u'ưo')
-        eq_(process_seq('ddx'), u'đx')
-        eq_(process_seq('hoacw'), u'hoăc')
-        eq_(process_seq('cuooi'), u'cuôi')
+        eq_(process_seq('Tosan'), 'Toán')
+        eq_(process_seq('tusnw'), 'tứn')
+        eq_(process_seq('dee'), 'dê')
+        eq_(process_seq('mowis'), 'mới')
+        eq_(process_seq('uwa'), 'ưa')
+        eq_(process_seq('uwo'), 'ưo')
+        eq_(process_seq('ddx'), 'đx')
+        eq_(process_seq('hoacw'), 'hoăc')
+        eq_(process_seq('cuooi'), 'cuôi')
 
-        eq_(process_seq('tooi'), u'tôi')
-        eq_(process_seq('chuyeenr'), u'chuyển')
-        eq_(process_seq('ddoonjg'), u'động')
-        eq_(process_seq('nheechs'), u'nhếch')
+        eq_(process_seq('tooi'), 'tôi')
+        eq_(process_seq('chuyeenr'), 'chuyển')
+        eq_(process_seq('ddoonjg'), 'động')
+        eq_(process_seq('nheechs'), 'nhếch')
 
         # uơ related
-        eq_(process_seq('quowr'), u'quở')
-        eq_(process_seq('huow'), u'huơ')
-        eq_(process_seq('thuowr'), u'thuở')
-        eq_(process_seq('QUOWR'), u'QUỞ')
-        eq_(process_seq('HUOW'), u'HUƠ')
-        eq_(process_seq('THUOWR'), u'THUỞ')
+        eq_(process_seq('quowr'), 'quở')
+        eq_(process_seq('huow'), 'huơ')
+        eq_(process_seq('thuowr'), 'thuở')
+        eq_(process_seq('QUOWR'), 'QUỞ')
+        eq_(process_seq('HUOW'), 'HUƠ')
+        eq_(process_seq('THUOWR'), 'THUỞ')
 
         # English words
-        eq_(process_key_no_skip('case'), u'cáe')
-        eq_(process_key_no_skip('reset'), u'rết')
+        eq_(process_key_no_skip('case'), 'cáe')
+        eq_(process_key_no_skip('reset'), 'rết')
 
     @attr('slow')
     def test_with_dictionary(self):
@@ -110,50 +111,50 @@ class TestProcessSeq():
 
     def test_bugs_related(self):
         # naỳ.
-        eq_(process_seq('nayf.'), u'này.')
+        eq_(process_seq('nayf.'), 'này.')
 
         # nguời
-        eq_(process_seq('nguowif'), u'người')
-        eq_(process_seq('nguwowif'), u'người')
+        eq_(process_seq('nguowif'), 'người')
+        eq_(process_seq('nguwowif'), 'người')
 
         # thươ.
-        eq_(process_seq("thuowr."), u"thuở.")
+        eq_(process_seq("thuowr."), "thuở.")
 
         eq_(process_seq("[["), "[")
         eq_(process_seq("[["), "[")
 
         # BUG #77
-        eq_(process_seq("ddiemer"), u"điểm")
+        eq_(process_seq("ddiemer"), "điểm")
 
         # BUG #78
-        eq_(process_seq("tuoufw"), u"tườu")
+        eq_(process_seq("tuoufw"), "tườu")
 
         # BUG #79
-        eq_(process_seq("huoswc"), u"hước")
+        eq_(process_seq("huoswc"), "hước")
 
         # BUG #81
-        eq_(process_seq("khoefo"), u"khoèo")
+        eq_(process_seq("khoefo"), "khoèo")
 
         # BUG #82
-        eq_(process_seq("uorw"), u"uở")
+        eq_(process_seq("uorw"), "uở")
 
     def test_bug_93(self):
         eq_(process_seq("{{"), "{")
         eq_(process_seq("}}"), "}")
 
     def test_free_key_position(self):
-        eq_(process_seq('toios'), u'tối')
-        eq_(process_seq('toois'), u'tối')
-        eq_(process_seq('toosi'), u'tối')
+        eq_(process_seq('toios'), 'tối')
+        eq_(process_seq('toois'), 'tối')
+        eq_(process_seq('toosi'), 'tối')
 
-        eq_(process_seq('tuyenre'), u'tuyển')
-        eq_(process_seq('tuyener'), u'tuyển')
-        eq_(process_seq('tuyeren'), u'tuyển')
-        eq_(process_seq('tuyerne'), u'tuyển')
-        eq_(process_seq('tuyeern'), u'tuyển')
-        eq_(process_seq('tuyeenr'), u'tuyển')
+        eq_(process_seq('tuyenre'), 'tuyển')
+        eq_(process_seq('tuyener'), 'tuyển')
+        eq_(process_seq('tuyeren'), 'tuyển')
+        eq_(process_seq('tuyerne'), 'tuyển')
+        eq_(process_seq('tuyeern'), 'tuyển')
+        eq_(process_seq('tuyeenr'), 'tuyển')
 
-        eq_(process_seq('tuwrowng'), u'tưởng')
+        eq_(process_seq('tuwrowng'), 'tưởng')
 
     def test_undo(self):
         eq_(process_seq('aaa'), 'aa')
@@ -173,10 +174,10 @@ class TestProcessSeq():
 
         eq_(process_seq('DDd'), 'Dd')
 
-        eq_(process_key_no_skip('Loorngr'), u'Lôngr')
-        eq_(process_key_no_skip('LOorngr'), u'LÔngr')
-        eq_(process_key_no_skip('DDoongd'), u'Dôngd')
-        eq_(process_key_no_skip('DDuowngd'), u'Dươngd')
+        eq_(process_key_no_skip('Loorngr'), 'Lôngr')
+        eq_(process_key_no_skip('LOorngr'), 'LÔngr')
+        eq_(process_key_no_skip('DDoongd'), 'Dôngd')
+        eq_(process_key_no_skip('DDuowngd'), 'Dươngd')
         eq_(process_key_no_skip('Duowngw'), 'Duongw')
 
     def test_non_vn(self):
@@ -199,8 +200,8 @@ class TestProcessSeq():
         for test in tests:
             yield atomic, test
 
-        eq_(process_seq("aans."), u"ấn.")
-        eq_(process_seq("aans]"), u"ấn]")
+        eq_(process_seq("aans."), "ấn.")
+        eq_(process_seq("aans]"), "ấn]")
         # eq_(process_seq("aans.tuongwj"), "ấn.tượng")
-        eq_(process_seq("gi[f"), u"giờ")
+        eq_(process_seq("gi[f"), "giờ")
         # eq_(process_seq("taojc"), "taojc")
