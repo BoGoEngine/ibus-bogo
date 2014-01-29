@@ -56,8 +56,6 @@ class Engine(IBus.Engine):
 
     def __init__(self, config, abbr_expander):
         super(Engine, self).__init__()
-        logging.info("You are running ibus-bogo")
-
         self.config = config
         self.input_context_capabilities = 0
         self.setup_tool_buttons()
@@ -223,16 +221,13 @@ class Engine(IBus.Engine):
         #
         # Very very veryyyy CRUDE, by the way.
         if self.input_context_capabilities & IBus.Capabilite.SURROUNDING_TEXT:
-            logging.debug("forwarding as commit")
+            logging.debug("Forwarding as commit...")
 
             for ch in string_to_commit:
-                self.forward_key_event(
-                    mapping[ch] if ch in mapping else ord(ch),
-                    0,
-                    0
-                )
+                keyval = mapping[ch] if ch in mapping else ord(ch)
+                self.forward_key_event(keyval=keyval, keycode=0, state=0)
         else:
-            logging.debug("Committing")
+            logging.debug("Committing...")
             # Delaying to partially solve the synchronization issue.
             # Mostly for wine apps and for Gtk apps
             # when the above check doesn't work.
