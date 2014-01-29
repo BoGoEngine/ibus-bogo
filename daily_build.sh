@@ -9,10 +9,10 @@
 
 # Produces something like this: 0.2.99+beta2+15+gf41910e
 # This would be assembled from: <latest tag>+<number of commits from that tag>+g<sha>
-version=$(LC_ALL=C git describe 2> /dev/null | sed 's/-/+/g')
+version=$(LC_ALL=C git describe --tags 2> /dev/null | sed -e 's/-/+/g' -e 's/^v//')
 
 # Hard-coded, change to suit your path
-REPOPATH="/home/chin/dev/bogo/bogoengine.github.com/debian/unstable"
+REPOPATH="/home/chin/bogoengine.github.com/debian/unstable"
 
 # ensure correct directory
 test -r debian/control || exit 1
@@ -22,7 +22,7 @@ mv debian/changelog debian/changelog.old
 echo $version > snapshot_version
 dch --create --empty --package "ibus-bogo" -v "${version}" --force-distribution --distribution "unstable" "Daily build"
 
-debuild "$@"
+debuild -us -uc "$@"
 rm -f snapshot_version
 rm -f debian/changelog
 mv debian/changelog.old debian/changelog
