@@ -60,7 +60,7 @@ class BackspaceBackend:
         self.commit_string(string)
 
     def commit_composition(self):
-        self.commit_string(self.engine.new_string)
+        self.commit_string(self.engine.prev_string)
 
     def commit_string(self, string):
         same_initial_chars = list(takewhile(lambda tupl: tupl[0] == tupl[1],
@@ -198,7 +198,6 @@ class Engine(IBus.Engine):
         self.reset()
 
     def reset(self):
-        self.new_string = ""
         self.prev_string = ""
         self.raw_string = ""
         self.backend.reset()
@@ -247,22 +246,22 @@ class Engine(IBus.Engine):
             keyval, brace_shift = self.do_brace_shift(keyval, modifiers)
 
             # Invoke BoGo to process the input
-            self.new_string, self.raw_string = \
+            new_string, self.raw_string = \
                 bogo.process_key(string=self.prev_string,
                                  key=chr(keyval),
                                  fallback_sequence=self.raw_string,
                                  config=self.config)
 
             # Revert the brace shift
-            if brace_shift and self.new_string and self.new_string[-1] in "{}":
+            if brace_shift and new_string and new_string[-1] in "{}":
                 logging.debug("Reverting brace shift")
-                self.new_string = self.new_string[:-1] + \
-                    chr(ord(self.new_string[-1]) - 0x20)
+                new_string = new_string[:-1] + \
+                    chr(ord(new_string[-1]) - 0x20)
 
-            logging.debug("New string: %s", self.new_string)
+            logging.debug("New string: %s", new_string)
 
-            self.backend.update_composition(self.new_string)
-            self.prev_string = self.new_string
+            self.backend.update_composition(new_string)
+            self.prev_string = new_string
             return True
 
         self.reset()
@@ -326,14 +325,13 @@ class Engine(IBus.Engine):
 
         if keyval == IBus.BackSpace:
             logging.debug("Getting a backspace")
-            if self.new_string == "":
+            if self.prev_string == "":
                 return False
 
-            deleted_char = self.new_string[-1]
-            self.new_string = self.new_string[:-1]
-            self.prev_string = self.new_string
+            deleted_char = self.prev_string[-1]
+            self.prev_string = self.prev_string[:-1]
 
-            if len(self.new_string) == 0:
+            if len(self.prev_string) == 0:
                 self.reset()
             else:
                 index = self.raw_string.rfind(deleted_char)
@@ -348,15 +346,15 @@ class Engine(IBus.Engine):
                 expanded_string = self.abbr_expander.expand(self.prev_string)
 
                 if expanded_string != self.prev_string:
-                    self.new_string = expanded_string
-                    self.commit_composition()
+                    self.prev_string = expanded_string
+                    self.backend.commit_composition()
                     self.reset()
                     return False
 
             if self.config['skip-non-vietnamese'] and \
                     not bogo.validation.is_valid_string(self.prev_string):
-                self.new_string = self.raw_string
-                self.commit_composition()
+                self.prev_string = self.raw_string
+                self.backend.commit_composition()
 
             self.reset()
             return False
