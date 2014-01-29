@@ -73,12 +73,6 @@ class FocusTracker():
 
         if active_window:
             self.window = active_window
-            logging.debug("Active window name: %s" +
-                          "window class: %s" +
-                          "window type: %s",
-                          active_window.get_name(),
-                          active_window.get_class_group_name(),
-                          active_window.get_window_type())
         else:
             logging.debug("Can't detect window")
             self.window = FocusTracker.NoneWindow()
