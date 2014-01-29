@@ -97,15 +97,11 @@ class Engine(IBus.Engine):
         This function gets called whenever a key is pressed.
         """
         if self.focus_tracker.is_in_unity_dash():
+            # FIXME: Should fallback to using preedit
             return False
 
         # Ignore key release events
-        event_is_key_press = (modifiers & (1 << 30)) == 0
-
-        # There is a strange overflow bug with python3-gi here so the above
-        # line is used instead
-        # is_press = ((modifiers & IBus.ModifierType.RELEASE_MASK) == 0)
-
+        event_is_key_press = (modifiers & IBus.ModifierType.RELEASE_MASK) == 0
         if not event_is_key_press:
             return False
 
