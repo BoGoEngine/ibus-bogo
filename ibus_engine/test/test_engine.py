@@ -46,7 +46,7 @@ class TestEngine():
                                     IBus.ModifierType.RELEASE_MASK)
 
     def send_bksp(self, engine):
-        engine.on_backspace_pressed()
+        engine.on_special_key_pressed(IBus.BackSpace)
         return self
 
     def send_return(self, engine):
