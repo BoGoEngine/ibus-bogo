@@ -77,14 +77,16 @@ class FocusTracker():
             logging.debug("Can't detect window")
             self.window = FocusTracker.NoneWindow()
 
-    def is_in_unity(self):
-        try:
-            return os.environ["XDG_CURRENT_DESKTOP"] == "Unity"
-        except KeyError:
-            return False
-
     def is_in_unity_dash(self):
-        if self.window.get_window_type() == Wnck.WindowType.DOCK and \
+
+        def is_in_unity_desktop():
+            try:
+                return os.environ["XDG_CURRENT_DESKTOP"] == "Unity"
+            except KeyError:
+                return False
+
+        if is_in_unity_desktop() and \
+                self.window.get_window_type() == Wnck.WindowType.DOCK and \
                 self.window.get_name() in ['launcher', 'unity-dash']:
             return True
         else:
@@ -144,8 +146,7 @@ class Engine(IBus.Engine):
 
         This function gets called whenever a key is pressed.
         """
-        if self.focus_tracker.is_in_unity() and \
-                self.focus_tracker.is_in_unity_dash():
+        if self.focus_tracker.is_in_unity_dash():
             return False
 
         # Ignore key release events
