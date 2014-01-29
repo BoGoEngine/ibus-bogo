@@ -51,36 +51,58 @@ def ibus_text_to_string(text):
     return text.get_text()
 
 
-def is_in_unity():
-    try:
-        return os.environ["XDG_CURRENT_DESKTOP"] == "Unity"
-    except KeyError:
-        return False
+class FocusTracker():
 
+    class NoneWindow():
+        def get_name(self):
+            return ""
 
-def is_in_unity_dash():
-    try:
+        def get_class(self):
+            return -1
+
+        def get_class_group_name(self):
+            return ""
+
+    def __init__(self):
+        self.window = FocusTracker.NoneWindow()
+
+    def on_focus_changed(self):
         screen = Wnck.Screen.get_default()
         screen.force_update()
-        window = screen.get_active_window()
-        window_name = window.get_name()
-        window_type = window.get_window_type()
-        logging.info("Current active window: %s" % window_name)
-        if window_type == Wnck.WindowType.DOCK and \
-                window_name in ['launcher', 'unity-dash']:
+        active_window = screen.get_active_window()
+
+        if active_window:
+            self.window = active_window
+            logging.debug("Active window name: %s" +
+                          "window class: %s" +
+                          "window type: %s",
+                          active_window.get_name(),
+                          active_window.get_class_group_name(),
+                          active_window.get_window_type())
+        else:
+            logging.debug("Can't detect window")
+            self.window = FocusTracker.NoneWindow()
+
+    def is_in_unity(self):
+        try:
+            return os.environ["XDG_CURRENT_DESKTOP"] == "Unity"
+        except KeyError:
+            return False
+
+    def is_in_unity_dash(self):
+        if self.window.get_window_type() == Wnck.WindowType.DOCK and \
+                self.window.get_name() in ['launcher', 'unity-dash']:
             return True
         else:
             return False
-    except:
-        return False
 
+    def is_in_firefox(self):
+        return \
+            self.window.get_class_group_name() in ["Firefox"]
 
-def is_in_firefox():
-    return True
-
-
-def is_in_chrome():
-    return True
+    def is_in_chrome(self):
+        return \
+            self.window.get_class_group_name() in ["Google-chrome-unstable"]
 
 
 class Engine(IBus.Engine):
@@ -104,6 +126,8 @@ class Engine(IBus.Engine):
         mouse_detector = MouseDetector.get_instance()
         mouse_detector.add_mouse_click_listener(self.reset_engine)
 
+        self.focus_tracker = FocusTracker()
+
     def reset_engine(self):
         self.new_string = ""
         self.old_string = ""
@@ -126,7 +150,8 @@ class Engine(IBus.Engine):
 
         This function gets called whenever a key is pressed.
         """
-        if is_in_unity() and is_in_unity_dash():
+        if self.focus_tracker.is_in_unity() and \
+                self.focus_tracker.is_in_unity_dash():
             return False
 
         # Ignore key release events
@@ -332,7 +357,8 @@ class Engine(IBus.Engine):
 
     def delete_prev_chars_with_backspaces(self, count):
         if self.first_time_sending_backspace and \
-                (is_in_firefox() or is_in_chrome()):
+                (self.focus_tracker.is_in_firefox() or
+                 self.focus_tracker.is_in_chrome()):
             # Sending a dead space key to dismiss the
             # autocomplete box in Firefox and Chrome's
             # address bar. See:
@@ -394,6 +420,7 @@ class Engine(IBus.Engine):
         Called when the input client widget gets focus.
         """
         self.register_properties(self.prop_list)
+        self.focus_tracker.on_focus_changed()
 
     def do_focus_out(self):
         """Implements IBus.Engine's focus_out's default signal handler.
