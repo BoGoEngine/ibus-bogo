@@ -73,7 +73,7 @@ def add_accent(components, accent):
     raw_string = remove_accent_string(vowel).lower()
     new_vowel = ""
     # Highest priority for ê and ơ
-    index = max(raw_string.find(u"ê"), raw_string.find(u"ơ"))
+    index = max(raw_string.find("ê"), raw_string.find("ơ"))
     if index != -1:
         new_vowel = vowel[:index] + add_accent_char(vowel[index], accent) + vowel[index+1:]
     elif len(vowel) == 1 or (len(vowel) == 2 and last_consonant == ""):

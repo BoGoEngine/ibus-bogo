@@ -12,7 +12,7 @@ def test_from_dict():
     exception = {
         'ping',
         'xit',
-        u'têt',
+        'têt',
         'gip'
     }
 
