@@ -43,8 +43,12 @@ import vncharsets
 vncharsets.init()
 
 
-def string_to_text(string):
+def string_to_ibus_text(string):
     return IBus.Text.new_from_string(string)
+
+
+def ibus_text_to_string(text):
+    return text.get_text()
 
 
 def is_in_unity():
@@ -268,7 +272,7 @@ class Engine(IBus.Engine):
             # Mostly for wine apps and for Gtk apps
             # when the above check doesn't work.
             time.sleep(0.005)
-            self.commit_text(string_to_text(string_to_commit))
+            self.commit_text(string_to_ibus_text(string_to_commit))
 
         self.current_shown_text = string
 
@@ -305,20 +309,22 @@ class Engine(IBus.Engine):
 
     def setup_tool_buttons(self):
         self.prop_list = IBus.PropList()
+        label = string_to_ibus_text("Preferences")
+        tooltip = label
         pref_button = IBus.Property.new(key="preferences",
                                         type=IBus.PropType.NORMAL,
-                                        label=string_to_text("Preferences"),
+                                        label=label,
                                         icon="preferences-other",
-                                        tooltip=string_to_text("Preferences"),
+                                        tooltip=tooltip,
                                         sensitive=True,
                                         visible=True,
                                         state=0,
                                         prop_list=None)
         help_button = IBus.Property.new(key="help",
                                         type=IBus.PropType.NORMAL,
-                                        label=string_to_text("Help"),
+                                        label=string_to_ibus_text("Help"),
                                         icon="system-help",
-                                        tooltip=string_to_text("Help"),
+                                        tooltip=string_to_ibus_text("Help"),
                                         sensitive=True,
                                         visible=True,
                                         state=0,
