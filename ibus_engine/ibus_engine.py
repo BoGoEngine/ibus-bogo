@@ -57,15 +57,15 @@ class Engine(IBus.Engine):
 
         self.can_do_surrounding_text = False
         self.ever_checked_surrounding_text = False
-        self.reset_engine()
+        self.reset()
 
         # Create a new thread to detect mouse clicks
         mouse_detector = MouseDetector.get_instance()
-        mouse_detector.add_mouse_click_listener(self.reset_engine)
+        mouse_detector.add_mouse_click_listener(self.reset)
 
         self.focus_tracker = FocusTracker()
 
-    def reset_engine(self):
+    def reset(self):
         self.new_string = ""
         self.prev_string = ""
         self.raw_string = ""
@@ -140,7 +140,7 @@ class Engine(IBus.Engine):
             self.prev_string = self.new_string
             return True
 
-        self.reset_engine()
+        self.reset()
         return False
 
     def do_brace_shift(self, keyval, modifiers):
@@ -160,7 +160,7 @@ class Engine(IBus.Engine):
     # This messes up Pidgin
     # def do_reset(self):
     #     logging.debug("Reset signal")
-    #     self.reset_engine()
+    #     self.reset()
 
     def commit_result(self, string):
         same_initial_chars = list(takewhile(lambda tupl: tupl[0] == tupl[1],
@@ -285,13 +285,13 @@ class Engine(IBus.Engine):
         self.ui_delegate.do_enable()
 
     def do_disable(self):
-        self.reset_engine()
+        self.reset()
 
     def do_focus_in(self):
         self.focus_tracker.on_focus_changed()
 
     def do_focus_out(self):
-        self.reset_engine()
+        self.reset()
 
     def do_property_activate(self, prop_key, state):
         self.ui_delegate.do_property_activate(prop_key, state)
@@ -301,7 +301,7 @@ class Engine(IBus.Engine):
 
     def on_special_key_pressed(self, keyval):
         if keyval == IBus.Return:
-            self.reset_engine()
+            self.reset()
             return False
 
         if keyval == IBus.BackSpace:
@@ -315,7 +315,7 @@ class Engine(IBus.Engine):
             self.prev_string = self.new_string
 
             if len(self.new_string) == 0:
-                self.reset_engine()
+                self.reset()
             else:
                 index = self.raw_string.rfind(deleted_char)
                 self.raw_string = self.raw_string[:-2] if index < 0 else \
@@ -330,12 +330,12 @@ class Engine(IBus.Engine):
 
                 if expanded_string != self.prev_string:
                     self.commit_result(expanded_string)
-                    self.reset_engine()
+                    self.reset()
                     return False
 
             if self.config['skip-non-vietnamese'] and \
                     not bogo.validation.is_valid_string(self.prev_string):
                 self.commit_result(self.raw_string)
 
-            self.reset_engine()
+            self.reset()
             return False
