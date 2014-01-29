@@ -218,21 +218,7 @@ class Engine(IBus.Engine):
         logging.debug("Number of fake backspace: %d", number_fake_backspace)
         logging.debug("String to commit: %s", string_to_commit)
 
-        # phaikawl@github:
-        #   A simple fix for the issue with autocomplete [issue #73][1]:
-        #   Just add a backtick after the text, the backtick would dismiss the
-        #   autocomplete and make bogo work smoothly.
-        #
-        #   It's a little bit "crude" but it works!
-        #
-        # lewtds@github:
-        #   Any key except a backspace should work either.
-        #
-        # [1]: https://github.com/BoGoEngine/ibus-bogo/issues/73
-        #
-        self.forward_key_event(IBus.grave, 41, 0)
-        for i in range(number_fake_backspace + 1):
-            self.forward_key_event(IBus.BackSpace, 14, 0)
+        self.delete_prev_chars(number_fake_backspace)
 
         # Charset conversion
         # We encode a Unicode string into a byte sequence with the specified
@@ -299,6 +285,23 @@ class Engine(IBus.Engine):
             state & (IBus.ModifierType.CONTROL_MASK |
                      IBus.ModifierType.MOD1_MASK) == 0 and \
             (key.isalpha() or key in current_im.keys())
+
+    def delete_prev_chars(self, count):
+        # phaikawl@github:
+        #   A simple fix for the issue with autocomplete [issue #73][1]:
+        #   Just add a backtick after the text, the backtick would dismiss the
+        #   autocomplete and make bogo work smoothly.
+        #
+        #   It's a little bit "crude" but it works!
+        #
+        # lewtds@github:
+        #   Any key except a backspace should work either.
+        #
+        # [1]: https://github.com/BoGoEngine/ibus-bogo/issues/73
+        #
+        self.forward_key_event(IBus.Space, 41, 0)
+        for i in range(count + 1):
+            self.forward_key_event(IBus.BackSpace, 14, 0)
 
     def setup_tool_buttons(self):
         self.prop_list = IBus.PropList()
