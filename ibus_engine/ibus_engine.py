@@ -24,12 +24,12 @@
 from gi.repository import GObject
 from gi.repository import IBus
 from gi.repository import Gdk
-from gi.repository import Wnck
 import time
 import logging
 import subprocess
 import os
 import sys
+from itertools import takewhile
 
 ENGINE_PATH = os.path.dirname(__file__)
 sys.path.append(
@@ -37,38 +37,19 @@ sys.path.append(
 
 import bogo
 from mouse_detector import MouseDetector
+from focus_tracker import FocusTracker
 from keysyms_mapping import mapping
 import vncharsets
 
 vncharsets.init()
 
 
-def string_to_text(string):
+def string_to_ibus_text(string):
     return IBus.Text.new_from_string(string)
 
 
-def is_in_unity():
-    try:
-        return os.environ["XDG_CURRENT_DESKTOP"] == "Unity"
-    except KeyError:
-        return False
-
-
-def is_in_unity_dash():
-    try:
-        screen = Wnck.Screen.get_default()
-        screen.force_update()
-        window = screen.get_active_window()
-        window_name = window.get_name()
-        window_type = window.get_window_type()
-        logging.info("Current active window: %s" % window_name)
-        if window_type == Wnck.WindowType.DOCK and \
-                window_name in ['launcher', 'unity-dash']:
-            return True
-        else:
-            return False
-    except:
-        return False
+def ibus_text_to_string(text):
+    return text.get_text()
 
 
 class Engine(IBus.Engine):
@@ -76,24 +57,27 @@ class Engine(IBus.Engine):
 
     def __init__(self, config, abbr_expander):
         super(Engine, self).__init__()
-        logging.info("You are running ibus-bogo")
-
         self.config = config
         self.input_context_capabilities = 0
         self.setup_tool_buttons()
 
         self.abbr_expander = abbr_expander
 
+        self.can_do_surrounding_text = False
+        self.ever_checked_surrounding_text = False
         self.reset_engine()
 
         # Create a new thread to detect mouse clicks
         mouse_detector = MouseDetector.get_instance()
         mouse_detector.add_mouse_click_listener(self.reset_engine)
 
+        self.focus_tracker = FocusTracker()
+
     def reset_engine(self):
         self.new_string = ""
-        self.old_string = ""
+        self.prev_string = ""
         self.raw_string = ""
+        self.first_time_sending_backspace = True
 
     # The "do_" part denotes a default signal handler
     def do_process_key_event(self, keyval, keycode, modifiers):
@@ -111,45 +95,29 @@ class Engine(IBus.Engine):
 
         This function gets called whenever a key is pressed.
         """
-        if is_in_unity() and is_in_unity_dash():
+        if self.focus_tracker.is_in_unity_dash():
+            # FIXME: Should fallback to using preedit
             return False
 
         # Ignore key release events
-        event_is_key_press = (modifiers & (1 << 30)) == 0
-
-        # There is a strange overflow bug with python3-gi here so the above
-        # line is used instead
-        # is_press = ((modifiers & IBus.ModifierType.RELEASE_MASK) == 0)
-
+        event_is_key_press = (modifiers & IBus.ModifierType.RELEASE_MASK) == 0
         if not event_is_key_press:
             return False
 
-        if keyval == IBus.Return:
-            return self.on_return_pressed()
+        if keyval in [IBus.Return, IBus.BackSpace, IBus.space]:
+            return self.on_special_key_pressed(keyval)
 
-        if keyval == IBus.BackSpace:
-            return self.on_backspace_pressed()
-
-        if keyval == IBus.space:
-            if self.config["enable-text-expansion"]:
-                expanded_string = self.abbr_expander.expand(self.old_string)
-
-                if expanded_string != self.old_string:
-                    self.commit_result(expanded_string)
-                    self.reset_engine()
-                    return False
-
-            if self.config['skip-non-vietnamese'] and \
-                    not bogo.validation.is_valid_string(self.old_string):
-                self.commit_result(self.raw_string)
-
-            self.reset_engine()
-            return False
+        # Check surrounding text capability after the first
+        # keypress.
+        if not self.ever_checked_surrounding_text and \
+                len(self.raw_string) == 1:
+            self.ever_checked_surrounding_text = True
+            self.can_do_surrounding_text = self.check_surrounding_text()
 
         if self.is_processable_key(keyval, modifiers):
             logging.debug("Key pressed: %c", chr(keyval))
             logging.debug("Raw string: %s", self.raw_string)
-            logging.debug("Old string: %s", self.old_string)
+            logging.debug("Old string: %s", self.prev_string)
 
             # Brace shift for TELEX's ][ keys.
             # When typing with capslock on, ][ won't get shifted to }{ resulting
@@ -157,10 +125,10 @@ class Engine(IBus.Engine):
             # manually.
             keyval, brace_shift = self.do_brace_shift(keyval, modifiers)
 
-            # Call Bogo engine to process the input
+            # Invoke BoGo to process the input
             self.new_string, self.raw_string = \
-                bogo.process_key(self.old_string,
-                                 chr(keyval),
+                bogo.process_key(string=self.prev_string,
+                                 key=chr(keyval),
                                  fallback_sequence=self.raw_string,
                                  config=self.config)
 
@@ -173,7 +141,7 @@ class Engine(IBus.Engine):
             logging.debug("New string: %s", self.new_string)
 
             self.commit_result(self.new_string)
-            self.old_string = self.new_string
+            self.prev_string = self.new_string
             return True
 
         self.reset_engine()
@@ -199,26 +167,14 @@ class Engine(IBus.Engine):
     #     self.reset_engine()
 
     def commit_result(self, string):
-        def get_nbackspace_and_string_to_commit(old_string, new_string):
-            if (old_string):
-                length = len(old_string)
-                for i in range(length):
-                    if old_string[i] != new_string[i]:
-                        _nbackspace = length - i
-                        _stringtocommit = new_string[i:]
-                        return _nbackspace, _stringtocommit
-                return 0, new_string[length:]
-            else:
-                return 0, new_string
+        same_initial_chars = list(takewhile(lambda tupl: tupl[0] == tupl[1],
+                                            zip(self.prev_string,
+                                                self.new_string)))
 
-        number_fake_backspace, string_to_commit = \
-            get_nbackspace_and_string_to_commit(self.old_string,
-                                                string)
+        n_backspace = len(self.prev_string) - len(same_initial_chars)
+        string_to_commit = self.new_string[len(same_initial_chars):]
 
-        logging.debug("Number of fake backspace: %d", number_fake_backspace)
-        logging.debug("String to commit: %s", string_to_commit)
-
-        self.delete_prev_chars(number_fake_backspace)
+        self.delete_prev_chars(n_backspace)
 
         # Charset conversion
         # We encode a Unicode string into a byte sequence with the specified
@@ -254,21 +210,18 @@ class Engine(IBus.Engine):
         #
         # Very very veryyyy CRUDE, by the way.
         if self.input_context_capabilities & IBus.Capabilite.SURROUNDING_TEXT:
-            logging.debug("forwarding as commit")
+            logging.debug("Forwarding as commit...")
 
             for ch in string_to_commit:
-                self.forward_key_event(
-                    mapping[ch] if ch in mapping else ord(ch),
-                    0,
-                    0
-                )
+                keyval = mapping[ch] if ch in mapping else ord(ch)
+                self.forward_key_event(keyval=keyval, keycode=0, state=0)
         else:
-            logging.debug("Committing")
+            logging.debug("Committing...")
             # Delaying to partially solve the synchronization issue.
             # Mostly for wine apps and for Gtk apps
             # when the above check doesn't work.
             time.sleep(0.005)
-            self.commit_text(string_to_text(string_to_commit))
+            self.commit_text(string_to_ibus_text(string_to_commit))
 
         self.current_shown_text = string
 
@@ -286,39 +239,70 @@ class Engine(IBus.Engine):
                      IBus.ModifierType.MOD1_MASK) == 0 and \
             (key.isalpha() or key in current_im.keys())
 
-    def delete_prev_chars(self, count):
-        # phaikawl@github:
-        #   A simple fix for the issue with autocomplete [issue #73][1]:
-        #   Just add a backtick after the text, the backtick would dismiss the
-        #   autocomplete and make bogo work smoothly.
-        #
-        #   It's a little bit "crude" but it works!
-        #
-        # lewtds@github:
-        #   Any key except a backspace should work either.
-        #
-        # [1]: https://github.com/BoGoEngine/ibus-bogo/issues/73
-        #
-        self.forward_key_event(IBus.space, 41, 0)
-        for i in range(count + 1):
+    def check_surrounding_text(self):
+        length = len(self.prev_string)
+
+        text, cursor_pos, anchor_pos = self.get_surrounding_text()
+        surrounding_text = ibus_text_to_string(text)
+
+        if surrounding_text.endswith(self.prev_string):
+            self.delete_surrounding_text(offset=-length, nchars=length)
+
+            text, cursor_pos, anchor_pos = self.get_surrounding_text()
+            surrounding_text = ibus_text_to_string(text)
+
+            if not surrounding_text.endswith(self.prev_string):
+                self.commit_text(string_to_ibus_text(self.prev_string))
+                return True
+            else:
+                return False
+
+    def delete_prev_chars_with_backspaces(self, count):
+        if self.first_time_sending_backspace and \
+                (self.focus_tracker.is_in_firefox() or
+                 self.focus_tracker.is_in_chrome()):
+            # Sending a dead space key to dismiss the
+            # autocomplete box in Firefox and Chrome's
+            # address bar. See:
+            # https://github.com/BoGoEngine/ibus-bogo-python/pull/109
+            logging.debug("Dismissing autocomplete...")
+
+            self.forward_key_event(IBus.space, 0, 0)
             self.forward_key_event(IBus.BackSpace, 14, 0)
+
+            self.first_time_sending_backspace = False
+
+        for i in range(count):
+            self.forward_key_event(IBus.BackSpace, 14, 0)
+
+    def delete_prev_chars(self, count):
+        if count > 0:
+            if self.can_do_surrounding_text and \
+                    not self.focus_tracker.is_in_chrome():
+                logging.debug("Deleting surrounding text...")
+                self.delete_surrounding_text(offset=-count, nchars=count)
+            else:
+                logging.debug("Sending backspace...")
+                self.delete_prev_chars_with_backspaces(count)
 
     def setup_tool_buttons(self):
         self.prop_list = IBus.PropList()
+        label = string_to_ibus_text("Preferences")
+        tooltip = label
         pref_button = IBus.Property.new(key="preferences",
                                         type=IBus.PropType.NORMAL,
-                                        label=string_to_text("Preferences"),
+                                        label=label,
                                         icon="preferences-other",
-                                        tooltip=string_to_text("Preferences"),
+                                        tooltip=tooltip,
                                         sensitive=True,
                                         visible=True,
                                         state=0,
                                         prop_list=None)
         help_button = IBus.Property.new(key="help",
                                         type=IBus.PropType.NORMAL,
-                                        label=string_to_text("Help"),
+                                        label=string_to_ibus_text("Help"),
                                         icon="system-help",
-                                        tooltip=string_to_text("Help"),
+                                        tooltip=string_to_ibus_text("Help"),
                                         sensitive=True,
                                         visible=True,
                                         state=0,
@@ -338,6 +322,7 @@ class Engine(IBus.Engine):
         Called when the input client widget gets focus.
         """
         self.register_properties(self.prop_list)
+        self.focus_tracker.on_focus_changed()
 
     def do_focus_out(self):
         """Implements IBus.Engine's focus_out's default signal handler.
@@ -367,26 +352,43 @@ class Engine(IBus.Engine):
     def do_set_capabilities(self, caps):
         self.input_context_capabilities = caps
 
-    def on_return_pressed(self):
-        self.reset_engine()
-        return False
-
-    def on_backspace_pressed(self):
-        logging.debug("Getting a backspace")
-        if self.new_string == "":
+    def on_special_key_pressed(self, keyval):
+        if keyval == IBus.Return:
+            self.reset_engine()
             return False
 
-        deleted_char = self.new_string[-1]
-        self.new_string = self.new_string[:-1]
-        self.current_shown_text = self.new_string
-        self.old_string = self.new_string
+        if keyval == IBus.BackSpace:
+            logging.debug("Getting a backspace")
+            if self.new_string == "":
+                return False
 
-        if len(self.new_string) == 0:
+            deleted_char = self.new_string[-1]
+            self.new_string = self.new_string[:-1]
+            self.current_shown_text = self.new_string
+            self.prev_string = self.new_string
+
+            if len(self.new_string) == 0:
+                self.reset_engine()
+            else:
+                index = self.raw_string.rfind(deleted_char)
+                self.raw_string = self.raw_string[:-2] if index < 0 else \
+                    self.raw_string[:index] + \
+                    self.raw_string[(index + 1):]
+
+            return False
+
+        if keyval == IBus.space:
+            if self.config["enable-text-expansion"]:
+                expanded_string = self.abbr_expander.expand(self.prev_string)
+
+                if expanded_string != self.prev_string:
+                    self.commit_result(expanded_string)
+                    self.reset_engine()
+                    return False
+
+            if self.config['skip-non-vietnamese'] and \
+                    not bogo.validation.is_valid_string(self.prev_string):
+                self.commit_result(self.raw_string)
+
             self.reset_engine()
-        else:
-            index = self.raw_string.rfind(deleted_char)
-            self.raw_string = self.raw_string[:-2] if index < 0 else \
-                self.raw_string[:index] + \
-                self.raw_string[(index + 1):]
-
-        return False
+            return False
