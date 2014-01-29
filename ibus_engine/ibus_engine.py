@@ -26,7 +26,6 @@ from gi.repository import IBus
 from gi.repository import Gdk
 import time
 import logging
-import subprocess
 import os
 import sys
 from itertools import takewhile
