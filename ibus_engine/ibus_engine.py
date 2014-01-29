@@ -88,6 +88,8 @@ class Engine(IBus.Engine):
 
         self.abbr_expander = abbr_expander
 
+        self.can_do_surrounding_text = False
+        self.ever_checked_surrounding_text = False
         self.reset_engine()
 
         # Create a new thread to detect mouse clicks
@@ -149,6 +151,13 @@ class Engine(IBus.Engine):
 
             self.reset_engine()
             return False
+
+        # Check surrounding text capability after the first
+        # keypress.
+        if not self.ever_checked_surrounding_text and \
+                len(self.raw_string) == 1:
+            self.ever_checked_surrounding_text = True
+            self.can_do_surrounding_text = self.check_surrounding_text()
 
         if self.is_processable_key(keyval, modifiers):
             logging.debug("Key pressed: %c", chr(keyval))
@@ -290,22 +299,39 @@ class Engine(IBus.Engine):
                      IBus.ModifierType.MOD1_MASK) == 0 and \
             (key.isalpha() or key in current_im.keys())
 
-    def delete_prev_chars(self, count):
-        # phaikawl@github:
-        #   A simple fix for the issue with autocomplete [issue #73][1]:
-        #   Just add a backtick after the text, the backtick would dismiss the
-        #   autocomplete and make bogo work smoothly.
-        #
-        #   It's a little bit "crude" but it works!
-        #
-        # lewtds@github:
-        #   Any key except a backspace should work either.
-        #
-        # [1]: https://github.com/BoGoEngine/ibus-bogo/issues/73
-        #
-        self.forward_key_event(IBus.space, 41, 0)
-        for i in range(count + 1):
+    def check_surrounding_text(self):
+        length = len(self.old_string)
+
+        text, cursor_pos, anchor_pos = self.get_surrounding_text()
+        surrounding_text = ibus_text_to_string(text)
+
+        logging.debug("text1=%s", surrounding_text)
+
+        if surrounding_text.endswith(self.old_string):
+            self.delete_surrounding_text(offset=-length, nchars=length)
+
+            text, cursor_pos, anchor_pos = self.get_surrounding_text()
+            surrounding_text = ibus_text_to_string(text)
+
+            logging.debug("text2=%s", surrounding_text)
+
+            if not surrounding_text.endswith(self.old_string):
+                self.commit_text(string_to_ibus_text(self.old_string))
+                return True
+            else:
+                return False
+
+    def delete_prev_chars_with_backspaces(self, count):
+        for i in range(count):
             self.forward_key_event(IBus.BackSpace, 14, 0)
+
+    def delete_prev_chars(self, count):
+        if self.can_do_surrounding_text:
+            logging.debug("Deleting surrounding text...")
+            self.delete_surrounding_text(offset=-count, nchars=count)
+        else:
+            logging.debug("Sending backspace...")
+            self.delete_prev_chars_with_backspaces(count)
 
     def setup_tool_buttons(self):
         self.prop_list = IBus.PropList()
