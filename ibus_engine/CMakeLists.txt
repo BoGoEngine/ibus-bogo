@@ -46,6 +46,7 @@ install (FILES
   mouse_detector.py
   abbr.py
   focus_tracker.py
+  ui.py
   DESTINATION
   ${BOGO_INSTALL_DIR}/ibus_engine
   )
