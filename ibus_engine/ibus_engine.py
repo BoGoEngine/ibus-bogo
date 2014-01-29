@@ -289,17 +289,9 @@ class Engine(IBus.Engine):
         self.reset_engine()
 
     def do_focus_in(self):
-        """Implements IBus.Engine's focus_in's default signal handler.
-
-        Called when the input client widget gets focus.
-        """
         self.focus_tracker.on_focus_changed()
 
     def do_focus_out(self):
-        """Implements IBus.Engine's focus_out's default signal handler.
-
-        Called when the input client widget loses focus.
-        """
         self.reset_engine()
 
     def do_property_activate(self, prop_key, state):
