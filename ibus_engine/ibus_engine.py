@@ -59,7 +59,7 @@ class Engine(IBus.Engine):
         super(Engine, self).__init__()
         self.config = config
         self.input_context_capabilities = 0
-        self.setup_tool_buttons()
+        self.ui_delegate = UiDelegate(engine=self)
 
         self.abbr_expander = abbr_expander
 
@@ -289,33 +289,8 @@ class Engine(IBus.Engine):
                 logging.debug("Sending backspace...")
                 self.delete_prev_chars_with_backspaces(count)
 
-    def setup_tool_buttons(self):
-        self.prop_list = IBus.PropList()
-        label = string_to_ibus_text("Preferences")
-        tooltip = label
-        pref_button = IBus.Property.new(key="preferences",
-                                        type=IBus.PropType.NORMAL,
-                                        label=label,
-                                        icon="preferences-other",
-                                        tooltip=tooltip,
-                                        sensitive=True,
-                                        visible=True,
-                                        state=0,
-                                        prop_list=None)
-        help_button = IBus.Property.new(key="help",
-                                        type=IBus.PropType.NORMAL,
-                                        label=string_to_ibus_text("Help"),
-                                        icon="system-help",
-                                        tooltip=string_to_ibus_text("Help"),
-                                        sensitive=True,
-                                        visible=True,
-                                        state=0,
-                                        prop_list=None)
-        self.prop_list.append(pref_button)
-        self.prop_list.append(help_button)
-
     def do_enable(self):
-        pass
+        self.ui_delegate.do_enable()
 
     def do_disable(self):
         self.reset_engine()
@@ -325,7 +300,6 @@ class Engine(IBus.Engine):
 
         Called when the input client widget gets focus.
         """
-        self.register_properties(self.prop_list)
         self.focus_tracker.on_focus_changed()
 
     def do_focus_out(self):
@@ -336,22 +310,7 @@ class Engine(IBus.Engine):
         self.reset_engine()
 
     def do_property_activate(self, prop_key, state):
-        if prop_key == "preferences":
-            try:
-                pid = os.fork()
-                if pid == 0:
-                    # os.system("/usr/lib/ibus-bogo/ibus-bogo-settings")
-                    os.system("python3 " +
-                              os.path.join(os.path.dirname(__file__),
-                                           "..",
-                                           "gui/controller.py"))
-                    os._exit(0)
-            except:
-                pass
-        elif prop_key == "help":
-            link = "http://ibus-bogo.readthedocs.org/en/latest/usage.html"
-            subprocess.call("xdg-open " + link, shell=True)
-        self.reset_engine()
+        self.ui_delegate.do_property_activate(prop_key, state)
 
     def do_set_capabilities(self, caps):
         self.input_context_capabilities = caps
@@ -396,3 +355,58 @@ class Engine(IBus.Engine):
 
             self.reset_engine()
             return False
+
+
+class UiDelegate():
+
+    def __init__(self, engine):
+        self.engine = engine
+        self.setup_tool_buttons()
+
+    def setup_tool_buttons(self):
+        self.prop_list = IBus.PropList()
+        label = string_to_ibus_text("Preferences")
+        tooltip = label
+        pref_button = IBus.Property.new(key="preferences",
+                                        type=IBus.PropType.NORMAL,
+                                        label=label,
+                                        icon="preferences-other",
+                                        tooltip=tooltip,
+                                        sensitive=True,
+                                        visible=True,
+                                        state=0,
+                                        prop_list=None)
+        help_button = IBus.Property.new(key="help",
+                                        type=IBus.PropType.NORMAL,
+                                        label=string_to_ibus_text("Help"),
+                                        icon="system-help",
+                                        tooltip=string_to_ibus_text("Help"),
+                                        sensitive=True,
+                                        visible=True,
+                                        state=0,
+                                        prop_list=None)
+        self.prop_list.append(pref_button)
+        self.prop_list.append(help_button)
+
+    def do_enable(self):
+        self.engine.register_properties(self.prop_list)
+
+    def do_property_activate(self, prop_key, state):
+        if prop_key == "preferences":
+            try:
+                pid = os.fork()
+                if pid == 0:
+                    # os.system("/usr/lib/ibus-bogo/ibus-bogo-settings")
+                    os.system("python3 " +
+                              os.path.join(os.path.dirname(__file__),
+                                           "..",
+                                           "gui/controller.py"))
+                    os._exit(0)
+            except:
+                pass
+        elif prop_key == "help":
+            link = "http://ibus-bogo.readthedocs.org/en/latest/usage.html"
+            subprocess.call("xdg-open " + link, shell=True)
+
+        # FIXME: Is this really necessary?
+        self.engine.reset_engine()
