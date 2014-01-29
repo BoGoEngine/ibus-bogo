@@ -105,27 +105,8 @@ class Engine(IBus.Engine):
         if not event_is_key_press:
             return False
 
-        if keyval == IBus.Return:
-            return self.on_return_pressed()
-
-        if keyval == IBus.BackSpace:
-            return self.on_backspace_pressed()
-
-        if keyval == IBus.space:
-            if self.config["enable-text-expansion"]:
-                expanded_string = self.abbr_expander.expand(self.old_string)
-
-                if expanded_string != self.old_string:
-                    self.commit_result(expanded_string)
-                    self.reset_engine()
-                    return False
-
-            if self.config['skip-non-vietnamese'] and \
-                    not bogo.validation.is_valid_string(self.old_string):
-                self.commit_result(self.raw_string)
-
-            self.reset_engine()
-            return False
+        if keyval in [IBus.Return, IBus.BackSpace, IBus.space]:
+            return self.on_special_key_pressed(keyval)
 
         # Check surrounding text capability after the first
         # keypress.
@@ -387,26 +368,43 @@ class Engine(IBus.Engine):
     def do_set_capabilities(self, caps):
         self.input_context_capabilities = caps
 
-    def on_return_pressed(self):
-        self.reset_engine()
-        return False
-
-    def on_backspace_pressed(self):
-        logging.debug("Getting a backspace")
-        if self.new_string == "":
+    def on_special_key_pressed(self, keyval):
+        if keyval == IBus.Return:
+            self.reset_engine()
             return False
 
-        deleted_char = self.new_string[-1]
-        self.new_string = self.new_string[:-1]
-        self.current_shown_text = self.new_string
-        self.old_string = self.new_string
+        if keyval == IBus.BackSpace:
+            logging.debug("Getting a backspace")
+            if self.new_string == "":
+                return False
 
-        if len(self.new_string) == 0:
+            deleted_char = self.new_string[-1]
+            self.new_string = self.new_string[:-1]
+            self.current_shown_text = self.new_string
+            self.old_string = self.new_string
+
+            if len(self.new_string) == 0:
+                self.reset_engine()
+            else:
+                index = self.raw_string.rfind(deleted_char)
+                self.raw_string = self.raw_string[:-2] if index < 0 else \
+                    self.raw_string[:index] + \
+                    self.raw_string[(index + 1):]
+
+            return False
+
+        if keyval == IBus.space:
+            if self.config["enable-text-expansion"]:
+                expanded_string = self.abbr_expander.expand(self.old_string)
+
+                if expanded_string != self.old_string:
+                    self.commit_result(expanded_string)
+                    self.reset_engine()
+                    return False
+
+            if self.config['skip-non-vietnamese'] and \
+                    not bogo.validation.is_valid_string(self.old_string):
+                self.commit_result(self.raw_string)
+
             self.reset_engine()
-        else:
-            index = self.raw_string.rfind(deleted_char)
-            self.raw_string = self.raw_string[:-2] if index < 0 else \
-                self.raw_string[:index] + \
-                self.raw_string[(index + 1):]
-
-        return False
+            return False
