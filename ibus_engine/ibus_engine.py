@@ -126,10 +126,10 @@ class Engine(IBus.Engine):
             # manually.
             keyval, brace_shift = self.do_brace_shift(keyval, modifiers)
 
-            # Call Bogo engine to process the input
+            # Invoke BoGo to process the input
             self.new_string, self.raw_string = \
-                bogo.process_key(self.old_string,
-                                 chr(keyval),
+                bogo.process_key(string=self.old_string,
+                                 key=chr(keyval),
                                  fallback_sequence=self.raw_string,
                                  config=self.config)
 
