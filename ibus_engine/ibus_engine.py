@@ -348,12 +348,14 @@ class Engine(IBus.Engine):
             self.forward_key_event(IBus.BackSpace, 14, 0)
 
     def delete_prev_chars(self, count):
-        if self.can_do_surrounding_text:
-            logging.debug("Deleting surrounding text...")
-            self.delete_surrounding_text(offset=-count, nchars=count)
-        else:
-            logging.debug("Sending backspace...")
-            self.delete_prev_chars_with_backspaces(count)
+        if count > 0:
+            if self.can_do_surrounding_text and \
+                    not self.focus_tracker.is_in_chrome():
+                logging.debug("Deleting surrounding text...")
+                self.delete_surrounding_text(offset=-count, nchars=count)
+            else:
+                logging.debug("Sending backspace...")
+                self.delete_prev_chars_with_backspaces(count)
 
     def setup_tool_buttons(self):
         self.prop_list = IBus.PropList()
