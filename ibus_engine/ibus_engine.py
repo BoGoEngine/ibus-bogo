@@ -334,15 +334,11 @@ class Engine(IBus.Engine):
         text, cursor_pos, anchor_pos = self.get_surrounding_text()
         surrounding_text = ibus_text_to_string(text)
 
-        logging.debug("text1=%s", surrounding_text)
-
         if surrounding_text.endswith(self.old_string):
             self.delete_surrounding_text(offset=-length, nchars=length)
 
             text, cursor_pos, anchor_pos = self.get_surrounding_text()
             surrounding_text = ibus_text_to_string(text)
-
-            logging.debug("text2=%s", surrounding_text)
 
             if not surrounding_text.endswith(self.old_string):
                 self.commit_text(string_to_ibus_text(self.old_string))
