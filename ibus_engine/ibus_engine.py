@@ -29,6 +29,7 @@ import logging
 import subprocess
 import os
 import sys
+from itertools import takewhile
 
 ENGINE_PATH = os.path.dirname(__file__)
 sys.path.append(
@@ -166,26 +167,14 @@ class Engine(IBus.Engine):
     #     self.reset_engine()
 
     def commit_result(self, string):
-        def get_nbackspace_and_string_to_commit(old_string, new_string):
-            if (old_string):
-                length = len(old_string)
-                for i in range(length):
-                    if old_string[i] != new_string[i]:
-                        _nbackspace = length - i
-                        _stringtocommit = new_string[i:]
-                        return _nbackspace, _stringtocommit
-                return 0, new_string[length:]
-            else:
-                return 0, new_string
+        same_initial_chars = list(takewhile(lambda tupl: tupl[0] == tupl[1],
+                                            zip(self.prev_string,
+                                                self.new_string)))
 
-        number_fake_backspace, string_to_commit = \
-            get_nbackspace_and_string_to_commit(self.old_string,
-                                                string)
+        n_backspace = len(self.prev_string) - len(same_initial_chars)
+        string_to_commit = self.new_string[len(same_initial_chars):]
 
-        logging.debug("Number of fake backspace: %d", number_fake_backspace)
-        logging.debug("String to commit: %s", string_to_commit)
-
-        self.delete_prev_chars(number_fake_backspace)
+        self.delete_prev_chars(n_backspace)
 
         # Charset conversion
         # We encode a Unicode string into a byte sequence with the specified
