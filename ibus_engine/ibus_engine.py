@@ -75,8 +75,6 @@ class Engine(IBus.Engine):
 
         This function gets called whenever a key is pressed.
         """
-        # if self.focus_tracker.is_in_unity_dash():
-        #     return False
 
         # Ignore key release events
         event_is_key_press = (modifiers & (1 << 30)) == 0

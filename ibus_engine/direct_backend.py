@@ -96,6 +96,9 @@ class DirectEditBackend(BaseBackend):
             self.engine.commit_text(IBus.Text.new_from_string(string_to_commit))
 
     def process_key_event(self, keyval, modifiers):
+        if self.focus_tracker.is_in_unity_dash():
+            return False
+
         # Check surrounding text capability after the first
         # keypress.
         if not self.ever_checked_surrounding_text and \
