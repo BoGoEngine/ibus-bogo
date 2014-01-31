@@ -58,7 +58,7 @@ class PreeditBackend(BaseBackend):
                                            mode=IBus.PreeditFocusMode.COMMIT)
 
     def commit_composition(self):
-        logging.debug("Committing...")
+        logging.debug("Committing composition...")
         self.engine.update_preedit_text(text=IBus.Text.new_from_string(""),
                                         cursor_pos=0,
                                         visible=False)
