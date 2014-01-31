@@ -44,10 +44,102 @@ import vncharsets
 vncharsets.init()
 
 
-class BackspaceBackend:
+class BaseBackend():
 
-    def __init__(self, engine):
+    def reset(self):
+        self.editing_string = ""
+        self.raw_string = ""
+
+    def update_composition(self, string):
+        # Virtual method
+        pass
+
+    def commit_composition(self):
+        # Virtual method
+        pass
+
+    def process_key_event(self, keyval, modifiers):
+        if self.is_processable_key(keyval, modifiers):
+            logging.debug("Key pressed: %c", chr(keyval))
+            logging.debug("Raw string: %s", self.raw_string)
+            logging.debug("Old string: %s", self.editing_string)
+
+            # Brace shift for TELEX's ][ keys.
+            # When typing with capslock on, ][ won't get shifted to }{ resulting
+            # in weird capitalization in "TưởNG". So we have to shift them
+            # manually.
+            keyval, brace_shift = self.do_brace_shift(keyval, modifiers)
+
+            # Invoke BoGo to process the input
+            new_string, self.raw_string = \
+                bogo.process_key(string=self.editing_string,
+                                 key=chr(keyval),
+                                 fallback_sequence=self.raw_string,
+                                 config=self.config)
+
+            # Revert the brace shift
+            if brace_shift and new_string and new_string[-1] in "{}":
+                logging.debug("Reverting brace shift")
+                new_string = new_string[:-1] + \
+                    chr(ord(new_string[-1]) - 0x20)
+
+            logging.debug("New string: %s", new_string)
+
+            self.update_composition(new_string)
+            self.editing_string = new_string
+            return True
+
+        self.reset()
+        return False
+
+    def do_brace_shift(self, keyval, modifiers):
+        capital_case = 0
+        caps_lock = modifiers & IBus.ModifierType.LOCK_MASK
+        shift = modifiers & IBus.ModifierType.SHIFT_MASK
+        if (caps_lock or shift) and not (caps_lock and shift):
+            capital_case = 1
+
+        brace_shift = False
+        if chr(keyval) in ['[', ']'] and capital_case == 1:
+            keyval = keyval + 0x20
+            brace_shift = True
+
+        return keyval, brace_shift
+
+    # This messes up Pidgin
+    # def do_reset(self):
+    #     logging.debug("Reset signal")
+    #     self.reset()
+
+    def is_processable_key(self, keyval, state):
+        return \
+            keyval in range(33, 126) and \
+            not state & IBus.ModifierType.CONTROL_MASK and \
+            not state & IBus.ModifierType.MOD1_MASK
+
+    def on_backspace_pressed(self):
+        logging.debug("Getting a backspace")
+        if self.editing_string == "":
+            return
+
+        deleted_char = self.editing_string[-1]
+        self.editing_string = self.editing_string[:-1]
+
+        if len(self.editing_string) == 0:
+            self.reset()
+        else:
+            index = self.raw_string.rfind(deleted_char)
+            self.raw_string = self.raw_string[:-2] if index < 0 else \
+                self.raw_string[:index] + \
+                self.raw_string[(index + 1):]
+
+
+class DirectEditBackend(BaseBackend):
+
+    def __init__(self, engine, config, abbr_expander):
         self.engine = engine
+        self.config = config
+        self.abbr_expander = abbr_expander
         self.can_do_surrounding_text = False
         self.ever_checked_surrounding_text = False
 
@@ -55,19 +147,20 @@ class BackspaceBackend:
 
     def reset(self):
         self.first_time_sending_backspace = True
+        super().reset()
 
     def update_composition(self, string):
         self.commit_string(string)
 
     def commit_composition(self):
-        self.commit_string(self.engine.prev_string)
+        self.commit_string(self.editing_string)
 
     def commit_string(self, string):
         same_initial_chars = list(takewhile(lambda tupl: tupl[0] == tupl[1],
-                                            zip(self.engine.prev_string,
+                                            zip(self.editing_string,
                                                 string)))
 
-        n_backspace = len(self.engine.prev_string) - len(same_initial_chars)
+        n_backspace = len(self.editing_string) - len(same_initial_chars)
         string_to_commit = string[len(same_initial_chars):]
 
         self.delete_prev_chars(n_backspace)
@@ -105,8 +198,9 @@ class BackspaceBackend:
         # client can do surrounding text.
         #
         # Very very veryyyy CRUDE, by the way.
-        if self.engine.input_context_capabilities & \
-                IBus.Capabilite.SURROUNDING_TEXT:
+        # if self.engine.input_context_capabilities & \
+        #         IBus.Capabilite.SURROUNDING_TEXT:
+        if False:
             logging.debug("Forwarding as commit...")
 
             for ch in string_to_commit:
@@ -120,32 +214,48 @@ class BackspaceBackend:
             time.sleep(0.005)
             self.engine.commit_text(IBus.Text.new_from_string(string_to_commit))
 
-    def do_process_key_event(self):
+    def process_key_event(self, keyval, modifiers):
         # Check surrounding text capability after the first
         # keypress.
         if not self.ever_checked_surrounding_text and \
-                len(self.engine.raw_string) == 1:
+                len(self.raw_string) == 1:
             self.ever_checked_surrounding_text = True
             self.can_do_surrounding_text = self.check_surrounding_text()
 
+        if keyval in [IBus.Return, IBus.BackSpace, IBus.space]:
+            return self.on_special_key_pressed(keyval)
+
+        eaten = super().process_key_event(keyval, modifiers)
+
+        if eaten:
+            self.update_composition(self.editing_string)
+
+        return eaten
+
     def check_surrounding_text(self):
-        length = len(self.engine.prev_string)
+        test_string = self.editing_string
+        length = len(test_string)
 
         ibus_text, cursor_pos, anchor_pos = self.engine.get_surrounding_text()
         surrounding_text = ibus_text.get_text()
 
-        if surrounding_text.endswith(self.engine.prev_string):
-            self.delete_surrounding_text(offset=-length, nchars=length)
+        if surrounding_text.endswith(test_string):
+            self.engine.delete_surrounding_text(offset=-length, nchars=length)
 
             ibus_text, _, _ = self.engine.get_surrounding_text()
             surrounding_text = ibus_text.get_text()
 
-            if not surrounding_text.endswith(self.engine.prev_string):
-                self.commit_text(
-                    IBus.Text.new_from_string(self.engine.prev_string))
+            if not surrounding_text.endswith(test_string):
+                self.engine.commit_text(
+                    IBus.Text.new_from_string(test_string))
                 return True
             else:
                 return False
+
+    def do_enable(self):
+        # Notify the input context that we want to use surrounding
+        # text.
+        self.engine.get_surrounding_text()
 
     def do_focus_in(self):
         self.focus_tracker.on_focus_changed()
@@ -178,6 +288,34 @@ class BackspaceBackend:
                 logging.debug("Sending backspace...")
                 self.delete_prev_chars_with_backspaces(count)
 
+    def on_special_key_pressed(self, keyval):
+        if keyval == IBus.Return:
+            self.reset()
+            return False
+
+        if keyval == IBus.BackSpace:
+            self.on_backspace_pressed()
+            return False
+
+        if keyval == IBus.space:
+            if self.config["enable-text-expansion"]:
+                expanded_string = self.abbr_expander.expand(self.editing_string)
+
+                if expanded_string != self.editing_string:
+                    self.editing_string = expanded_string
+                    self.commit_composition()
+                    self.reset()
+                    return False
+
+            if self.config['skip-non-vietnamese'] and \
+                    not bogo.validation.is_valid_string(
+                        self.editing_string):
+                self.editing_string = self.raw_string
+                self.commit_composition()
+
+            self.reset()
+            return False
+
 
 class Engine(IBus.Engine):
     __gtype_name__ = 'EngineBoGo'
@@ -187,8 +325,9 @@ class Engine(IBus.Engine):
 
         self.config = config
         self.ui_delegate = UiDelegate(engine=self)
-        self.backend = BackspaceBackend(engine=self)
-        self.abbr_expander = abbr_expander
+        self.backend = DirectEditBackend(engine=self,
+                                         config=config,
+                                         abbr_expander=abbr_expander)
 
         # Create a new thread to detect mouse clicks
         mouse_detector = MouseDetector.get_instance()
@@ -198,8 +337,6 @@ class Engine(IBus.Engine):
         self.reset()
 
     def reset(self):
-        self.prev_string = ""
-        self.raw_string = ""
         self.backend.reset()
 
     # The "do_" part denotes a default signal handler
@@ -231,77 +368,11 @@ class Engine(IBus.Engine):
         if not event_is_key_press:
             return False
 
-        if keyval in [IBus.Return, IBus.BackSpace, IBus.space]:
-            return self.on_special_key_pressed(keyval)
-
-        if self.is_processable_key(keyval, modifiers):
-            logging.debug("Key pressed: %c", chr(keyval))
-            logging.debug("Raw string: %s", self.raw_string)
-            logging.debug("Old string: %s", self.prev_string)
-
-            # Brace shift for TELEX's ][ keys.
-            # When typing with capslock on, ][ won't get shifted to }{ resulting
-            # in weird capitalization in "TưởNG". So we have to shift them
-            # manually.
-            keyval, brace_shift = self.do_brace_shift(keyval, modifiers)
-
-            # Invoke BoGo to process the input
-            new_string, self.raw_string = \
-                bogo.process_key(string=self.prev_string,
-                                 key=chr(keyval),
-                                 fallback_sequence=self.raw_string,
-                                 config=self.config)
-
-            # Revert the brace shift
-            if brace_shift and new_string and new_string[-1] in "{}":
-                logging.debug("Reverting brace shift")
-                new_string = new_string[:-1] + \
-                    chr(ord(new_string[-1]) - 0x20)
-
-            logging.debug("New string: %s", new_string)
-
-            self.backend.update_composition(new_string)
-            self.prev_string = new_string
-            return True
-
-        self.reset()
-        return False
-
-    def do_brace_shift(self, keyval, modifiers):
-        capital_case = 0
-        caps_lock = modifiers & IBus.ModifierType.LOCK_MASK
-        shift = modifiers & IBus.ModifierType.SHIFT_MASK
-        if (caps_lock or shift) and not (caps_lock and shift):
-            capital_case = 1
-
-        brace_shift = False
-        if chr(keyval) in ['[', ']'] and capital_case == 1:
-            keyval = keyval + 0x20
-            brace_shift = True
-
-        return keyval, brace_shift
-
-    # This messes up Pidgin
-    # def do_reset(self):
-    #     logging.debug("Reset signal")
-    #     self.reset()
-
-    def is_processable_key(self, keyval, state):
-        # This can be extended to support typing in French, Japanese,...
-        # keyboards. But currently not working.
-        #
-        # TODO Don't assume default-input-methods
-        IMs = self.config['default-input-methods']
-        current_im = IMs[self.config['input-method']]
-
-        key = chr(keyval)
-        return keyval in range(33, 126) and \
-            state & (IBus.ModifierType.CONTROL_MASK |
-                     IBus.ModifierType.MOD1_MASK) == 0 and \
-            (key.isalpha() or key in current_im.keys())
+        return self.backend.process_key_event(keyval, modifiers)
 
     def do_enable(self):
         self.ui_delegate.do_enable()
+        self.backend.do_enable()
 
     def do_disable(self):
         self.reset()
@@ -317,44 +388,3 @@ class Engine(IBus.Engine):
 
     def do_set_capabilities(self, caps):
         self.input_context_capabilities = caps
-
-    def on_special_key_pressed(self, keyval):
-        if keyval == IBus.Return:
-            self.reset()
-            return False
-
-        if keyval == IBus.BackSpace:
-            logging.debug("Getting a backspace")
-            if self.prev_string == "":
-                return False
-
-            deleted_char = self.prev_string[-1]
-            self.prev_string = self.prev_string[:-1]
-
-            if len(self.prev_string) == 0:
-                self.reset()
-            else:
-                index = self.raw_string.rfind(deleted_char)
-                self.raw_string = self.raw_string[:-2] if index < 0 else \
-                    self.raw_string[:index] + \
-                    self.raw_string[(index + 1):]
-
-            return False
-
-        if keyval == IBus.space:
-            if self.config["enable-text-expansion"]:
-                expanded_string = self.abbr_expander.expand(self.prev_string)
-
-                if expanded_string != self.prev_string:
-                    self.prev_string = expanded_string
-                    self.backend.commit_composition()
-                    self.reset()
-                    return False
-
-            if self.config['skip-non-vietnamese'] and \
-                    not bogo.validation.is_valid_string(self.prev_string):
-                self.prev_string = self.raw_string
-                self.backend.commit_composition()
-
-            self.reset()
-            return False
