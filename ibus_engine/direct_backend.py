@@ -3,7 +3,6 @@ import time
 from itertools import takewhile
 from gi.repository import IBus
 
-import bogo
 from focus_tracker import FocusTracker
 from base_backend import BaseBackend
 from keysyms_mapping import mapping
@@ -180,20 +179,6 @@ class DirectEditBackend(BaseBackend):
             return False
 
         if keyval == IBus.space:
-            if self.config["enable-text-expansion"]:
-                expanded_string = self.abbr_expander.expand(self.editing_string)
-
-                if expanded_string != self.editing_string:
-                    self.editing_string = expanded_string
-                    self.commit_composition()
-                    self.reset()
-                    return False
-
-            if self.config['skip-non-vietnamese'] and \
-                    not bogo.validation.is_valid_string(
-                        self.editing_string):
-                self.editing_string = self.raw_string
-                self.commit_composition()
-
+            self.on_space_pressed()
             self.reset()
             return False

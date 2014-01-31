@@ -91,3 +91,19 @@ class BaseBackend():
             self.raw_string = self.raw_string[:-2] if index < 0 else \
                 self.raw_string[:index] + \
                 self.raw_string[(index + 1):]
+
+    def on_space_pressed(self):
+        if self.config["enable-text-expansion"]:
+            expanded_string = self.abbr_expander.expand(self.editing_string)
+
+            if expanded_string != self.editing_string:
+                self.editing_string = expanded_string
+                self.commit_composition()
+                self.reset()
+                return
+
+        if self.config['skip-non-vietnamese'] and \
+                not bogo.validation.is_valid_string(
+                    self.editing_string):
+            self.editing_string = self.raw_string
+            self.commit_composition()
