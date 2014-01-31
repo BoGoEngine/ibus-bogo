@@ -39,10 +39,14 @@ class Engine(IBus.Engine):
     __gtype_name__ = 'EngineBoGo'
 
     def __init__(self, config, abbr_expander):
-        super(Engine, self).__init__()
+        super().__init__()
 
         self.config = config
+
+        # Delegate pattern
         self.ui_delegate = UiDelegate(engine=self)
+
+        # State pattern
         self.backend = DirectEditBackend(engine=self,
                                          config=config,
                                          abbr_expander=abbr_expander)
