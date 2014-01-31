@@ -47,6 +47,8 @@ install (FILES
   abbr.py
   focus_tracker.py
   ui.py
+  base_backend.py
+  direct_backend.py
   DESTINATION
   ${BOGO_INSTALL_DIR}/ibus_engine
   )
