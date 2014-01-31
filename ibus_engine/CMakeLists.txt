@@ -49,6 +49,7 @@ install (FILES
   ui.py
   base_backend.py
   direct_backend.py
+  preedit_backend.py
   DESTINATION
   ${BOGO_INSTALL_DIR}/ibus_engine
   )
