@@ -29,12 +29,10 @@ ENGINE_PATH = os.path.dirname(__file__)
 sys.path.append(
     os.path.abspath(os.path.join(ENGINE_PATH, "..")))
 
-import vncharsets
+
 from mouse_detector import MouseDetector
 from ui import UiDelegate
 from direct_backend import DirectEditBackend
-
-vncharsets.init()
 
 
 class Engine(IBus.Engine):
