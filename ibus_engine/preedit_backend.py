@@ -44,9 +44,18 @@ class PreeditBackend(BaseBackend):
 
     def update_composition(self, string):
         logging.debug("Updating composition...")
-        self.engine.update_preedit_text(text=IBus.Text.new_from_string(string),
-                                        cursor_pos=len(string),
-                                        visible=True)
+        text = IBus.Text.new_from_string(string)
+        text.append_attribute(type=IBus.AttrType.UNDERLINE,
+                              value=IBus.AttrUnderline.SINGLE,
+                              start_index=0,
+                              end_index=len(string))
+
+        self \
+            .engine \
+            .update_preedit_text_with_mode(text=text,
+                                           cursor_pos=len(string),
+                                           visible=True,
+                                           mode=IBus.PreeditFocusMode.COMMIT)
 
     def commit_composition(self):
         logging.debug("Committing...")
