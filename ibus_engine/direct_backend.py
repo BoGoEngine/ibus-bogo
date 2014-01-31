@@ -105,6 +105,10 @@ class DirectEditBackend(BaseBackend):
         # client can do surrounding text.
         #
         # Very very veryyyy CRUDE, by the way.
+
+        # NOTE: We are deleting surrounding text instead of sending backspaces
+        #       in Gtk apps now so this hack is not needed.
+
         # if self.engine.input_context_capabilities & \
         #         IBus.Capabilite.SURROUNDING_TEXT:
         if False:
@@ -116,8 +120,7 @@ class DirectEditBackend(BaseBackend):
         else:
             logging.debug("Committing...")
             # Delaying to partially solve the synchronization issue.
-            # Mostly for wine apps and for Gtk apps
-            # when the above check doesn't work.
+            # Mostly for wine apps.
             time.sleep(0.005)
             self.engine.commit_text(IBus.Text.new_from_string(string_to_commit))
 
