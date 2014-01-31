@@ -71,6 +71,7 @@ class BaseBackend():
             self.editing_string = new_string
             return True
 
+        self.commit_composition()
         self.reset()
         return False
 
@@ -115,18 +116,28 @@ class BaseBackend():
                 self.raw_string[:index] + \
                 self.raw_string[(index + 1):]
 
+        self.update_composition(self.editing_string)
+
     def on_space_pressed(self):
-        if self.config["enable-text-expansion"]:
-            expanded_string = self.abbr_expander.expand(self.editing_string)
+        expanded_string = ""
 
-            if expanded_string != self.editing_string:
-                self.editing_string = expanded_string
-                self.commit_composition()
-                self.reset()
-                return
+        def can_expand():
+            if self.config["enable-text-expansion"]:
+                expanded_string = self.abbr_expander.expand(self.editing_string)
+                return expanded_string != self.editing_string
+            else:
+                return False
 
-        if self.config['skip-non-vietnamese'] and \
-                not bogo.validation.is_valid_string(
-                    self.editing_string):
+        def is_non_vietnamese():
+            if self.config['skip-non-vietnamese']:
+                return not bogo.validation.is_valid_string(self.editing_string)
+            else:
+                return False
+
+        if can_expand():
+            self.editing_string = expanded_string
+        elif is_non_vietnamese():
             self.editing_string = self.raw_string
-            self.commit_composition()
+
+        self.commit_composition()
+        self.reset()
