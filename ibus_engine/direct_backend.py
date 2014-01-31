@@ -36,6 +36,8 @@ class DirectEditBackend(BaseBackend):
         self.commit_string(self.editing_string)
 
     def commit_string(self, string):
+        # Don't actually commit the whole string but only the part at the end
+        # that differs from editing_string
         same_initial_chars = list(takewhile(lambda tupl: tupl[0] == tupl[1],
                                             zip(self.editing_string,
                                                 string)))
