@@ -212,5 +212,4 @@ class DirectEditBackend(BaseBackend):
 
         if keyval == IBus.space:
             self.on_space_pressed()
-            self.reset()
             return False
