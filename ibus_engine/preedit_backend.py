@@ -87,8 +87,9 @@ class PreeditBackend(BaseBackend):
             return False
 
         if keyval == IBus.BackSpace:
+            eaten = len(self.editing_string) > 0
             self.on_backspace_pressed()
-            return len(self.editing_string) > 0
+            return eaten
 
         if keyval == IBus.space:
             self.on_space_pressed()
