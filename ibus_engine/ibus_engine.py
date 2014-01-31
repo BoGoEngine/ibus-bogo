@@ -2,7 +2,7 @@
 # This file is part of ibus-bogo project.
 #
 # Copyright (C) 2012 Long T. Dam <longdt90@gmail.com>
-# Copyright (C) 2012-2013 Trung Ngo <ndtrung4419@gmail.com>
+# Copyright (C) 2012-2014 Trung Ngo <ndtrung4419@gmail.com>
 # Copyright (C) 2013 Duong H. Nguyen <cmpitg@gmail.com>
 # Copyright (C) 2013 Hai P. Nguyen <hainp2604@gmail.com>
 # Copyright (C) 2013-2014 Hai T. Nguyen <phaikawl@gmail.com>
