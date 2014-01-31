@@ -33,6 +33,7 @@ sys.path.append(
 from mouse_detector import MouseDetector
 from ui import UiDelegate
 from direct_backend import DirectEditBackend
+from preedit_backend import PreeditBackend
 
 
 class Engine(IBus.Engine):
@@ -47,9 +48,14 @@ class Engine(IBus.Engine):
         self.ui_delegate = UiDelegate(engine=self)
 
         # State pattern
-        self.backend = DirectEditBackend(engine=self,
-                                         config=config,
-                                         abbr_expander=abbr_expander)
+        if config["use-preedit"]:
+            self.backend = PreeditBackend(engine=self,
+                                          config=config,
+                                          abbr_expander=abbr_expander)
+        else:
+            self.backend = DirectEditBackend(engine=self,
+                                             config=config,
+                                             abbr_expander=abbr_expander)
 
         # Create a new thread to detect mouse clicks
         mouse_detector = MouseDetector.get_instance()

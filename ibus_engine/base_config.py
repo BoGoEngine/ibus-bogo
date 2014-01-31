@@ -28,6 +28,11 @@ import bogo
 # TODO: This module needs some tests
 ENGINE_DIR = os.path.dirname(__file__)
 
+IBUS_BOGO_DEFAULT_CONFIG = {
+    "use-preedit": False
+}
+
+
 # TODO: It's best if we can preserve comments and line order
 class BaseConfig(object):
     """Base config object, designed to behave like a dictionary.
@@ -83,6 +88,7 @@ class BaseConfig(object):
 
     def read_default_config(self):
         self._keys = bogo.get_default_config()
+        self._keys.update(IBUS_BOGO_DEFAULT_CONFIG)
 
     def reset(self):
         self._keys = {}
