@@ -1,3 +1,4 @@
+# vim: set expandtab softtabstop=4 shiftwidth=4:
 #
 # This file is part of ibus-bogo project.
 #
@@ -24,16 +25,19 @@
 from gi.repository import IBus
 import os
 import sys
+import logging
 
 ENGINE_PATH = os.path.dirname(__file__)
 sys.path.append(
     os.path.abspath(os.path.join(ENGINE_PATH, "..")))
 
 
-from mouse_detector import MouseDetector
+#from mouse_detector import MouseDetector
+from focus_tracker import FocusTracker
 from ui import UiDelegate
 from direct_backend import DirectEditBackend
 from preedit_backend import PreeditBackend
+from surrounding_text_backend import SurroundingTextBackend
 
 
 class Engine(IBus.Engine):
@@ -43,25 +47,24 @@ class Engine(IBus.Engine):
         super().__init__()
 
         self.config = config
-
-        # Delegate pattern
         self.ui_delegate = UiDelegate(engine=self)
+        self.focus_tracker = FocusTracker()
 
-        # State pattern
-        if config["use-preedit"]:
-            self.backend = PreeditBackend(engine=self,
+        self.preedit_backend = PreeditBackend(engine=self,
                                           config=config,
                                           abbr_expander=abbr_expander)
-        else:
-            self.backend = DirectEditBackend(engine=self,
-                                             config=config,
-                                             abbr_expander=abbr_expander)
+
+        self.surrounding_text_backend = SurroundingTextBackend(engine=self,
+                                                               config=config,
+                                                               abbr_expander=abbr_expander)
+
+        self.backend = self.preedit_backend
 
         # Create a new thread to detect mouse clicks
-        mouse_detector = MouseDetector.get_instance()
-        mouse_detector.add_mouse_click_listener(self.reset)
+        # mouse_detector = MouseDetector.get_instance()
+        # mouse_detector.add_mouse_click_listener(self.reset)
 
-        self.input_context_capabilities = 0
+        self.caps = 0
         self.reset()
 
     def reset(self):
@@ -104,7 +107,12 @@ class Engine(IBus.Engine):
         self.reset()
 
     def do_focus_in(self):
+        logging.debug("do_focus_in()")
+        self.focus_tracker.on_focus_changed()
         self.backend.do_focus_in()
+
+    def do_reset(self):
+        self.reset()
 
     def do_focus_out(self):
         self.reset()
@@ -113,4 +121,14 @@ class Engine(IBus.Engine):
         self.ui_delegate.do_property_activate(prop_key, state)
 
     def do_set_capabilities(self, caps):
-        self.input_context_capabilities = caps
+        logging.debug("do_set_capabilities: %s", caps)
+
+        logging.debug(self.focus_tracker.is_in_unity_dash())
+        logging.debug(self.focus_tracker.is_in_chrome())
+        if caps & IBus.Capabilite.SURROUNDING_TEXT and \
+                not self.focus_tracker.is_in_unity_dash() and \
+                not self.focus_tracker.is_in_chrome():
+            logging.debug("here")
+            self.backend = self.surrounding_text_backend
+        else:
+            self.backend = self.preedit_backend

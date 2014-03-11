@@ -1,3 +1,4 @@
+# vim: set expandtab softtabstop=4 shiftwidth=4:
 #
 # This file is part of ibus-bogo project.
 #
@@ -65,7 +66,7 @@ class PreeditBackend(BaseBackend):
         self.engine.commit_text(IBus.Text.new_from_string(self.editing_string))
 
     def process_key_event(self, keyval, modifiers):
-        if keyval in [IBus.Return, IBus.BackSpace, IBus.space]:
+        if keyval in [IBus.BackSpace, IBus.space]:
             return self.on_special_key_pressed(keyval)
 
         eaten = super().process_key_event(keyval, modifiers)
