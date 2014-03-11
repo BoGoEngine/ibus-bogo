@@ -123,8 +123,6 @@ class Engine(IBus.Engine):
     def do_set_capabilities(self, caps):
         logging.debug("do_set_capabilities: %s", caps)
 
-        logging.debug(self.focus_tracker.is_in_unity_dash())
-        logging.debug(self.focus_tracker.is_in_chrome())
         if caps & IBus.Capabilite.SURROUNDING_TEXT and \
                 not self.focus_tracker.is_in_unity_dash() and \
                 not self.focus_tracker.is_in_chrome():
