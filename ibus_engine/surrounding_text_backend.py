@@ -49,6 +49,7 @@ class SurroundingTextBackend(BaseBackend):
 
     def reset(self):
         super().reset()
+        self.previous_string = ""
 
     def update_composition(self, string):
         self.commit_string(string)
@@ -60,16 +61,18 @@ class SurroundingTextBackend(BaseBackend):
         # Don't actually commit the whole string but only the part at the end
         # that differs from the editing_string
         same_initial_chars = list(takewhile(lambda tupl: tupl[0] == tupl[1],
-                                            zip(self.editing_string,
+                                            zip(self.previous_string,
                                                 string)))
 
-        n_backspace = len(self.editing_string) - len(same_initial_chars)
+        n_backspace = len(self.previous_string) - len(same_initial_chars)
         string_to_commit = string[len(same_initial_chars):]
 
+        logging.debug("Deleting %s chars...", n_backspace)
         self.delete_prev_chars(n_backspace)
 
-        logging.debug("Committing...")
+        logging.debug("Committing: %s", string_to_commit)
         self.engine.commit_text(IBus.Text.new_from_string(string_to_commit))
+        self.previous_string = string
 
     def process_key_event(self, keyval, modifiers):
         if keyval in [IBus.Return, IBus.BackSpace, IBus.space]:
