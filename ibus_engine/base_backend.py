@@ -121,8 +121,6 @@ class BaseBackend():
                 self.raw_string[:index] + \
                 self.raw_string[(index + 1):]
 
-        self.update_composition(self.editing_string)
-
     def on_space_pressed(self):
         expanded_string = ""
 
