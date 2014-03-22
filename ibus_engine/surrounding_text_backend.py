@@ -27,7 +27,6 @@ from itertools import takewhile
 from gi.repository import IBus
 
 import vncharsets
-from focus_tracker import FocusTracker
 from base_backend import BaseBackend
 from keysyms_mapping import mapping
 

@@ -24,6 +24,7 @@
 
 from gi.repository import IBus
 import os
+import subprocess
 import sys
 import logging
 
@@ -33,7 +34,6 @@ sys.path.append(
 
 
 #from mouse_detector import MouseDetector
-from focus_tracker import FocusTracker
 from ui import UiDelegate
 from direct_backend import DirectEditBackend
 from preedit_backend import PreeditBackend
@@ -48,7 +48,6 @@ class Engine(IBus.Engine):
 
         self.config = config
         self.ui_delegate = UiDelegate(engine=self)
-        self.focus_tracker = FocusTracker()
 
         self.preedit_backend = PreeditBackend(engine=self,
                                           config=config,
@@ -108,7 +107,10 @@ class Engine(IBus.Engine):
 
     def do_focus_in(self):
         logging.debug("do_focus_in()")
-        self.focus_tracker.on_focus_changed()
+        focused_pid = subprocess.check_output("xprop -id $(xprop -root | awk '/_NET_ACTIVE_WINDOW\(WINDOW\)/{print $NF}') | awk '/_NET_WM_PID\(CARDINAL\)/{print $NF}'", shell=True).decode().strip()
+        self.focused_exe = os.path.realpath("/proc/{0}/exe".format(focused_pid))
+        logging.debug("%s focused", self.focused_exe)
+
         self.backend.do_focus_in()
 
     def do_reset(self):
@@ -122,11 +124,17 @@ class Engine(IBus.Engine):
 
     def do_set_capabilities(self, caps):
         logging.debug("do_set_capabilities: %s", caps)
+        self.caps = caps
 
+        logging.debug("is_blacklisted: %s", self.is_app_blacklisted())
         if caps & IBus.Capabilite.SURROUNDING_TEXT and \
-                not self.focus_tracker.is_in_unity_dash() and \
-                not self.focus_tracker.is_in_chrome():
-            logging.debug("here")
+                not self.is_app_blacklisted():
             self.backend = self.surrounding_text_backend
         else:
             self.backend = self.preedit_backend
+
+    def is_app_blacklisted(self):
+        for exe_name in self.config["surrounding-text-blacklist"]:
+            if self.focused_exe.find(exe_name) != -1:
+                return True
+        return False
