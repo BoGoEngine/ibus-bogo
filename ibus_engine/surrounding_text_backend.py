@@ -31,6 +31,7 @@ from base_backend import BaseBackend
 from keysyms_mapping import mapping
 
 vncharsets.init()
+logger = logging.getLogger(__name__)
 
 
 class SurroundingTextBackend(BaseBackend):
@@ -66,10 +67,10 @@ class SurroundingTextBackend(BaseBackend):
         n_backspace = len(self.previous_string) - len(same_initial_chars)
         string_to_commit = string[len(same_initial_chars):]
 
-        logging.debug("Deleting %s chars...", n_backspace)
+        logger.debug("Deleting %s chars...", n_backspace)
         self.delete_prev_chars(n_backspace)
 
-        logging.debug("Committing: %s", string_to_commit)
+        logger.debug("Committing: %s", string_to_commit)
         self.engine.commit_text(IBus.Text.new_from_string(string_to_commit))
         self.previous_string = string
 
@@ -128,7 +129,7 @@ class SurroundingTextBackend(BaseBackend):
 
     def delete_prev_chars(self, count):
         if count > 0:
-            logging.debug("Deleting surrounding text...")
+            logger.debug("Deleting surrounding text...")
             self.engine.delete_surrounding_text(offset=-count, nchars=count)
 
     def on_special_key_pressed(self, keyval):

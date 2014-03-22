@@ -38,6 +38,8 @@ from ui import UiDelegate
 from preedit_backend import PreeditBackend
 from surrounding_text_backend import SurroundingTextBackend
 
+logger = logging.getLogger(__name__)
+
 
 class Engine(IBus.Engine):
     __gtype_name__ = 'EngineBoGo'
@@ -98,34 +100,38 @@ class Engine(IBus.Engine):
         return self.backend.process_key_event(keyval, modifiers)
 
     def do_enable(self):
+        logger.debug("do_enable()")
         self.ui_delegate.do_enable()
         self.backend.do_enable()
 
     def do_disable(self):
+        logger.debug("do_disable()")
         self.reset()
 
     def do_focus_in(self):
-        logging.debug("do_focus_in()")
+        logger.debug("do_focus_in()")
         focused_pid = subprocess.check_output("xprop -id $(xprop -root | awk '/_NET_ACTIVE_WINDOW\(WINDOW\)/{print $NF}') | awk '/_NET_WM_PID\(CARDINAL\)/{print $NF}'", shell=True).decode().strip()
         self.focused_exe = os.path.realpath("/proc/{0}/exe".format(focused_pid))
-        logging.debug("%s focused", self.focused_exe)
+        logger.debug("%s focused", self.focused_exe)
 
         self.backend.do_focus_in()
 
     def do_reset(self):
+        logger.debug("do_reset()")
         self.reset()
 
     def do_focus_out(self):
+        logger.debug("do_focus_out()")
         self.reset()
 
     def do_property_activate(self, prop_key, state):
         self.ui_delegate.do_property_activate(prop_key, state)
 
     def do_set_capabilities(self, caps):
-        logging.debug("do_set_capabilities: %s", caps)
+        logger.debug("do_set_capabilities: %s", caps)
         self.caps = caps
 
-        logging.debug("is_blacklisted: %s", self.is_app_blacklisted())
+        logger.debug("is_blacklisted: %s", self.is_app_blacklisted())
         if caps & IBus.Capabilite.SURROUNDING_TEXT and \
                 not self.is_app_blacklisted():
             self.backend = self.surrounding_text_backend

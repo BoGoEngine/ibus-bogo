@@ -25,6 +25,7 @@ import vncharsets
 from base_backend import BaseBackend
 
 vncharsets.init()
+logger = logging.getLogger(__name__)
 
 
 class PreeditBackend(BaseBackend):
@@ -44,7 +45,7 @@ class PreeditBackend(BaseBackend):
         super().reset()
 
     def update_composition(self, string):
-        logging.debug("Updating composition...")
+        logger.debug("Updating composition...")
         text = IBus.Text.new_from_string(string)
         text.append_attribute(type=IBus.AttrType.UNDERLINE,
                               value=IBus.AttrUnderline.SINGLE,
@@ -59,7 +60,7 @@ class PreeditBackend(BaseBackend):
                                            mode=IBus.PreeditFocusMode.COMMIT)
 
     def commit_composition(self):
-        logging.debug("Committing composition...")
+        logger.debug("Committing composition...")
         self.engine.update_preedit_text(text=IBus.Text.new_from_string(""),
                                         cursor_pos=0,
                                         visible=False)

@@ -26,6 +26,8 @@ from gi.repository import IBus
 import logging
 import bogo
 
+logger = logging.getLogger(__name__)
+
 
 class BaseBackend():
 
@@ -43,9 +45,9 @@ class BaseBackend():
 
     def process_key_event(self, keyval, modifiers):
         if self.is_processable_key(keyval, modifiers):
-            logging.debug("Key pressed: %c", chr(keyval))
-            logging.debug("Raw string: %s", self.raw_string)
-            logging.debug("Old string: %s", self.editing_string)
+            logger.debug("Key pressed: %c", chr(keyval))
+            logger.debug("Raw string: %s", self.raw_string)
+            logger.debug("Old string: %s", self.editing_string)
 
             # Brace shift for TELEX's ][ keys.
             # When typing with capslock on, ][ won't get shifted to }{ resulting
@@ -62,11 +64,11 @@ class BaseBackend():
 
             # Revert the brace shift
             if brace_shift and new_string and new_string[-1] in "{}":
-                logging.debug("Reverting brace shift")
+                logger.debug("Reverting brace shift")
                 new_string = new_string[:-1] + \
                     chr(ord(new_string[-1]) - 0x20)
 
-            logging.debug("New string: %s", new_string)
+            logger.debug("New string: %s", new_string)
 
             self.update_composition(new_string)
             self.editing_string = new_string
@@ -90,7 +92,7 @@ class BaseBackend():
 
     # This messes up Pidgin
     # def do_reset(self):
-    #     logging.debug("Reset signal")
+    #     logger.debug("Reset signal")
     #     self.reset()
 
     def is_processable_key(self, keyval, state):
@@ -105,7 +107,7 @@ class BaseBackend():
              keyval in im_keys)
 
     def on_backspace_pressed(self):
-        logging.debug("Getting a backspace")
+        logger.debug("Getting a backspace")
         if self.editing_string == "":
             return
 
