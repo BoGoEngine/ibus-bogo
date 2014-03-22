@@ -78,6 +78,18 @@ class SurroundingTextBackend(BaseBackend):
         if keyval in [IBus.Return, IBus.BackSpace, IBus.space]:
             return self.on_special_key_pressed(keyval)
 
+        if len(self.editing_string) == 0:
+            # If we are not editing any word then try to process the
+            # existing word at the cursor.
+            surrounding_text, cursor, anchor = self.engine.get_surrounding_text()
+            surrounding_text = surrounding_text.text[:cursor]
+
+            # FIXME replace isalpha() with something like is_processable()
+            if surrounding_text[-1].isalpha():
+                self.editing_string = surrounding_text.split(" ")[-1]
+                self.previous_string = self.editing_string
+                self.raw_string = self.editing_string
+
         eaten = super().process_key_event(keyval, modifiers)
 
         if eaten:
