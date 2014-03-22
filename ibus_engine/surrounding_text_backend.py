@@ -93,6 +93,8 @@ class SurroundingTextBackend(BaseBackend):
 
         if eaten:
             self.update_composition(self.editing_string)
+        else:
+            self.reset()
 
         return eaten
 

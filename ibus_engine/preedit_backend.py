@@ -73,6 +73,9 @@ class PreeditBackend(BaseBackend):
 
         if eaten:
             self.update_composition(self.editing_string)
+        else:
+            self.commit_composition()
+            self.reset()
 
         return eaten
 

@@ -71,10 +71,8 @@ class BaseBackend():
             self.update_composition(new_string)
             self.editing_string = new_string
             return True
-
-        self.commit_composition()
-        self.reset()
-        return False
+        else:
+            return False
 
     def do_brace_shift(self, keyval, modifiers):
         capital_case = 0
