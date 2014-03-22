@@ -90,6 +90,10 @@ class PreeditBackend(BaseBackend):
         if keyval == IBus.BackSpace:
             eaten = len(self.editing_string) > 0
             self.on_backspace_pressed()
+
+            if eaten:
+                self.update_composition(self.editing_string)
+            
             return eaten
 
         if keyval == IBus.space:
