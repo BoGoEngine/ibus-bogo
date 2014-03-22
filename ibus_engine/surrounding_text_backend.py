@@ -84,7 +84,7 @@ class SurroundingTextBackend(BaseBackend):
             surrounding_text = surrounding_text.text[:cursor]
 
             # FIXME replace isalpha() with something like is_processable()
-            if surrounding_text[-1].isalpha():
+            if surrounding_text and surrounding_text[-1].isalpha():
                 self.editing_string = surrounding_text.split(" ")[-1]
                 self.previous_string = self.editing_string
                 self.raw_string = self.editing_string
