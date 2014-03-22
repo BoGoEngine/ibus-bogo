@@ -95,10 +95,15 @@ class BaseBackend():
     #     self.reset()
 
     def is_processable_key(self, keyval, state):
+        # We accept a-Z and all the keys used in the current
+        # input mode.
+        im_keys = self.config["default-input-methods"][self.config["input-method"]]
         return \
-            keyval in range(33, 126) and \
             not state & IBus.ModifierType.CONTROL_MASK and \
-            not state & IBus.ModifierType.MOD1_MASK
+            not state & IBus.ModifierType.MOD1_MASK and \
+            (keyval in range(65, 91) or 
+             keyval in range(97, 123) or 
+             keyval in im_keys)
 
     def on_backspace_pressed(self):
         logging.debug("Getting a backspace")
