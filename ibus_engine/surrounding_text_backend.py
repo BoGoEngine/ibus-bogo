@@ -125,6 +125,7 @@ class SurroundingTextBackend(BaseBackend):
 
         if keyval == IBus.BackSpace:
             self.on_backspace_pressed()
+            self.previous_string = self.previous_string[:-1]
             return False
 
         if keyval == IBus.space:
