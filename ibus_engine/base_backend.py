@@ -1,3 +1,4 @@
+# vim: set expandtab softtabstop=4 shiftwidth=4:
 #
 # This file is part of ibus-bogo project.
 #
