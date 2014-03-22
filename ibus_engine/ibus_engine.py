@@ -35,7 +35,6 @@ sys.path.append(
 
 #from mouse_detector import MouseDetector
 from ui import UiDelegate
-from direct_backend import DirectEditBackend
 from preedit_backend import PreeditBackend
 from surrounding_text_backend import SurroundingTextBackend
 
