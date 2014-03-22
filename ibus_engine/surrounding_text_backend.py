@@ -120,12 +120,13 @@ class SurroundingTextBackend(BaseBackend):
                 return False
 
     def do_enable(self):
-        # Notify the input context that we want to use surrounding
-        # text.
-        self.engine.get_surrounding_text()
+        pass
 
     def do_focus_in(self):
-        pass
+        # Notify the input context that we want to use surrounding
+        # text.
+        # FIXME Maybe this should be in do_enable(), less DBus messages.
+        self.engine.get_surrounding_text()
 
     def delete_prev_chars(self, count):
         if count > 0:
