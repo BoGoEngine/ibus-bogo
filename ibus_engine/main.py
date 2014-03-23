@@ -33,6 +33,7 @@ from ibus_engine import Engine
 from mouse_detector import MouseDetector
 from config import Config
 from abbr import AbbreviationExpander
+from trayicon import TrayIcon
 
 
 current_path = os.path.dirname(os.path.abspath(__file__))
@@ -81,6 +82,7 @@ class IMApp:
         self.config = Config()
         self.abbr_expander = AbbreviationExpander(config=self.config)
         self.abbr_expander.watch_file(CONFIG_DIR + "/abbr_rules.json")
+        self.icon = TrayIcon()
 
         if exec_by_ibus:
             self.bus.request_name("org.freedesktop.IBus.BoGo", 0)
@@ -114,7 +116,7 @@ class IMApp:
             sys.stderr = stderr
             f.close()
 
-            Engine.__init__(engine, self.config, self.abbr_expander)
+            Engine.__init__(engine, self.config, self.abbr_expander, self.icon)
 
             self.engine_count += 1
             return engine

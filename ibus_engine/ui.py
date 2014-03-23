@@ -38,11 +38,28 @@ class UiDelegate():
                                         visible=True,
                                         state=0,
                                         prop_list=None)
+        self.input_mode_prop = IBus.Property(key='InputMode',
+                                        prop_type=IBus.PropType.MENU,
+                                        label=IBus.Text.new_from_string("BoGo"),
+                                        symbol=IBus.Text.new_from_string("ấ"),
+                                        icon='',
+                                        tooltip=IBus.Text.new_from_string("Switch input mode"),
+                                        sensitive=True,
+                                        visible=True,
+                                        state=IBus.PropState.UNCHECKED,
+                                        sub_props=None)
+        self.prop_list.append(self.input_mode_prop)
         self.prop_list.append(pref_button)
         self.prop_list.append(help_button)
 
     def do_enable(self):
         self.engine.register_properties(self.prop_list)
+        self.input_mode_prop.set_symbol(IBus.Text.new_from_string("ấ"))
+        self.engine.update_property(self.input_mode_prop)
+
+    def do_disable(self):
+        self.input_mode_prop.set_symbol(IBus.Text.new_from_string("a"))
+        self.engine.update_property(self.input_mode_prop)
 
     def do_property_activate(self, prop_key, state):
         if prop_key == "preferences":

@@ -22,7 +22,7 @@
 # along with ibus-bogo.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from gi.repository import IBus
+from gi.repository import IBus, GLib
 import os
 import subprocess
 import sys
@@ -37,6 +37,7 @@ sys.path.append(
 from ui import UiDelegate
 from preedit_backend import PreeditBackend
 from surrounding_text_backend import SurroundingTextBackend
+from trayicon import TrayIcon
 
 logger = logging.getLogger(__name__)
 
@@ -44,10 +45,11 @@ logger = logging.getLogger(__name__)
 class Engine(IBus.Engine):
     __gtype_name__ = 'EngineBoGo'
 
-    def __init__(self, config, abbr_expander):
+    def __init__(self, config, abbr_expander, icon):
         super().__init__()
 
         self.config = config
+        self.icon = icon
         self.ui_delegate = UiDelegate(engine=self)
 
         self.preedit_backend = PreeditBackend(engine=self,
@@ -65,6 +67,9 @@ class Engine(IBus.Engine):
         # mouse_detector.add_mouse_click_listener(self.reset)
 
         self.caps = 0
+
+        self.vietnameseMode = True
+
         self.reset()
 
     def reset(self):
@@ -87,6 +92,7 @@ class Engine(IBus.Engine):
         This function gets called whenever a key is pressed.
         """
 
+
         # Ignore key release events
         event_is_key_press = (modifiers & (1 << 30)) == 0
 
@@ -97,7 +103,21 @@ class Engine(IBus.Engine):
         if not event_is_key_press:
             return False
 
-        return self.backend.process_key_event(keyval, modifiers)
+        if keyval == IBus.space and \
+                modifiers & IBus.ModifierType.CONTROL_MASK:
+            self.vietnameseMode = not self.vietnameseMode
+            if self.vietnameseMode:
+                self.icon.enable()
+                self.ui_delegate.do_enable()
+            else:
+                self.icon.disable()
+                self.ui_delegate.do_disable()
+            return True
+
+        if self.vietnameseMode:
+            return self.backend.process_key_event(keyval, modifiers)
+        else:
+            return False
 
     def do_enable(self):
         logger.debug("do_enable()")
@@ -113,6 +133,8 @@ class Engine(IBus.Engine):
         focused_pid = subprocess.check_output("xprop -id $(xprop -root | awk '/_NET_ACTIVE_WINDOW\(WINDOW\)/{print $NF}') | awk '/_NET_WM_PID\(CARDINAL\)/{print $NF}'", shell=True).decode().strip()
         self.focused_exe = os.path.realpath("/proc/{0}/exe".format(focused_pid))
         logger.debug("%s focused", self.focused_exe)
+
+        self.switch_mode()
 
         self.backend.do_focus_in()
 
@@ -131,8 +153,9 @@ class Engine(IBus.Engine):
         logger.debug("do_set_capabilities: %s", caps)
         self.caps = caps
 
+    def switch_mode(self):
         logger.debug("is_blacklisted: %s", self.is_app_blacklisted())
-        if caps & IBus.Capabilite.SURROUNDING_TEXT and \
+        if self.caps & IBus.Capabilite.SURROUNDING_TEXT and \
                 not self.is_app_blacklisted():
             self.backend = self.surrounding_text_backend
         else:
