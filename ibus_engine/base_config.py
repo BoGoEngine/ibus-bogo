@@ -29,7 +29,15 @@ import bogo
 ENGINE_DIR = os.path.dirname(__file__)
 
 IBUS_BOGO_DEFAULT_CONFIG = {
-    "use-preedit": False
+    "surrounding-text-blacklist": [
+        "chrome",
+        "chromium",
+        "compiz",
+        "gnome-terminal",
+        "lxterminal",
+        "konsole",
+        "geany",
+    ]
 }
 
 
