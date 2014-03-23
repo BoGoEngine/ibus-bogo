@@ -79,4 +79,4 @@ class UiDelegate():
             subprocess.call("xdg-open " + link, shell=True)
 
         # FIXME: Is this really necessary?
-        self.engine.reset_engine()
+        self.engine.reset()
