@@ -28,7 +28,6 @@ from gi.repository import IBus
 
 import vncharsets
 from base_backend import BaseBackend
-from keysyms_mapping import mapping
 
 vncharsets.init()
 logger = logging.getLogger(__name__)
