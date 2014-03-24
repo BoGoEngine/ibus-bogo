@@ -1,0 +1,3 @@
+[submodule "bogo"]
+	path = bogo
+	url = git@github.com:BoGoEngine/bogo-python.git
