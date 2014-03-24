@@ -12,7 +12,7 @@ virtualenv:
   system_site_packages: true
 before_install:
   - sudo apt-get update
-  - sudo apt-get install -qq ibus python3-gi gir1.2-ibus-1.0 gir1.2-wnck-3.0
+  - sudo apt-get install -qq ibus python3-gi gir1.2-ibus-1.0 gir1.2-wnck-3.0 python3-pyqt4
 before_script:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
