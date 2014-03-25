@@ -66,7 +66,7 @@ class IMApp:
                                  author=author,
                                  icon=current_path + "/data/ibus-bogo-dev.svg",
                                  # icon = "ibus-bogo",
-                                 layout="us")
+                                 layout="default")
 
         self.component.add_engine(engine)
         self.mainloop = GObject.MainLoop()
