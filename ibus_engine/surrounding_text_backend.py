@@ -54,7 +54,8 @@ class SurroundingTextBackend(BaseBackend):
         self.commit_string(string)
 
     def commit_composition(self):
-        self.commit_string(self.editing_string)
+        if len(self.editing_string) != 0:
+            self.commit_string(self.editing_string)
 
     def commit_string(self, string):
         # Don't actually commit the whole string but only the part at the end

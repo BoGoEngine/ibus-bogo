@@ -61,10 +61,11 @@ class PreeditBackend(BaseBackend):
 
     def commit_composition(self):
         logger.debug("Committing composition...")
-        self.engine.update_preedit_text(text=IBus.Text.new_from_string(""),
-                                        cursor_pos=0,
-                                        visible=False)
-        self.engine.commit_text(IBus.Text.new_from_string(self.editing_string))
+        if len(self.editing_string) != 0:
+            self.engine.update_preedit_text(text=IBus.Text.new_from_string(""),
+                                            cursor_pos=0,
+                                            visible=False)
+            self.engine.commit_text(IBus.Text.new_from_string(self.editing_string))
 
     def process_key_event(self, keyval, modifiers):
         if keyval in [IBus.BackSpace, IBus.space]:
