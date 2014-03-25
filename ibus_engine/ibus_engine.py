@@ -152,6 +152,7 @@ class Engine(IBus.Engine):
     def do_set_capabilities(self, caps):
         logger.debug("do_set_capabilities: %s", caps)
         self.caps = caps
+        self.switch_mode()
 
     def switch_mode(self):
         logger.debug("is_blacklisted: %s", self.is_app_blacklisted())
