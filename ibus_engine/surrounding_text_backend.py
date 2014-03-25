@@ -99,26 +99,6 @@ class SurroundingTextBackend(BaseBackend):
 
         return eaten
 
-    def check_surrounding_text(self):
-        test_string = self.editing_string
-        length = len(test_string)
-
-        ibus_text, cursor_pos, anchor_pos = self.engine.get_surrounding_text()
-        surrounding_text = ibus_text.get_text()
-
-        if surrounding_text.endswith(test_string):
-            self.engine.delete_surrounding_text(offset=-length, nchars=length)
-
-            ibus_text, _, _ = self.engine.get_surrounding_text()
-            surrounding_text = ibus_text.get_text()
-
-            if not surrounding_text.endswith(test_string):
-                self.engine.commit_text(
-                    IBus.Text.new_from_string(test_string))
-                return True
-            else:
-                return False
-
     def do_enable(self):
         pass
 
