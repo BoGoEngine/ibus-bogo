@@ -1,4 +1,3 @@
-# vim: set expandtab softtabstop=4 shiftwidth=4:
 #
 # This file is part of ibus-bogo project.
 #
@@ -90,7 +89,6 @@ class SurroundingTextBackend(BaseBackend):
                 self.editing_string = surrounding_text.split(" ")[-1]
                 self.previous_string = self.editing_string
                 self.raw_string = self.editing_string
-                logging.debug("Continue with surrounding text: %s", self.editing_string)
 
         eaten = super().process_key_event(keyval, modifiers)
 
@@ -109,11 +107,6 @@ class SurroundingTextBackend(BaseBackend):
         # text.
         # FIXME Maybe this should be in do_enable(), less DBus messages.
         self.engine.get_surrounding_text()
-
-        # Trigger an empty edit operation so that the input context
-        # will update the surrounding text.
-        self.engine.commit_text(IBus.Text.new_from_string(" "))
-        self.delete_prev_chars(1)
 
     def delete_prev_chars(self, count):
         if count > 0:
