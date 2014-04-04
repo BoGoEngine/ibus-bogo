@@ -706,6 +706,7 @@ then
 	then
 		echo \# Gỡ cài đặt ibus-bogo...
 		gksudo apt-get remove ibus-bogo --message "Vui lòng nhập mật khẩu để gỡ cài đặt ibus-bogo đã có sẵn trong máy."
+		[ $? -ne 0 ] && exit
 	fi
 
 	echo \# Cài đặt phần mềm phụ thuộc...
@@ -715,6 +716,7 @@ then
 	if [ $? -ne 0 ]
 	then
 		gksudo "apt-get install $DEPS"
+		[ $? -ne 0 ] && exit
 	fi
 fi
 
@@ -742,6 +744,13 @@ Categories=Utility;
 EOF
 
 gksudo "sh -c 'cp $BASE/ibus_engine/data/bogo.xml /usr/share/ibus/component && sed -e \"s|<exec>/usr/lib/ibus-bogo/ibus-engine-bogo --ibus</exec>|<exec>${BASE}/launcher.sh --ibus</exec>|\" --in-place /usr/share/ibus/component/bogo.xml'" --description "Bộ cài đặt ibus-ringo"
+
+if [ $? -ne 0 ]
+then
+	rm -r $BASE
+	rm ~/.local/share/applications/ibus-setup-bogo.desktop
+	exit
+fi
 
 echo \# Khởi động lại ibus...
 ibus-daemon --xim --daemonize --replace
