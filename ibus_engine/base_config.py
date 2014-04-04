@@ -37,6 +37,7 @@ IBUS_BOGO_DEFAULT_CONFIG = {
         "lxterminal",
         "konsole",
         "geany",
+        "skype"
     ]
 }
 
