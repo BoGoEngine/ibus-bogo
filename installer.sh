@@ -746,7 +746,7 @@ echo 100
 	--auto-close \
 	--no-cancel
 
-if [ $? == 0 ]
+if [ $? -eq 0 ]
 then
     zenity --info \
 	    --title="Đã cài đặt thành công" \
