@@ -21,10 +21,6 @@ cd $BASE
 git submodule init
 git submodule update
 
-cat > ~/.config/autostart/ibus-bogo.desktop <<EOF
-[Desktop Entry]
-Exec=${BASE}/launcher.sh
-EOF
 
 # FIXME: This is duplicated from gui/ibus-setup-bogo.desktop
 cat > ~/.local/share/applications/ibus-bogo-setup.desktop <<EOF
@@ -37,5 +33,8 @@ Icon=ibus-bogo
 Type=Application
 Categories=Utility;
 EOF
+
+gksudo cp $BASE/ibus_engine/data/bogo.xml /usr/share/ibus/component/
+gksudo -- sed -e "s|<exec>/usr/lib/ibus-bogo/ibus-engine-bogo --ibus</exec>|<exec>${BASE}/launcher.sh --ibus</exec>|" --in-place /usr/share/ibus/component/bogo.xml
 
 ibus-daemon --xim --daemonize --replace
