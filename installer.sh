@@ -34,7 +34,6 @@ Type=Application
 Categories=Utility;
 EOF
 
-gksudo cp $BASE/ibus_engine/data/bogo.xml /usr/share/ibus/component/
-gksudo -- sed -e "s|<exec>/usr/lib/ibus-bogo/ibus-engine-bogo --ibus</exec>|<exec>${BASE}/launcher.sh --ibus</exec>|" --in-place /usr/share/ibus/component/bogo.xml
+gksudo "sh -c 'cp $BASE/ibus_engine/data/bogo.xml /usr/share/ibus/component && sed -e \"s|<exec>/usr/lib/ibus-bogo/ibus-engine-bogo --ibus</exec>|<exec>${BASE}/launcher.sh --ibus</exec>|\" --in-place /usr/share/ibus/component/bogo.xml'"
 
 ibus-daemon --xim --daemonize --replace
