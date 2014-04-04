@@ -744,7 +744,7 @@ echo 100
 	--title="Bộ cài đặt ibus-ringo" \
 	--pulsate \
 	--auto-close \
-	--auto-kill
+	--no-cancel
 
 zenity --info \
 	--title="Đã cài đặt thành công" \
