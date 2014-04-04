@@ -698,8 +698,8 @@ then
 fi
 
 (
-
-if [ $DISTRO == 'Ubuntu' -a $DISTRO_VERSION == '14.04' ]
+# FIXME: create several distro checker utility functions to use here
+if [ $DISTRO = 'Ubuntu' ] && [ $DISTRO_VERSION = '14.04' -o $DISTRO_VERSION = '13.10' ]
 then
 	dpkg --status ibus-bogo > /dev/null
 	if [ $? -eq 0 ]
