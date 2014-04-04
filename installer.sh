@@ -18,6 +18,9 @@ fi
 
 git clone $REPO $BASE
 cd $BASE
+
+git reset --hard HEAD
+git pull
 git submodule init
 git submodule update
 
