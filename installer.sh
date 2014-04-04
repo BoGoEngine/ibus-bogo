@@ -698,10 +698,17 @@ then
 fi
 
 (
-echo \# Cài đặt phần mềm phụ thuộc...
 
 if [ $DISTRO == 'Ubuntu' -a $DISTRO_VERSION == '14.04' ]
 then
+	dpkg --status ibus-bogo > /dev/null
+	if [ $? -eq 0 ]
+	then
+		echo \# Gỡ cài đặt ibus-bogo...
+		gksudo apt-get remove ibus-bogo --message "Vui lòng nhập mật khẩu để gỡ cài đặt ibus-bogo đã có sẵn trong máy."
+	fi
+
+	echo \# Cài đặt phần mềm phụ thuộc...
 	# Check dependencies
 	DEPS='git ibus python3 python3-gi gir1.2-ibus-1.0 gir1.2-wnck-3.0 python3-pyqt4 libnotify4 gir1.2-notify-0.7'
 	dpkg --status $DEPS > /dev/null
