@@ -746,6 +746,9 @@ echo 100
 	--auto-close \
 	--no-cancel
 
-zenity --info \
-	--title="Đã cài đặt thành công" \
-	--text="Cảm ơn bạn đã dùng thử bộ gõ của chúng tôi! Hãy làm theo hướng dẫn sau để hoàn tất cài đặt: <a href='http://ibus-bogo.readthedocs.org/en/latest/install.html#cau-hinh-sau-khi-cai-dat'>http://ibus-bogo.readthedocs.org/en/latest/install.html#cau-hinh-sau-khi-cai-dat</a>"
+if [ $? == 0 ]
+then
+    zenity --info \
+	    --title="Đã cài đặt thành công" \
+	    --text="Cảm ơn bạn đã dùng thử bộ gõ của chúng tôi! Hãy làm theo hướng dẫn sau để hoàn tất cài đặt: <a href='http://ibus-bogo.readthedocs.org/en/latest/install.html#cau-hinh-sau-khi-cai-dat'>http://ibus-bogo.readthedocs.org/en/latest/install.html#cau-hinh-sau-khi-cai-dat</a>"
+fi
