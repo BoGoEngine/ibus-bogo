@@ -726,6 +726,10 @@ then
 		gksudo "apt-get install $DEPS"
 		[ $? -ne 0 ] && exit
 	fi
+else
+	zenity --error \
+		--text="Xin lỗi. Bản phân phối Linux của bạn không được hỗ trợ."
+	exit
 fi
 
 echo \# Đang tải ibus-ringo về $BASE...
