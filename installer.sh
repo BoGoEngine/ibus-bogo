@@ -760,8 +760,9 @@ then
 	exit
 fi
 
-echo \# Khởi động lại ibus...
+echo \# Đang khởi động lại ibus...
 ibus-daemon --xim --daemonize --replace
+sleep 2
 
 echo 100
 ) | zenity --progress \
