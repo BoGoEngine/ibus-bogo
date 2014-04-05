@@ -697,9 +697,17 @@ then
     exit
 fi
 
+is_supported_debian_family()
+{
+	local is_ubuntu=false
+	local is_debian=false
+	[ "$DISTRO" = 'Ubuntu' ] && [ "$DISTRO_VERSION" = '14.04' -o "$DISTRO_VERSION" = '13.10' ] && is_ubuntu=true
+	[ "$DISTRO" = 'Debian' ] && [ "$DISTRO_VERSION" = 'unstable' ] && is_debian=true
+	[ $is_ubuntu = true -o $is_debian = true ] && echo 0 || echo 1
+}
+
 (
-# FIXME: create several distro checker utility functions to use here
-if [ $DISTRO = 'Ubuntu' ] && [ $DISTRO_VERSION = '14.04' -o $DISTRO_VERSION = '13.10' ]
+if [ `is_supported_debian_family` = '0' ]
 then
 	dpkg --status ibus-bogo > /dev/null
 	if [ $? -eq 0 ]
