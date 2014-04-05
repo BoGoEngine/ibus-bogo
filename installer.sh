@@ -713,7 +713,7 @@ then
 	if [ $? -eq 0 ]
 	then
 		echo \# Gỡ cài đặt ibus-bogo...
-		gksudo apt-get remove ibus-bogo --message "Vui lòng nhập mật khẩu để gỡ cài đặt ibus-bogo đã có sẵn trong máy."
+		gksudo "apt-get remove ibus-bogo --assume-yes" --message "Vui lòng nhập mật khẩu để gỡ cài đặt ibus-bogo đã có sẵn trong máy."
 		[ $? -ne 0 ] && exit
 	fi
 
