@@ -44,6 +44,8 @@ class SurroundingTextBackend(BaseBackend):
         self.engine = engine
         self.config = config
         self.abbr_expander = abbr_expander
+
+        super().__init__()
         self.reset()
 
     def reset(self):
@@ -119,10 +121,27 @@ class SurroundingTextBackend(BaseBackend):
             return False
 
         if keyval == IBus.BackSpace:
+            if self.suggested_spell:
+                # Add the word to the user's personal word list
+                self.spellchecker.add(self.prev_raw_string)
+
+                # And restore it
+                self.editing_string = self.prev_raw_string
+
+                # Delete the space character
+                self.delete_prev_chars(1)
+                self.commit_composition()
+                self.reset()
+                self.suggested_spell = False
+                return True
+
             self.on_backspace_pressed()
             self.previous_string = self.previous_string[:-1]
             return False
 
         if keyval == IBus.space:
             self.on_space_pressed()
+            self.commit_composition()
+            if not self.suggested_spell:
+                self.reset()
             return False

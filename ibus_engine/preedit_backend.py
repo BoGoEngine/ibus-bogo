@@ -39,6 +39,7 @@ class PreeditBackend(BaseBackend):
         self.engine = engine
         self.config = config
         self.abbr_expander = abbr_expander
+        super().__init__()
 
     def reset(self):
         self.engine.hide_preedit_text()
@@ -103,5 +104,6 @@ class PreeditBackend(BaseBackend):
 
         if keyval == IBus.space:
             self.on_space_pressed()
+            self.commit_composition()
             self.reset()
             return False

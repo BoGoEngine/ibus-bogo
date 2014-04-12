@@ -24,16 +24,26 @@
 
 from gi.repository import IBus
 import logging
+import enchant
 import bogo
 
 logger = logging.getLogger(__name__)
 
+DICT_PATH = '/home/chin/dev/bogo/ibus-bogo/ibus_engine/data'
+
 
 class BaseBackend():
 
+    def __init__(self):
+        custom_broker = enchant.Broker()
+        custom_broker.set_param('enchant.myspell.dictionary.path',
+                DICT_PATH)
+        self.spellchecker = enchant.DictWithPWL('vi_VN_telex', pwl='/tmp/pwl.txt', broker=custom_broker)
+    
     def reset(self):
         self.editing_string = ""
         self.raw_string = ""
+        self.suggested_spell = False
 
     def update_composition(self, string):
         # Virtual method
@@ -44,6 +54,9 @@ class BaseBackend():
         pass
 
     def process_key_event(self, keyval, modifiers):
+        if self.suggested_spell:
+            self.reset()
+
         if self.is_processable_key(keyval, modifiers):
             logger.debug("Key pressed: %c", chr(keyval))
             logger.debug("Raw string: %s", self.raw_string)
@@ -138,10 +151,48 @@ class BaseBackend():
             else:
                 return False
 
+        # http://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Levenshtein_distance#Python
+        def levenshtein(s1, s2):
+            if len(s1) < len(s2):
+                return levenshtein(s2, s1)
+         
+            # len(s1) >= len(s2)
+            if len(s2) == 0:
+                return len(s1)
+         
+            previous_row = range(len(s2) + 1)
+            for i, c1 in enumerate(s1):
+                current_row = [i + 1]
+                for j, c2 in enumerate(s2):
+                    insertions = previous_row[j + 1] + 1 # j+1 instead of j since previous_row and current_row are one character longer
+                    deletions = current_row[j] + 1       # than s2
+                    substitutions = previous_row[j] + (c1 != c2)
+                    current_row.append(min(insertions, deletions, substitutions))
+                previous_row = current_row
+ 
+            return previous_row[-1]
+
         if can_expand():
             self.editing_string = expanded_string
-        elif is_non_vietnamese():
-            self.editing_string = self.raw_string
+        elif is_non_vietnamese() \
+                and not self.spellchecker.check(self.raw_string):
+            try:
+                suggested = self.spellchecker.suggest(self.raw_string)[0]
+                if levenshtein(self.raw_string, suggested) < 3:
+                    self.prev_raw_string = self.raw_string
+                    self.suggested_spell = True
+                    self.editing_string = self.process_seq(suggested)
+                    logging.debug("suggested: %s", suggested)
+            except IndexError:
+                pass
 
-        self.commit_composition()
-        self.reset()
+    def process_seq(self, seq):
+        string = ""
+        raw = string
+        for i in seq:
+            string, raw = bogo.process_key(string,
+                                           i,
+                                           fallback_sequence=raw,
+                                           config=self.config)
+        return string
+
