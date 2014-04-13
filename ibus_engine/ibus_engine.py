@@ -83,6 +83,10 @@ class Engine(IBus.Engine):
             'new_spellcheck_offender',
             self.on_new_spellcheck_offender)
 
+        self.preedit_backend.connect(
+            'new_spellcheck_offender',
+            self.on_new_spellcheck_offender)
+
         # Create a new thread to detect mouse clicks
         # mouse_detector = MouseDetector.get_instance()
         # mouse_detector.add_mouse_click_listener(self.reset)

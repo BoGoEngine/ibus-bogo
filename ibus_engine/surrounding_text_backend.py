@@ -22,10 +22,8 @@
 #
 
 import logging
-import time
 from itertools import takewhile
-from collections import defaultdict
-from gi.repository import IBus, GObject
+from gi.repository import IBus
 
 import vncharsets
 from base_backend import BaseBackend
@@ -34,25 +32,18 @@ vncharsets.init()
 logger = logging.getLogger(__name__)
 
 
-class SurroundingTextBackend(BaseBackend, GObject.GObject):
+class SurroundingTextBackend(BaseBackend):
 
     """
     Backend for Engine that tries to directly manipulate the
     currently typing text inside the application being typed in.
     """
 
-    __gsignals__ = {
-        'new_spellcheck_offender': (GObject.SIGNAL_RUN_LAST, bool,
-                                    (str,))
-    }
-
     def __init__(self, engine, config, abbr_expander, spellchecker):
         self.engine = engine
         self.config = config
         self.abbr_expander = abbr_expander
         self.spellchecker = spellchecker
-
-        self.spell_offenders = defaultdict(lambda: 0)
 
         super().__init__()
         self.reset()
@@ -63,10 +54,12 @@ class SurroundingTextBackend(BaseBackend, GObject.GObject):
 
     def update_composition(self, string):
         self.commit_string(string)
+        super().update_composition(string)
 
     def commit_composition(self):
         if len(self.editing_string) != 0:
             self.commit_string(self.editing_string)
+            super().commit_composition()
 
     def commit_string(self, string):
         # Don't actually commit the whole string but only the part at the end
@@ -92,7 +85,8 @@ class SurroundingTextBackend(BaseBackend, GObject.GObject):
         if len(self.editing_string) == 0:
             # If we are not editing any word then try to process the
             # existing word at the cursor.
-            surrounding_text, cursor, anchor = self.engine.get_surrounding_text()
+            surrounding_text, cursor, anchor = \
+                self.engine.get_surrounding_text()
             surrounding_text = surrounding_text.text[:cursor]
 
             # FIXME replace isalpha() with something like is_processable()
@@ -123,6 +117,7 @@ class SurroundingTextBackend(BaseBackend, GObject.GObject):
         if count > 0:
             logger.debug("Deleting surrounding text...")
             self.engine.delete_surrounding_text(offset=-count, nchars=count)
+            super().delete_prev_chars(count)
 
     def on_special_key_pressed(self, keyval):
         if keyval == IBus.Return:
@@ -130,37 +125,14 @@ class SurroundingTextBackend(BaseBackend, GObject.GObject):
             return False
 
         if keyval == IBus.BackSpace:
-            # If the last commited string is a spellchecker suggestion
-            # then this backspace is to undo that. Three-time offenders
-            # get blacklisted.
-            if self.suggested_spell:
-                # Delete the space character
-                self.delete_prev_chars(1)
-
-                self.editing_string = self.prev_raw_string
-                self.commit_composition()
-                self.suggested_spell = False
-
-                self.spell_offenders[self.prev_raw_string] += 1
-
-                if self.spell_offenders[self.prev_raw_string] == 3:
-                    if self.emit(
-                            'new_spellcheck_offender',
-                            self.prev_raw_string):
-                        self.spellchecker.add(self.prev_raw_string)
-                    else:
-                        self.spell_offenders[self.prev_raw_string] = 0
-
-                self.reset()
-                return True
-
-            self.on_backspace_pressed()
+            eaten = self.on_backspace_pressed()
             self.previous_string = self.previous_string[:-1]
-            return False
+            return eaten
 
         if keyval == IBus.space:
             self.on_space_pressed()
-            self.commit_composition()
-            if not self.suggested_spell:
+            if self.last_action()["type"] == "string-correction":
+                return True
+            else:
                 self.reset()
-            return False
+                return False
