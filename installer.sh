@@ -719,7 +719,7 @@ then
 
 	echo \# Cài đặt phần mềm phụ thuộc...
 	# Check dependencies
-	DEPS='git ibus python3 python3-gi gir1.2-ibus-1.0 gir1.2-wnck-3.0 python3-pyqt4 libnotify4 gir1.2-notify-0.7'
+	DEPS='git ibus python3 python3-gi gir1.2-ibus-1.0 gir1.2-wnck-3.0 python3-pyqt4 libnotify4 gir1.2-notify-0.7 python3-enchant'
 	dpkg --status $DEPS > /dev/null
 	if [ $? -ne 0 ]
 	then
