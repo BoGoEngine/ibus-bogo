@@ -56,12 +56,25 @@ class BaseBackend():
         self.suggested_spell = False
 
     def update_composition(self, string):
-        # Virtual method
-        pass
+        self.history.append({
+            "type": "update-composition",
+            "raw-string": self.raw_string,
+            "editing-string": self.editing_string
+        })
 
     def commit_composition(self):
-        # Virtual method
-        pass
+        self.history.append({
+            "type": "commit-composition",
+            "raw-string": self.raw_string,
+            "editing-string": self.editing_string
+        })
+
+    def delete_prev_chars(self, count):
+        self.history.append({
+            "type": "delete-prev-chars",
+            "raw-string": self.raw_string,
+            "editing-string": self.editing_string
+        })
 
     def process_key_event(self, keyval, modifiers):
         if self.suggested_spell:
