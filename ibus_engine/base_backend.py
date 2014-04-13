@@ -31,6 +31,24 @@ logger = logging.getLogger(__name__)
 
 
 class BaseBackend():
+    def __init__(self):
+        # History is a list/stack of 'action's, which can be commits,
+        # backspaces, string expansions, string corrections, etc.
+        self.history = []
+        super().__init__()
+
+    def last_nth_action(self, nth):
+        if len(self.history) > nth:
+            return self.history[-nth]
+        else:
+            return {
+                "type": "none",
+                "editing-string": "",
+                "raw-string": ""
+            }
+
+    def last_action(self):
+        return self.last_nth_action(1)
 
     def reset(self):
         self.editing_string = ""
