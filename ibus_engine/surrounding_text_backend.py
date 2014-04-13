@@ -79,6 +79,10 @@ class SurroundingTextBackend(BaseBackend):
         self.previous_string = string
 
     def process_key_event(self, keyval, modifiers):
+        if keyval != IBus.BackSpace and \
+                self.last_action()["type"] == "string-correction":
+            self.reset()
+
         if keyval in [IBus.Return, IBus.BackSpace, IBus.space]:
             return self.on_special_key_pressed(keyval)
 
