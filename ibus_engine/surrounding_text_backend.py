@@ -133,6 +133,12 @@ class SurroundingTextBackend(BaseBackend):
             self.previous_string = self.previous_string[:-1]
 
             if self.last_action()["type"] == "undo":
+                # The next backspace should be a normal backspace
+                self.history.append({
+                    "type": "none",
+                    "editing-string": self.editing_string,
+                    "raw-string": self.raw_string
+                })
                 return True
             else:
                 return False
