@@ -125,9 +125,13 @@ class SurroundingTextBackend(BaseBackend):
             return False
 
         if keyval == IBus.BackSpace:
-            eaten = self.on_backspace_pressed()
+            self.on_backspace_pressed()
             self.previous_string = self.previous_string[:-1]
-            return eaten
+
+            if self.last_action()["type"] == "undo":
+                return True
+            else:
+                return False
 
         if keyval == IBus.space:
             self.on_space_pressed()
