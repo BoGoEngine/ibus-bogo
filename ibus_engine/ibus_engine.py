@@ -22,7 +22,7 @@
 # along with ibus-bogo.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from gi.repository import IBus, GLib
+from gi.repository import IBus
 import os
 import subprocess
 import sys
@@ -38,7 +38,6 @@ sys.path.append(
 from ui import UiDelegate
 from preedit_backend import PreeditBackend
 from surrounding_text_backend import SurroundingTextBackend
-from trayicon import TrayIcon
 
 logger = logging.getLogger(__name__)
 
@@ -57,21 +56,26 @@ class Engine(IBus.Engine):
         self.ui_delegate = UiDelegate(engine=self)
 
         custom_broker = enchant.Broker()
-        custom_broker.set_param('enchant.myspell.dictionary.path',
-                DICT_PATH)
-        self.spellchecker = enchant.DictWithPWL('vi_VN_telex',
-                pwl=PWL_PATH,
-                broker=custom_broker)
+        custom_broker.set_param(
+            'enchant.myspell.dictionary.path',
+            DICT_PATH)
 
-        self.preedit_backend = PreeditBackend(engine=self,
-                config=config,
-                abbr_expander=abbr_expander,
-                spellchecker=self.spellchecker)
+        self.spellchecker = enchant.DictWithPWL(
+            'vi_VN_telex',
+            pwl=PWL_PATH,
+            broker=custom_broker)
 
-        self.surrounding_text_backend = SurroundingTextBackend(engine=self,
-                config=config,
-                abbr_expander=abbr_expander,
-                spellchecker=self.spellchecker)
+        self.preedit_backend = PreeditBackend(
+            engine=self,
+            config=config,
+            abbr_expander=abbr_expander,
+            spellchecker=self.spellchecker)
+
+        self.surrounding_text_backend = SurroundingTextBackend(
+            engine=self,
+            config=config,
+            abbr_expander=abbr_expander,
+            spellchecker=self.spellchecker)
 
         self.backend = self.preedit_backend
 
@@ -104,7 +108,6 @@ class Engine(IBus.Engine):
 
         This function gets called whenever a key is pressed.
         """
-
 
         # Ignore key release events
         event_is_key_press = (modifiers & (1 << 30)) == 0
@@ -143,8 +146,13 @@ class Engine(IBus.Engine):
 
     def do_focus_in(self):
         logger.debug("do_focus_in()")
-        focused_pid = subprocess.check_output("xprop -id $(xprop -root | awk '/_NET_ACTIVE_WINDOW\(WINDOW\)/{print $NF}') | awk '/_NET_WM_PID\(CARDINAL\)/{print $NF}'", shell=True).decode().strip()
-        self.focused_exe = os.path.realpath("/proc/{0}/exe".format(focused_pid))
+        focused_pid = subprocess.check_output(
+            "xprop -id $(xprop -root | " +
+            "awk '/_NET_ACTIVE_WINDOW\(WINDOW\)/{print $NF}') | " +
+            "awk '/_NET_WM_PID\(CARDINAL\)/{print $NF}'",
+            shell=True).decode().strip()
+        self.focused_exe = os.path.realpath(
+            "/proc/{0}/exe".format(focused_pid))
         logger.debug("%s focused", self.focused_exe)
 
         self.switch_mode()
