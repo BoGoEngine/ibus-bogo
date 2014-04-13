@@ -34,6 +34,13 @@ với IBus, gồm tất cả các file và thư mục con trong ``/ibus_engine``
 gọi hàm `process_key`, đưa kết quả cho người dùng và tạo giao diện tinh
 chỉnh phương pháp gõ.
 
+Coding style
+------------
+
+Chúng tôi sử dụng flake8 để thực hiện kiểm tra styling và những lỗi
+cơ bản. Hãy đảm bảo code của bạn vượt qua được flake8 trước khi tạo
+pull request.
+
 Documentation
 -------------
 
