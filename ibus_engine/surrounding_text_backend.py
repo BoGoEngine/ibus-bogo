@@ -134,6 +134,13 @@ class SurroundingTextBackend(BaseBackend, GObject.GObject):
             # then this backspace is to undo that. Three-time offenders
             # get blacklisted.
             if self.suggested_spell:
+                # Delete the space character
+                self.delete_prev_chars(1)
+
+                self.editing_string = self.prev_raw_string
+                self.commit_composition()
+                self.suggested_spell = False
+
                 self.spell_offenders[self.prev_raw_string] += 1
 
                 if self.spell_offenders[self.prev_raw_string] == 3:
@@ -144,14 +151,7 @@ class SurroundingTextBackend(BaseBackend, GObject.GObject):
                     else:
                         self.spell_offenders[self.prev_raw_string] = 0
 
-                # Delete the space character
-                self.delete_prev_chars(1)
-
-                self.editing_string = self.prev_raw_string
-                self.commit_composition()
                 self.reset()
-                self.suggested_spell = False
-
                 return True
 
             self.on_backspace_pressed()
