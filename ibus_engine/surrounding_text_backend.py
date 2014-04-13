@@ -24,7 +24,8 @@
 import logging
 import time
 from itertools import takewhile
-from gi.repository import IBus
+from collections import defaultdict
+from gi.repository import IBus, GObject
 
 import vncharsets
 from base_backend import BaseBackend
@@ -33,18 +34,25 @@ vncharsets.init()
 logger = logging.getLogger(__name__)
 
 
-class SurroundingTextBackend(BaseBackend):
+class SurroundingTextBackend(BaseBackend, GObject.GObject):
 
     """
     Backend for Engine that tries to directly manipulate the
     currently typing text inside the application being typed in.
     """
 
+    __gsignals__ = {
+        'new_spellcheck_offender': (GObject.SIGNAL_RUN_LAST, bool,
+                                    (str,))
+    }
+
     def __init__(self, engine, config, abbr_expander, spellchecker):
         self.engine = engine
         self.config = config
         self.abbr_expander = abbr_expander
         self.spellchecker = spellchecker
+
+        self.spell_offenders = defaultdict(lambda: 0)
 
         super().__init__()
         self.reset()
@@ -122,18 +130,26 @@ class SurroundingTextBackend(BaseBackend):
             return False
 
         if keyval == IBus.BackSpace:
+            # If the last commited string is a spellchecker suggestion
+            # then this backspace is to undo that. Three-time offenders
+            # get blacklisted.
             if self.suggested_spell:
-                # Add the word to the user's personal word list
-                self.spellchecker.add(self.prev_raw_string)
+                self.spell_offenders[self.prev_raw_string] += 1
 
-                # And restore it
-                self.editing_string = self.prev_raw_string
+                if self.spell_offenders[self.prev_raw_string] == 3:
+                    if self.emit(
+                            'new_spellcheck_offender',
+                            self.prev_raw_string):
+                        self.spellchecker.add(self.prev_raw_string)
 
                 # Delete the space character
                 self.delete_prev_chars(1)
+
+                self.editing_string = self.prev_raw_string
                 self.commit_composition()
                 self.reset()
                 self.suggested_spell = False
+
                 return True
 
             self.on_backspace_pressed()

@@ -22,7 +22,7 @@
 # along with ibus-bogo.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from gi.repository import IBus
+from gi.repository import IBus, Gtk
 import os
 import subprocess
 import sys
@@ -78,6 +78,10 @@ class Engine(IBus.Engine):
             spellchecker=self.spellchecker)
 
         self.backend = self.preedit_backend
+
+        self.surrounding_text_backend.connect(
+            'new_spellcheck_offender',
+            self.on_new_spellcheck_offender)
 
         # Create a new thread to detect mouse clicks
         # mouse_detector = MouseDetector.get_instance()
@@ -188,3 +192,17 @@ class Engine(IBus.Engine):
             if self.focused_exe.find(exe_name) != -1:
                 return True
         return False
+
+    def on_new_spellcheck_offender(self, sender, offender):
+        dialog = Gtk.MessageDialog(
+            parent=None,
+            flags=0,
+            message_type=Gtk.MessageType.QUESTION,
+            buttons=Gtk.ButtonsType.YES_NO,
+            message_format=
+            "Stop spellchecking this key sequence: {0}?".format(offender))
+
+        response = dialog.run()
+        dialog.destroy()
+
+        return response == Gtk.ResponseType.YES
