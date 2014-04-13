@@ -187,4 +187,3 @@ class BaseBackend():
                                            fallback_sequence=raw,
                                            config=self.config)
         return string
-
