@@ -141,6 +141,8 @@ class SurroundingTextBackend(BaseBackend, GObject.GObject):
                             'new_spellcheck_offender',
                             self.prev_raw_string):
                         self.spellchecker.add(self.prev_raw_string)
+                    else:
+                        self.spell_offenders[self.prev_raw_string] = 0
 
                 # Delete the space character
                 self.delete_prev_chars(1)
