@@ -27,6 +27,7 @@ import os
 import subprocess
 import sys
 import logging
+import enchant
 
 ENGINE_PATH = os.path.dirname(__file__)
 sys.path.append(
@@ -41,6 +42,9 @@ from trayicon import TrayIcon
 
 logger = logging.getLogger(__name__)
 
+DICT_PATH = ENGINE_PATH + '/data'
+PWL_PATH = os.path.expanduser('~/.config/ibus-bogo/spelling-blacklist.txt')
+
 
 class Engine(IBus.Engine):
     __gtype_name__ = 'EngineBoGo'
@@ -52,13 +56,22 @@ class Engine(IBus.Engine):
         self.icon = icon
         self.ui_delegate = UiDelegate(engine=self)
 
+        custom_broker = enchant.Broker()
+        custom_broker.set_param('enchant.myspell.dictionary.path',
+                DICT_PATH)
+        self.spellchecker = enchant.DictWithPWL('vi_VN_telex',
+                pwl=PWL_PATH,
+                broker=custom_broker)
+
         self.preedit_backend = PreeditBackend(engine=self,
-                                          config=config,
-                                          abbr_expander=abbr_expander)
+                config=config,
+                abbr_expander=abbr_expander,
+                spellchecker=self.spellchecker)
 
         self.surrounding_text_backend = SurroundingTextBackend(engine=self,
-                                                               config=config,
-                                                               abbr_expander=abbr_expander)
+                config=config,
+                abbr_expander=abbr_expander,
+                spellchecker=self.spellchecker)
 
         self.backend = self.preedit_backend
 

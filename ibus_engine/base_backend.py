@@ -25,24 +25,12 @@
 from gi.repository import IBus
 import logging
 import os
-import enchant
 import bogo
 
 logger = logging.getLogger(__name__)
 
-FILE_PATH = os.path.dirname(os.path.abspath(__file__))
-DICT_PATH = FILE_PATH + '/data'
-PWL_PATH = os.path.expanduser('~/.config/ibus-bogo/spelling-blacklist.txt')
 
 class BaseBackend():
-
-    def __init__(self):
-        custom_broker = enchant.Broker()
-        custom_broker.set_param('enchant.myspell.dictionary.path',
-                DICT_PATH)
-        self.spellchecker = enchant.DictWithPWL('vi_VN_telex',
-                pwl=PWL_PATH,
-                broker=custom_broker)
 
     def reset(self):
         self.editing_string = ""
