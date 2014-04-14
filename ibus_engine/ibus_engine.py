@@ -65,17 +65,21 @@ class Engine(IBus.Engine):
             pwl=PWL_PATH,
             broker=custom_broker)
 
+        self.english_spellchecker = enchant.Dict('en_US')
+
         self.preedit_backend = PreeditBackend(
             engine=self,
             config=config,
             abbr_expander=abbr_expander,
-            spellchecker=self.spellchecker)
+            spellchecker=self.spellchecker,
+            english_spellchecker=self.english_spellchecker)
 
         self.surrounding_text_backend = SurroundingTextBackend(
             engine=self,
             config=config,
             abbr_expander=abbr_expander,
-            spellchecker=self.spellchecker)
+            spellchecker=self.spellchecker,
+            english_spellchecker=self.english_spellchecker)
 
         self.backend = self.preedit_backend
 

@@ -39,11 +39,13 @@ class SurroundingTextBackend(BaseBackend):
     currently typing text inside the application being typed in.
     """
 
-    def __init__(self, engine, config, abbr_expander, spellchecker):
+    def __init__(self, engine, config, abbr_expander,
+                 spellchecker, english_spellchecker):
         self.engine = engine
         self.config = config
         self.abbr_expander = abbr_expander
         self.spellchecker = spellchecker
+        self.english_spellchecker = english_spellchecker
 
         super().__init__()
         self.reset()

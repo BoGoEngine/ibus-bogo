@@ -253,7 +253,8 @@ class BaseBackend(GObject.Object):
                 and not self.spellchecker.check(self.raw_string):
             try:
                 suggested = self.spellchecker.suggest(self.raw_string)[0]
-                if levenshtein(self.raw_string, suggested) < 3:
+                if not self.english_spellchecker.check(self.raw_string) and \
+                        levenshtein(self.raw_string, suggested) < 3:
                     self.editing_string = self.process_seq(suggested) + " "
                     self.update_composition(self.editing_string)
 
