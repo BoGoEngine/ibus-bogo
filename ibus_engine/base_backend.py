@@ -259,9 +259,12 @@ class BaseBackend(GObject.Object):
                 and not self.spellchecker.check(self.raw_string):
             try:
                 suggested = self.spellchecker.suggest(self.raw_string)[0]
-                if not self.english_spellchecker.check(self.raw_string) and \
-                        levenshtein(self.raw_string, suggested) < 3:
+                max_distance = \
+                    self.config["typo-correction-level"]
+                distance = levenshtein(self.raw_string, suggested)
 
+                if not self.english_spellchecker.check(self.raw_string) and \
+                        distance <= max_distance:
                     self.editing_string = \
                         ' '.join(map(self.process_seq,
                                      suggested.split(' '))) + ' '

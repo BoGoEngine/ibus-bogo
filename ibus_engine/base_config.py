@@ -38,7 +38,8 @@ IBUS_BOGO_DEFAULT_CONFIG = {
         "konsole",
         "geany",
         "skype"
-    ]
+    ],
+    "typo-correction-level": 2
 }
 
 
