@@ -47,7 +47,10 @@ class BaseBackend(GObject.Object):
         # History is a list/stack of 'action's, which can be commits,
         # backspaces, string expansions, string corrections, etc.
         self.history = []
+
         self.spell_offenders = defaultdict(lambda: 0)
+
+        self.reset()
         super().__init__()
 
     def last_nth_action(self, nth):
