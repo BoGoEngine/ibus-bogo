@@ -261,7 +261,10 @@ class BaseBackend(GObject.Object):
                 suggested = self.spellchecker.suggest(self.raw_string)[0]
                 if not self.english_spellchecker.check(self.raw_string) and \
                         levenshtein(self.raw_string, suggested) < 3:
-                    self.editing_string = self.process_seq(suggested) + " "
+
+                    self.editing_string = \
+                        ' '.join(map(self.process_seq,
+                                     suggested.split(' '))) + ' '
                     self.update_composition(self.editing_string)
 
                     self.history.append({
