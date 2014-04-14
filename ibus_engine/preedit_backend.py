@@ -38,11 +38,11 @@ class PreeditBackend(BaseBackend):
     def __init__(self, engine, config, abbr_expander,
                  spellchecker, english_spellchecker):
         self.engine = engine
-        self.config = config
-        self.abbr_expander = abbr_expander
-        self.spellchecker = spellchecker
-        self.english_spellchecker = english_spellchecker
-        super().__init__()
+        super().__init__(
+            config=config,
+            abbr_expander=abbr_expander,
+            spellchecker=spellchecker,
+            english_spellchecker=english_spellchecker)
 
     def reset(self):
         self.engine.hide_preedit_text()

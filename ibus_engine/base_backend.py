@@ -37,7 +37,13 @@ class BaseBackend(GObject.Object):
                                     (str,))
     }
 
-    def __init__(self):
+    def __init__(self, config, abbr_expander,
+                 spellchecker, english_spellchecker):
+        self.config = config
+        self.abbr_expander = abbr_expander
+        self.spellchecker = spellchecker
+        self.english_spellchecker = english_spellchecker
+
         # History is a list/stack of 'action's, which can be commits,
         # backspaces, string expansions, string corrections, etc.
         self.history = []
