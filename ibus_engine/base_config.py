@@ -55,6 +55,10 @@ class BaseConfig(object):
         self.read_default_config()
         self.read_config(path)
 
+        # Write immediately because the default config
+        # may introduce a new key
+        self.write_config()
+
     def read_config(self, path):
         try:
             f = open(path, "r")
