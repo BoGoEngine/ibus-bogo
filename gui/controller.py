@@ -233,7 +233,9 @@ class Window(Ui_FormClass, UiFormBase):
 
     @pyqtSlot()
     def on_importButton_clicked(self):
-        caption = "Choose a Unikey text expansion rule file"
+        caption = QCoreApplication.translate(
+            "expander",
+            "Choose a Unikey text expansion rule file")
         fileName = QFileDialog.getOpenFileName(parent=self,
                                                caption=caption)
         if fileName:
@@ -244,7 +246,9 @@ class Window(Ui_FormClass, UiFormBase):
 
     @pyqtSlot()
     def on_exportButton_clicked(self):
-        caption = "Choose a location to save expansion rule file"
+        caption = QCoreApplication.translate(
+            "expander",
+            "Choose a location to save expansion rule file")
         fileName = QFileDialog.getSaveFileName(parent=self,
                                                caption=caption)
 
@@ -306,16 +310,31 @@ class Window(Ui_FormClass, UiFormBase):
                 new_mime.setText(text)
 
                 clipboard.setMimeData(new_mime)
+                subject = QCoreApplication.translate(
+                    "charset",
+                    "Converted")
+                content = QCoreApplication.translate(
+                    "charset",
+                    "From {0} to UTF-8")
                 n = Notify.Notification.new(
-                    "Converted", sourceEncoding + "-> utf-8", "")
+                    subject, content.format(sourceEncoding), "")
             else:
-                n = Notify.Notification.new(
-                    "Cannot convert",
-                    "No HTML/plain text data in clipboard.",
-                    "")
+                subject = QCoreApplication.translate(
+                    "charset",
+                    "Cannot convert")
+                content = QCoreApplication.translate(
+                    "charset",
+                    "No HTML/plain text data in clipboard.")
+                n = Notify.Notification.new(subject, content)
         except UnicodeEncodeError:
+            subject = QCoreApplication.translate(
+                "charset",
+                "Cannot convert")
+            content = QCoreApplication.translate(
+                "charset",
+                "Mixed Unicode in clipboard.")
             n = Notify.Notification.new(
-                "Cannot convert", "Mixed Unicode in clipboard.", "")
+                subject, content, "")
         n.show()
 
     @pyqtSlot()
