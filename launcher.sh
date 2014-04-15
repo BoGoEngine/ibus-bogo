@@ -15,5 +15,3 @@ then
 else
 	python3 ibus_engine/main.py
 fi
-
-
