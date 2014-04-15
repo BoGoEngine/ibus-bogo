@@ -324,6 +324,17 @@ class Window(Ui_FormClass, UiFormBase):
             "xdg-open http://ibus-bogo.readthedocs.org/en/latest/usage.html",
             shell=True)
 
+    @pyqtSlot(int)
+    def on_typoSlider_valueChanged(self, value):
+        level = self.typoSlider.value()
+        self.settings["typo-correction-level"] = level
+        self.updateSliderLabel(level)
+
+    def updateSliderLabel(self, level):
+        label = QCoreApplication.translate("slider", "OFF") if level == 0 \
+            else str(level)
+        self.typoLevelLabel.setText(label)
+
     def switchLanguage(self, locale):
         logging.debug("switchLanguage: %s", locale)
         if locale == "en_US":
@@ -400,6 +411,10 @@ class Window(Ui_FormClass, UiFormBase):
 
             self.autocapCheckBox.setEnabled(isEnabled)
             self.ruleEditorGroupBox.setEnabled(isEnabled)
+
+        level = self.settings["typo-correction-level"]
+        self.typoSlider.setValue(level)
+        self.updateSliderLabel(level)
 
     def retranslateUi(self, object):
         super(Window, self).retranslateUi(object)
