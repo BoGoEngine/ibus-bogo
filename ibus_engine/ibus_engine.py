@@ -210,6 +210,8 @@ class Engine(IBus.Engine):
             message_format=
             "Stop spellchecking this key sequence: {0}?".format(offender))
 
+        dialog.set_skip_taskbar_hint(False)
+
         response = dialog.run()
         dialog.destroy()
 
