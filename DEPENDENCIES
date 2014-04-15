@@ -2,3 +2,4 @@
 Debian	unstable	ibus python3 python3-gi gir1.2-ibus-1.0 gir1.2-wnck-3.0 python3-pyqt4 libnotify4 gir1.2-notify-0.7 python3-enchant
 Ubuntu	13.10	ibus python3 python3-gi gir1.2-ibus-1.0 gir1.2-wnck-3.0 python3-pyqt4 libnotify4 gir1.2-notify-0.7 python3-enchant
 Ubuntu	14.04	ibus python3 python3-gi gir1.2-ibus-1.0 gir1.2-wnck-3.0 python3-pyqt4 libnotify4 gir1.2-notify-0.7 python3-enchant
+Arch	rolling	ibus python python-gobject libwnck3 python-pyqt4 libnotify qt4 python-pyenchant
