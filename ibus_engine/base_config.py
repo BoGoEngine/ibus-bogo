@@ -38,7 +38,8 @@ IBUS_BOGO_DEFAULT_CONFIG = {
         "konsole",
         "geany",
         "skype"
-    ]
+    ],
+    "typo-correction-level": 2
 }
 
 
@@ -53,6 +54,10 @@ class BaseConfig(object):
         self.path = path
         self.read_default_config()
         self.read_config(path)
+
+        # Write immediately because the default config
+        # may introduce a new key
+        self.write_config()
 
     def read_config(self, path):
         try:

@@ -35,10 +35,14 @@ class PreeditBackend(BaseBackend):
     currently typing text inside the application being typed in.
     """
 
-    def __init__(self, engine, config, abbr_expander):
+    def __init__(self, engine, config, abbr_expander,
+                 spellchecker, english_spellchecker):
         self.engine = engine
-        self.config = config
-        self.abbr_expander = abbr_expander
+        super().__init__(
+            config=config,
+            abbr_expander=abbr_expander,
+            spellchecker=spellchecker,
+            english_spellchecker=english_spellchecker)
 
     def reset(self):
         self.engine.hide_preedit_text()
@@ -58,6 +62,7 @@ class PreeditBackend(BaseBackend):
                                            cursor_pos=len(string),
                                            visible=True,
                                            mode=IBus.PreeditFocusMode.COMMIT)
+        super().update_composition(string)
 
     def commit_composition(self):
         logger.debug("Committing composition...")
@@ -66,8 +71,14 @@ class PreeditBackend(BaseBackend):
                                             cursor_pos=0,
                                             visible=False)
             self.engine.commit_text(IBus.Text.new_from_string(self.editing_string))
+            super().commit_composition()
 
     def process_key_event(self, keyval, modifiers):
+        if keyval != IBus.BackSpace and \
+                self.last_action()["type"] == "string-correction":
+            self.commit_composition()
+            self.reset()
+
         if keyval in [IBus.BackSpace, IBus.space]:
             return self.on_special_key_pressed(keyval)
 
@@ -93,15 +104,18 @@ class PreeditBackend(BaseBackend):
             return False
 
         if keyval == IBus.BackSpace:
-            eaten = len(self.editing_string) > 0
-            self.on_backspace_pressed()
+            eaten = self.on_backspace_pressed()
 
             if eaten:
                 self.update_composition(self.editing_string)
-            
+
             return eaten
 
         if keyval == IBus.space:
             self.on_space_pressed()
-            self.reset()
-            return False
+            if self.last_action()["type"] == "string-correction":
+                return True
+            else:
+                self.commit_composition()
+                self.reset()
+                return False

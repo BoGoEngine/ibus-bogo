@@ -31,10 +31,11 @@ class TestEngine():
             }
         }
 
-        self.eng = BaseBackend()
-        self.eng.reset()
-        self.eng.config = config
-        self.eng.expander = AbbreviationExpander()
+        self.eng = BaseBackend(
+            config=config,
+            abbr_expander=AbbreviationExpander(),
+            spellchecker=None,
+            english_spellchecker=None)
 
     def send_keys(self, input, engine):
         [self.send_key(character, engine) for character in input]

@@ -22,26 +22,74 @@
 # along with ibus-bogo.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from gi.repository import IBus
+from gi.repository import IBus, GObject
 import logging
+from collections import defaultdict
 import bogo
 
 logger = logging.getLogger(__name__)
 
 
-class BaseBackend():
+class BaseBackend(GObject.Object):
+
+    __gsignals__ = {
+        'new_spellcheck_offender': (GObject.SIGNAL_RUN_LAST, bool,
+                                    (str,))
+    }
+
+    def __init__(self, config, abbr_expander,
+                 spellchecker, english_spellchecker):
+        self.config = config
+        self.abbr_expander = abbr_expander
+        self.spellchecker = spellchecker
+        self.english_spellchecker = english_spellchecker
+
+        # History is a list/stack of 'action's, which can be commits,
+        # backspaces, string expansions, string corrections, etc.
+        self.history = []
+
+        self.spell_offenders = defaultdict(lambda: 0)
+
+        self.reset()
+        super().__init__()
+
+    def last_nth_action(self, nth):
+        if len(self.history) > nth:
+            return self.history[-nth]
+        else:
+            return {
+                "type": "none",
+                "editing-string": "",
+                "raw-string": ""
+            }
+
+    def last_action(self):
+        return self.last_nth_action(1)
 
     def reset(self):
         self.editing_string = ""
         self.raw_string = ""
 
     def update_composition(self, string):
-        # Virtual method
-        pass
+        self.history.append({
+            "type": "update-composition",
+            "raw-string": self.raw_string,
+            "editing-string": self.editing_string
+        })
 
     def commit_composition(self):
-        # Virtual method
-        pass
+        self.history.append({
+            "type": "commit-composition",
+            "raw-string": self.raw_string,
+            "editing-string": self.editing_string
+        })
+
+    def delete_prev_chars(self, count):
+        self.history.append({
+            "type": "delete-prev-chars",
+            "raw-string": self.raw_string,
+            "editing-string": self.editing_string
+        })
 
     def process_key_event(self, keyval, modifiers):
         if self.is_processable_key(keyval, modifiers):
@@ -106,21 +154,63 @@ class BaseBackend():
              keyval in range(97, 123) or 
              keyval in im_keys)
 
+    def undo_last_action(self):
+        last_action = self.last_action()
+
+        # If the last commited string is a spellchecker suggestion
+        # then this backspace is to undo that. Three-time offenders
+        # get blacklisted.
+        if last_action["type"] == "string-correction":
+            logging.debug("Undoing spell correction")
+
+            # self.delete_prev_chars(1)
+            self.editing_string = last_action["raw-string"]
+            self.commit_composition()
+
+            prev_raw_string = last_action["raw-string"]
+            self.spell_offenders[prev_raw_string] += 1
+
+            logging.debug("count = %s", self.spell_offenders[prev_raw_string])
+            if self.spell_offenders[prev_raw_string] == 3:
+                if self.emit(
+                        'new_spellcheck_offender',
+                        prev_raw_string):
+                    self.spellchecker.add(prev_raw_string)
+                else:
+                    self.spell_offenders[prev_raw_string] = 0
+
+            self.history.append({
+                "type": "undo",
+                "raw-string": self.raw_string,
+                "editing-string": self.editing_string
+            })
+
+            self.reset()
+            return True
+
+        return False
+
     def on_backspace_pressed(self):
         logger.debug("Getting a backspace")
         if self.editing_string == "":
-            return
+            self.reset()
+            return False
+
+        # Backspace is also the hotkey to undo the last action where
+        # applicable.
+        has_undone = self.undo_last_action()
+        if has_undone:
+            return True
 
         deleted_char = self.editing_string[-1]
         self.editing_string = self.editing_string[:-1]
 
-        if len(self.editing_string) == 0:
-            self.reset()
-        else:
-            index = self.raw_string.rfind(deleted_char)
-            self.raw_string = self.raw_string[:-2] if index < 0 else \
-                self.raw_string[:index] + \
-                self.raw_string[(index + 1):]
+        index = self.raw_string.rfind(deleted_char)
+        self.raw_string = self.raw_string[:-2] if index < 0 else \
+            self.raw_string[:index] + \
+            self.raw_string[(index + 1):]
+
+        return True
 
     def on_space_pressed(self):
         expanded_string = ""
@@ -138,10 +228,65 @@ class BaseBackend():
             else:
                 return False
 
+        # http://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Levenshtein_distance#Python
+        def levenshtein(s1, s2):
+            if len(s1) < len(s2):
+                return levenshtein(s2, s1)
+         
+            # len(s1) >= len(s2)
+            if len(s2) == 0:
+                return len(s1)
+         
+            previous_row = range(len(s2) + 1)
+            for i, c1 in enumerate(s1):
+                current_row = [i + 1]
+                for j, c2 in enumerate(s2):
+                    insertions = previous_row[j + 1] + 1 # j+1 instead of j since previous_row and current_row are one character longer
+                    deletions = current_row[j] + 1       # than s2
+                    substitutions = previous_row[j] + (c1 != c2)
+                    current_row.append(min(insertions, deletions, substitutions))
+                previous_row = current_row
+ 
+            return previous_row[-1]
+
         if can_expand():
             self.editing_string = expanded_string
-        elif is_non_vietnamese():
-            self.editing_string = self.raw_string
+            self.update_composition(self.editing_string)
 
-        self.commit_composition()
-        self.reset()
+            self.history.append({
+                "type": "string-expansion",
+                "raw-string": self.raw_string,
+                "editing-string": self.editing_string
+            })
+        elif is_non_vietnamese() \
+                and not self.spellchecker.check(self.raw_string):
+            try:
+                suggested = self.spellchecker.suggest(self.raw_string)[0]
+                max_distance = \
+                    self.config["typo-correction-level"]
+                distance = levenshtein(self.raw_string, suggested)
+
+                if not self.english_spellchecker.check(self.raw_string) and \
+                        distance <= max_distance:
+                    self.editing_string = \
+                        ' '.join(map(self.process_seq,
+                                     suggested.split(' '))) + ' '
+                    self.update_composition(self.editing_string)
+
+                    self.history.append({
+                        "type": "string-correction",
+                        "raw-string": self.raw_string,
+                        "editing-string": self.editing_string
+                    })
+            except IndexError:
+                pass
+
+    def process_seq(self, seq):
+        string = ""
+        raw = string
+        for i in seq:
+            string, raw = bogo.process_key(string,
+                                           i,
+                                           fallback_sequence=raw,
+                                           config=self.config)
+        return string

@@ -22,11 +22,12 @@
 # along with ibus-bogo.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from gi.repository import IBus, GLib
+from gi.repository import IBus, Gtk
 import os
 import subprocess
 import sys
 import logging
+import enchant
 
 ENGINE_PATH = os.path.dirname(__file__)
 sys.path.append(
@@ -37,9 +38,11 @@ sys.path.append(
 from ui import UiDelegate
 from preedit_backend import PreeditBackend
 from surrounding_text_backend import SurroundingTextBackend
-from trayicon import TrayIcon
 
 logger = logging.getLogger(__name__)
+
+DICT_PATH = ENGINE_PATH + '/data'
+PWL_PATH = os.path.expanduser('~/.config/ibus-bogo/spelling-blacklist.txt')
 
 
 class Engine(IBus.Engine):
@@ -52,15 +55,41 @@ class Engine(IBus.Engine):
         self.icon = icon
         self.ui_delegate = UiDelegate(engine=self)
 
-        self.preedit_backend = PreeditBackend(engine=self,
-                                          config=config,
-                                          abbr_expander=abbr_expander)
+        custom_broker = enchant.Broker()
+        custom_broker.set_param(
+            'enchant.myspell.dictionary.path',
+            DICT_PATH)
 
-        self.surrounding_text_backend = SurroundingTextBackend(engine=self,
-                                                               config=config,
-                                                               abbr_expander=abbr_expander)
+        self.spellchecker = enchant.DictWithPWL(
+            'vi_VN_telex',
+            pwl=PWL_PATH,
+            broker=custom_broker)
+
+        self.english_spellchecker = enchant.Dict('en_US')
+
+        self.preedit_backend = PreeditBackend(
+            engine=self,
+            config=config,
+            abbr_expander=abbr_expander,
+            spellchecker=self.spellchecker,
+            english_spellchecker=self.english_spellchecker)
+
+        self.surrounding_text_backend = SurroundingTextBackend(
+            engine=self,
+            config=config,
+            abbr_expander=abbr_expander,
+            spellchecker=self.spellchecker,
+            english_spellchecker=self.english_spellchecker)
 
         self.backend = self.preedit_backend
+
+        self.surrounding_text_backend.connect(
+            'new_spellcheck_offender',
+            self.on_new_spellcheck_offender)
+
+        self.preedit_backend.connect(
+            'new_spellcheck_offender',
+            self.on_new_spellcheck_offender)
 
         # Create a new thread to detect mouse clicks
         # mouse_detector = MouseDetector.get_instance()
@@ -91,7 +120,6 @@ class Engine(IBus.Engine):
 
         This function gets called whenever a key is pressed.
         """
-
 
         # Ignore key release events
         event_is_key_press = (modifiers & (1 << 30)) == 0
@@ -130,8 +158,13 @@ class Engine(IBus.Engine):
 
     def do_focus_in(self):
         logger.debug("do_focus_in()")
-        focused_pid = subprocess.check_output("xprop -id $(xprop -root | awk '/_NET_ACTIVE_WINDOW\(WINDOW\)/{print $NF}') | awk '/_NET_WM_PID\(CARDINAL\)/{print $NF}'", shell=True).decode().strip()
-        self.focused_exe = os.path.realpath("/proc/{0}/exe".format(focused_pid))
+        focused_pid = subprocess.check_output(
+            "xprop -id $(xprop -root | " +
+            "awk '/_NET_ACTIVE_WINDOW\(WINDOW\)/{print $NF}') | " +
+            "awk '/_NET_WM_PID\(CARDINAL\)/{print $NF}'",
+            shell=True).decode().strip()
+        self.focused_exe = os.path.realpath(
+            "/proc/{0}/exe".format(focused_pid))
         logger.debug("%s focused", self.focused_exe)
 
         self.switch_mode()
@@ -167,3 +200,17 @@ class Engine(IBus.Engine):
             if self.focused_exe.find(exe_name) != -1:
                 return True
         return False
+
+    def on_new_spellcheck_offender(self, sender, offender):
+        dialog = Gtk.MessageDialog(
+            parent=None,
+            flags=0,
+            message_type=Gtk.MessageType.QUESTION,
+            buttons=Gtk.ButtonsType.YES_NO,
+            message_format=
+            "Stop spellchecking this key sequence: {0}?".format(offender))
+
+        response = dialog.run()
+        dialog.destroy()
+
+        return response == Gtk.ResponseType.YES

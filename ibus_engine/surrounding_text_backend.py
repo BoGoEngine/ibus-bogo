@@ -22,7 +22,6 @@
 #
 
 import logging
-import time
 from itertools import takewhile
 from gi.repository import IBus
 
@@ -40,10 +39,15 @@ class SurroundingTextBackend(BaseBackend):
     currently typing text inside the application being typed in.
     """
 
-    def __init__(self, engine, config, abbr_expander):
+    def __init__(self, engine, config, abbr_expander,
+                 spellchecker, english_spellchecker):
         self.engine = engine
-        self.config = config
-        self.abbr_expander = abbr_expander
+
+        super().__init__(
+            config=config,
+            abbr_expander=abbr_expander,
+            spellchecker=spellchecker,
+            english_spellchecker=english_spellchecker)
         self.reset()
 
     def reset(self):
@@ -52,10 +56,12 @@ class SurroundingTextBackend(BaseBackend):
 
     def update_composition(self, string):
         self.commit_string(string)
+        super().update_composition(string)
 
     def commit_composition(self):
         if len(self.editing_string) != 0:
             self.commit_string(self.editing_string)
+            super().commit_composition()
 
     def commit_string(self, string):
         # Don't actually commit the whole string but only the part at the end
@@ -75,13 +81,18 @@ class SurroundingTextBackend(BaseBackend):
         self.previous_string = string
 
     def process_key_event(self, keyval, modifiers):
+        if keyval != IBus.BackSpace and \
+                self.last_action()["type"] == "string-correction":
+            self.reset()
+
         if keyval in [IBus.Return, IBus.BackSpace, IBus.space]:
             return self.on_special_key_pressed(keyval)
 
         if len(self.editing_string) == 0:
             # If we are not editing any word then try to process the
             # existing word at the cursor.
-            surrounding_text, cursor, anchor = self.engine.get_surrounding_text()
+            surrounding_text, cursor, anchor = \
+                self.engine.get_surrounding_text()
             surrounding_text = surrounding_text.text[:cursor]
 
             # FIXME replace isalpha() with something like is_processable()
@@ -112,6 +123,7 @@ class SurroundingTextBackend(BaseBackend):
         if count > 0:
             logger.debug("Deleting surrounding text...")
             self.engine.delete_surrounding_text(offset=-count, nchars=count)
+            super().delete_prev_chars(count)
 
     def on_special_key_pressed(self, keyval):
         if keyval == IBus.Return:
@@ -121,8 +133,22 @@ class SurroundingTextBackend(BaseBackend):
         if keyval == IBus.BackSpace:
             self.on_backspace_pressed()
             self.previous_string = self.previous_string[:-1]
-            return False
+
+            if self.last_action()["type"] == "undo":
+                # The next backspace should be a normal backspace
+                self.history.append({
+                    "type": "none",
+                    "editing-string": self.editing_string,
+                    "raw-string": self.raw_string
+                })
+                return True
+            else:
+                return False
 
         if keyval == IBus.space:
             self.on_space_pressed()
-            return False
+            if self.last_action()["type"] == "string-correction":
+                return True
+            else:
+                self.reset()
+                return False
