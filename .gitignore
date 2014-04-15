@@ -1,4 +1,5 @@
 *.swp
+*~
 *.pyc
 build
 obj-*-linux-gnu
