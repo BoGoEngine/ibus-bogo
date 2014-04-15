@@ -149,7 +149,6 @@ class Engine(IBus.Engine):
 
     def do_enable(self):
         logger.debug("do_enable()")
-        self.ui_delegate.do_enable()
         self.backend.do_enable()
 
     def do_disable(self):
@@ -170,6 +169,7 @@ class Engine(IBus.Engine):
         self.switch_mode()
 
         self.backend.do_focus_in()
+        self.ui_delegate.do_enable()
 
     def do_reset(self):
         logger.debug("do_reset()")
