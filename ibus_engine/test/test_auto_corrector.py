@@ -60,3 +60,57 @@ class TestAutoCorrector():
 
         sequence = "casmeof"
         eq_(self.corrector.suggest(sequence), sequence)
+
+    def test_skip_english(self):
+        """
+        It should skip sequences that are deemed to be English
+        by the English spellchecker.
+        """
+        self.spellchecker.check = Mock(return_value=False)
+        self.spellchecker.suggest = Mock(return_value=["ser"])
+        self.english_spellchecker.check = Mock(return_value=True)
+
+        sequence = "set"
+        eq_(self.corrector.suggest(sequence), sequence)
+
+    def test_blacklist_after_n_offences(self):
+        """
+        It should blacklist a key sequence after N tickets. N is
+        specified by the config dictionary.
+        """
+        self.spellchecker.check = Mock(return_value=False)
+        self.spellchecker.suggest = Mock(return_value=["car"])
+
+        on_new_spellcheck_offender = Mock(return_value=True)
+        self.corrector.connect(
+            "new_spellcheck_offender", on_new_spellcheck_offender)
+
+        sequence = "carl"
+        self.corrector.increase_ticket(sequence)
+        self.corrector.increase_ticket(sequence)
+        self.corrector.increase_ticket(sequence)
+
+        on_new_spellcheck_offender.assert_called_once_with(
+            self.corrector, sequence)
+        self.spellchecker.add.assert_called_once_with(sequence)
+
+    def test_dont_blacklist(self):
+        """
+        It should not blacklist a key sequence if the last
+        signal handler for new_spellcheck_offender returns False.
+        """
+        self.spellchecker.check = Mock(return_value=False)
+        self.spellchecker.suggest = Mock(return_value=["car"])
+
+        on_new_spellcheck_offender = Mock(return_value=False)
+        self.corrector.connect(
+            "new_spellcheck_offender", on_new_spellcheck_offender)
+
+        sequence = "carl"
+        self.corrector.increase_ticket(sequence)
+        self.corrector.increase_ticket(sequence)
+        self.corrector.increase_ticket(sequence)
+
+        on_new_spellcheck_offender.assert_called_once_with(
+            self.corrector, sequence)
+        eq_(self.spellchecker.add.called, False)
