@@ -170,7 +170,6 @@ class BaseBackend(GObject.Object):
             prev_raw_string = last_action["raw-string"]
             self.spell_offenders[prev_raw_string] += 1
 
-            logging.debug("count = %s", self.spell_offenders[prev_raw_string])
             if self.spell_offenders[prev_raw_string] == 3:
                 if self.emit(
                         'new_spellcheck_offender',
