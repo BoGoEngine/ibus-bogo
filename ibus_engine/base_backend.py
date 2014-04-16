@@ -65,7 +65,7 @@ class BaseBackend():
         self.history.append({
             "type": "update-composition",
             "raw-string": self.raw_string,
-            "editing-string": self.editing_string
+            "editing-string": string
         })
 
     def commit_composition(self):
