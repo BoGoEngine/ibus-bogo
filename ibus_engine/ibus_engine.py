@@ -87,6 +87,7 @@ class Engine(IBus.Engine):
             abbr_expander=abbr_expander,
             auto_corrector=auto_corrector)
 
+        # The preedit backend is the default
         self.backend = self.preedit_backend
 
         # Create a new thread to detect mouse clicks
