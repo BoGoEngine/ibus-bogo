@@ -77,3 +77,17 @@ class TestBaseBackend():
 
         eq_(self.backend.last_action(), expected)
         self.backend.update_composition.assert_called_once_with(expanded)
+
+    def test_reset(self):
+        """
+        reset() should create a history entry.
+        """
+        self.backend.reset()
+
+        expected = {
+            "type": "reset",
+            "raw-string": "",
+            "editing-string": ""
+        }
+
+        eq_(self.backend.last_action(), expected)

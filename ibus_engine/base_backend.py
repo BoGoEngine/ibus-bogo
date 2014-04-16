@@ -60,6 +60,11 @@ class BaseBackend():
     def reset(self):
         self.editing_string = ""
         self.raw_string = ""
+        self.history.append({
+            "type": "reset",
+            "raw-string": "",
+            "editing-string": ""
+        })
 
     def update_composition(self, string):
         self.history.append({
