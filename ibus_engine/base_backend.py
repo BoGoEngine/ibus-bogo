@@ -173,8 +173,8 @@ class BaseBackend():
 
             self.history.append({
                 "type": "undo",
-                "raw-string": self.raw_string,
-                "editing-string": self.editing_string
+                "raw-string": prev_raw_string,
+                "editing-string": prev_raw_string
             })
 
             self.reset()
@@ -184,25 +184,32 @@ class BaseBackend():
 
     def on_backspace_pressed(self):
         logger.debug("Getting a backspace")
-        if self.editing_string == "":
+        editing_string = self.last_action()["editing-string"]
+        raw_string = self.last_action()["raw-string"]
+
+        if editing_string == "":
             self.reset()
-            return False
+            return
 
         # Backspace is also the hotkey to undo the last action where
         # applicable.
         has_undone = self.undo_last_action()
         if has_undone:
-            return True
+            return
 
-        deleted_char = self.editing_string[-1]
-        self.editing_string = self.editing_string[:-1]
+        deleted_char = editing_string[-1]
+        editing_string = editing_string[:-1]
 
-        index = self.raw_string.rfind(deleted_char)
-        self.raw_string = self.raw_string[:-2] if index < 0 else \
-            self.raw_string[:index] + \
-            self.raw_string[(index + 1):]
+        index = raw_string.rfind(deleted_char)
+        raw_string = raw_string[:-2] if index < 0 else \
+            raw_string[:index] + \
+            raw_string[(index + 1):]
 
-        return True
+        self.history.append({
+            "type": "backspace",
+            "raw-string": raw_string,
+            "editing-string": editing_string
+        })
 
     def on_space_pressed(self):
         # Wrap the string inside a list so that can_expand() can
