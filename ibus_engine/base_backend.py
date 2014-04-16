@@ -177,7 +177,6 @@ class BaseBackend():
                 "editing-string": prev_raw_string
             })
 
-            self.reset()
             return True
 
         return False
