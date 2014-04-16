@@ -22,33 +22,24 @@
 # along with ibus-bogo.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from gi.repository import IBus, GObject
+from gi.repository import IBus
 import logging
-from collections import defaultdict
 import bogo
 
 logger = logging.getLogger(__name__)
 
 
-class BaseBackend(GObject.Object):
-
-    __gsignals__ = {
-        'new_spellcheck_offender': (GObject.SIGNAL_RUN_LAST, bool,
-                                    (str,))
-    }
+class BaseBackend():
 
     def __init__(self, config, abbr_expander,
-                 spellchecker, english_spellchecker):
+                 auto_corrector):
         self.config = config
         self.abbr_expander = abbr_expander
-        self.spellchecker = spellchecker
-        self.english_spellchecker = english_spellchecker
+        self.auto_corrector = auto_corrector
 
         # History is a list/stack of 'action's, which can be commits,
         # backspaces, string expansions, string corrections, etc.
         self.history = []
-
-        self.spell_offenders = defaultdict(lambda: 0)
 
         self.reset()
         super().__init__()
@@ -158,26 +149,16 @@ class BaseBackend(GObject.Object):
         last_action = self.last_action()
 
         # If the last commited string is a spellchecker suggestion
-        # then this backspace is to undo that. Three-time offenders
-        # get blacklisted.
+        # then this backspace is to undo that.
         if last_action["type"] == "string-correction":
-            logging.debug("Undoing spell correction")
+            logger.debug("Undoing spell correction")
 
             # self.delete_prev_chars(1)
             self.editing_string = last_action["raw-string"]
             self.commit_composition()
 
             prev_raw_string = last_action["raw-string"]
-            self.spell_offenders[prev_raw_string] += 1
-
-            logging.debug("count = %s", self.spell_offenders[prev_raw_string])
-            if self.spell_offenders[prev_raw_string] == 3:
-                if self.emit(
-                        'new_spellcheck_offender',
-                        prev_raw_string):
-                    self.spellchecker.add(prev_raw_string)
-                else:
-                    self.spell_offenders[prev_raw_string] = 0
+            self.auto_corrector.increase_ticket(prev_raw_string)
 
             self.history.append({
                 "type": "undo",
@@ -228,27 +209,6 @@ class BaseBackend(GObject.Object):
             else:
                 return False
 
-        # http://en.wikibooks.org/wiki/Algorithm_Implementation/Strings/Levenshtein_distance#Python
-        def levenshtein(s1, s2):
-            if len(s1) < len(s2):
-                return levenshtein(s2, s1)
-         
-            # len(s1) >= len(s2)
-            if len(s2) == 0:
-                return len(s1)
-         
-            previous_row = range(len(s2) + 1)
-            for i, c1 in enumerate(s1):
-                current_row = [i + 1]
-                for j, c2 in enumerate(s2):
-                    insertions = previous_row[j + 1] + 1 # j+1 instead of j since previous_row and current_row are one character longer
-                    deletions = current_row[j] + 1       # than s2
-                    substitutions = previous_row[j] + (c1 != c2)
-                    current_row.append(min(insertions, deletions, substitutions))
-                previous_row = current_row
- 
-            return previous_row[-1]
-
         if can_expand():
             self.editing_string = expanded_string
             self.update_composition(self.editing_string)
@@ -258,35 +218,17 @@ class BaseBackend(GObject.Object):
                 "raw-string": self.raw_string,
                 "editing-string": self.editing_string
             })
-        elif is_non_vietnamese() \
-                and not self.spellchecker.check(self.raw_string):
-            try:
-                suggested = self.spellchecker.suggest(self.raw_string)[0]
-                max_distance = \
-                    self.config["typo-correction-level"]
-                distance = levenshtein(self.raw_string, suggested)
+        elif is_non_vietnamese():
+            self.editing_string = \
+                self.auto_corrector.suggest(self.raw_string) + ' '
+            self.update_composition(self.editing_string)
 
-                if not self.english_spellchecker.check(self.raw_string) and \
-                        distance <= max_distance:
-                    self.editing_string = \
-                        ' '.join(map(self.process_seq,
-                                     suggested.split(' '))) + ' '
-                    self.update_composition(self.editing_string)
-
-                    self.history.append({
-                        "type": "string-correction",
-                        "raw-string": self.raw_string,
-                        "editing-string": self.editing_string
-                    })
-            except IndexError:
-                pass
-
-    def process_seq(self, seq):
-        string = ""
-        raw = string
-        for i in seq:
-            string, raw = bogo.process_key(string,
-                                           i,
-                                           fallback_sequence=raw,
-                                           config=self.config)
-        return string
+            # Only save this edit as a string-correction
+            # if the editing_string is actually different
+            # from the raw_string.
+            if self.editing_string != self.raw_string:
+                self.history.append({
+                    "type": "string-correction",
+                    "raw-string": self.raw_string,
+                    "editing-string": self.editing_string
+                })

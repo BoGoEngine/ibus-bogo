@@ -38,6 +38,7 @@ sys.path.append(
 from ui import UiDelegate
 from preedit_backend import PreeditBackend
 from surrounding_text_backend import SurroundingTextBackend
+from auto_corrector import AutoCorrector
 
 logger = logging.getLogger(__name__)
 
@@ -60,36 +61,34 @@ class Engine(IBus.Engine):
             'enchant.myspell.dictionary.path',
             DICT_PATH)
 
-        self.spellchecker = enchant.DictWithPWL(
+        spellchecker = enchant.DictWithPWL(
             'vi_VN_telex',
             pwl=PWL_PATH,
             broker=custom_broker)
 
-        self.english_spellchecker = enchant.Dict('en_US')
+        english_spellchecker = enchant.Dict('en_US')
+
+        auto_corrector = AutoCorrector(
+            config, spellchecker, english_spellchecker)
+
+        auto_corrector.connect(
+            'new_spellcheck_offender',
+            self.on_new_spellcheck_offender)
 
         self.preedit_backend = PreeditBackend(
             engine=self,
             config=config,
             abbr_expander=abbr_expander,
-            spellchecker=self.spellchecker,
-            english_spellchecker=self.english_spellchecker)
+            auto_corrector=auto_corrector)
 
         self.surrounding_text_backend = SurroundingTextBackend(
             engine=self,
             config=config,
             abbr_expander=abbr_expander,
-            spellchecker=self.spellchecker,
-            english_spellchecker=self.english_spellchecker)
+            auto_corrector=auto_corrector)
 
+        # The preedit backend is the default
         self.backend = self.preedit_backend
-
-        self.surrounding_text_backend.connect(
-            'new_spellcheck_offender',
-            self.on_new_spellcheck_offender)
-
-        self.preedit_backend.connect(
-            'new_spellcheck_offender',
-            self.on_new_spellcheck_offender)
 
         # Create a new thread to detect mouse clicks
         # mouse_detector = MouseDetector.get_instance()
