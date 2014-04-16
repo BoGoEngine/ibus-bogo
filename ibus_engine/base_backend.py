@@ -194,11 +194,13 @@ class BaseBackend():
         return True
 
     def on_space_pressed(self):
-        expanded_string = ""
+        # Wrap the string inside a list so that can_expand() can
+        # modify the it.
+        expanded_string = [""]
 
         def can_expand():
             if self.config["enable-text-expansion"]:
-                expanded_string = self.abbr_expander.expand(self.editing_string)
+                expanded_string[0] = self.abbr_expander.expand(self.editing_string)
                 return expanded_string != self.editing_string
             else:
                 return False
@@ -210,7 +212,7 @@ class BaseBackend():
                 return False
 
         if can_expand():
-            self.editing_string = expanded_string
+            self.editing_string = expanded_string[0]
             self.update_composition(self.editing_string)
 
             self.history.append({
