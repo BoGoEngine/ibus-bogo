@@ -51,7 +51,6 @@ class SurroundingTextBackend(BaseBackend):
 
     def reset(self):
         super().reset()
-        self.previous_string = ""
 
     def update_composition(self, string):
         self.commit_string(string)
@@ -63,13 +62,14 @@ class SurroundingTextBackend(BaseBackend):
             super().commit_composition()
 
     def commit_string(self, string):
+        previous_string = self.last_action()["editing-string"]
         # Don't actually commit the whole string but only the part at the end
         # that differs from the editing_string
         same_initial_chars = list(takewhile(lambda tupl: tupl[0] == tupl[1],
-                                            zip(self.previous_string,
+                                            zip(previous_string,
                                                 string)))
 
-        n_backspace = len(self.previous_string) - len(same_initial_chars)
+        n_backspace = len(previous_string) - len(same_initial_chars)
         string_to_commit = string[len(same_initial_chars):]
 
         logger.debug("Deleting %s chars...", n_backspace)
@@ -77,7 +77,6 @@ class SurroundingTextBackend(BaseBackend):
 
         logger.debug("Committing: %s", string_to_commit)
         self.engine.commit_text(IBus.Text.new_from_string(string_to_commit))
-        self.previous_string = string
 
     def process_key_event(self, keyval, modifiers):
         if keyval != IBus.BackSpace and \
@@ -87,7 +86,7 @@ class SurroundingTextBackend(BaseBackend):
         if keyval in [IBus.Return, IBus.BackSpace, IBus.space]:
             return self.on_special_key_pressed(keyval)
 
-        if len(self.editing_string) == 0:
+        if len(self.last_action()["editing-string"]) == 0:
             # If we are not editing any word then try to process the
             # existing word at the cursor.
             surrounding_text, cursor, anchor = \
@@ -102,7 +101,6 @@ class SurroundingTextBackend(BaseBackend):
                     "editing-string": editing_string,
                     "raw-string": editing_string
                 })
-                self.previous_string = editing_string
 
         eaten = super().process_key_event(keyval, modifiers)
         return eaten
@@ -129,15 +127,16 @@ class SurroundingTextBackend(BaseBackend):
 
         if keyval == IBus.BackSpace:
             self.on_backspace_pressed()
-            self.previous_string = self.previous_string[:-1]
 
-            if self.last_action()["type"] == "undo":
+            last_action = self.last_action()
+            if last_action["type"] == "undo":
                 # The next backspace should be a normal backspace
                 self.history.append({
                     "type": "none",
-                    "editing-string": self.editing_string,
-                    "raw-string": self.raw_string
+                    "editing-string": last_action["editing-string"],
+                    "raw-string": last_action["raw-string"]
                 })
+                self.reset()
                 return True
             else:
                 return False
