@@ -94,9 +94,9 @@ class BaseBackend():
             logger.debug("Old string: %s", self.editing_string)
 
             # Brace shift for TELEX's ][ keys.
-            # When typing with capslock on, ][ won't get shifted to }{ resulting
-            # in weird capitalization in "TưởNG". So we have to shift them
-            # manually.
+            # When typing with capslock on, ][ won't get shifted to }{
+            # resulting in weird capitalization in "TưởNG". So we have to
+            # shift them manually.
             keyval, brace_shift = self.do_brace_shift(keyval, modifiers)
 
             # Invoke BoGo to process the input
