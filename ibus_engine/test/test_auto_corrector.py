@@ -1,6 +1,10 @@
 from nose.tools import eq_
 from ibus_engine.auto_corrector import AutoCorrector
-from unittest.mock import Mock
+
+try:
+    from unittest.mock import Mock
+except:
+    from mock import Mock
 
 
 class TestAutoCorrector():
