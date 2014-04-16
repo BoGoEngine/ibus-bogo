@@ -89,9 +89,13 @@ class BaseBackend():
 
     def process_key_event(self, keyval, modifiers):
         if self.is_processable_key(keyval, modifiers):
+            last_action = self.last_action()
+            editing_string = last_action["editing-string"]
+            raw_string = last_action["raw-string"]
+
             logger.debug("Key pressed: %c", chr(keyval))
-            logger.debug("Raw string: %s", self.raw_string)
-            logger.debug("Old string: %s", self.editing_string)
+            logger.debug("Previous raw string: %s", raw_string)
+            logger.debug("Previous editing string: %s", editing_string)
 
             # Brace shift for TELEX's ][ keys.
             # When typing with capslock on, ][ won't get shifted to }{
@@ -100,10 +104,10 @@ class BaseBackend():
             keyval, brace_shift = self.do_brace_shift(keyval, modifiers)
 
             # Invoke BoGo to process the input
-            new_string, self.raw_string = \
-                bogo.process_key(string=self.editing_string,
+            new_string, new_raw_string = \
+                bogo.process_key(string=editing_string,
                                  key=chr(keyval),
-                                 fallback_sequence=self.raw_string,
+                                 fallback_sequence=raw_string,
                                  config=self.config)
 
             # Revert the brace shift
@@ -114,8 +118,8 @@ class BaseBackend():
 
             logger.debug("New string: %s", new_string)
 
+            self.raw_string = new_raw_string
             self.update_composition(new_string)
-            self.editing_string = new_string
             return True
         else:
             self.commit_composition()
