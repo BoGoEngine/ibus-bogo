@@ -60,6 +60,8 @@ class AutoCorrector(GObject.Object):
                     distance <= max_distance:
                 return ' '.join(map(self.process_seq,
                                 suggested.split(' ')))
+            else:
+                return key_sequence
         except IndexError:
             # No suggestion is found
             return key_sequence
