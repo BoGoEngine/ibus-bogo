@@ -82,13 +82,6 @@ class PreeditBackend(BaseBackend):
             return self.on_special_key_pressed(keyval)
 
         eaten = super().process_key_event(keyval, modifiers)
-
-        if eaten:
-            self.update_composition(self.editing_string)
-        else:
-            self.commit_composition()
-            self.reset()
-
         return eaten
 
     def do_enable(self):

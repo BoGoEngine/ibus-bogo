@@ -118,6 +118,8 @@ class BaseBackend():
             self.editing_string = new_string
             return True
         else:
+            self.commit_composition()
+            self.reset()
             return False
 
     def do_brace_shift(self, keyval, modifiers):

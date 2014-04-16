@@ -101,12 +101,6 @@ class SurroundingTextBackend(BaseBackend):
                 self.raw_string = self.editing_string
 
         eaten = super().process_key_event(keyval, modifiers)
-
-        if eaten:
-            self.update_composition(self.editing_string)
-        else:
-            self.reset()
-
         return eaten
 
     def do_enable(self):
