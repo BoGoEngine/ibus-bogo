@@ -45,7 +45,7 @@ class BaseBackend():
         super().__init__()
 
     def last_nth_action(self, nth):
-        if len(self.history) > nth:
+        if len(self.history) >= nth:
             return self.history[-nth]
         else:
             return {
