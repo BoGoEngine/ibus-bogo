@@ -151,7 +151,7 @@ class BaseBackend():
         # If the last commited string is a spellchecker suggestion
         # then this backspace is to undo that.
         if last_action["type"] == "string-correction":
-            logging.debug("Undoing spell correction")
+            logger.debug("Undoing spell correction")
 
             # self.delete_prev_chars(1)
             self.editing_string = last_action["raw-string"]
