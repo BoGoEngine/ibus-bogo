@@ -1,5 +1,4 @@
 from nose.tools import eq_
-from gi.repository import IBus
 from ibus_engine.base_backend import BaseBackend
 from ibus_engine.abbr import AbbreviationExpander
 
@@ -34,8 +33,7 @@ class TestEngine():
         self.eng = BaseBackend(
             config=config,
             abbr_expander=AbbreviationExpander(),
-            spellchecker=None,
-            english_spellchecker=None)
+            auto_corrector=None)
 
     def send_keys(self, input, engine):
         [self.send_key(character, engine) for character in input]
