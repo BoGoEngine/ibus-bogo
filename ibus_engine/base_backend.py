@@ -209,39 +209,42 @@ class BaseBackend():
         # modify the it.
         expanded_string = [""]
 
+        last_action = self.last_action()
+        editing_string = last_action["editing-string"]
+        raw_string = last_action["raw-string"]
+
         def can_expand():
             if self.config["enable-text-expansion"]:
-                expanded_string[0] = self.abbr_expander.expand(self.editing_string)
-                return expanded_string != self.editing_string
+                expanded_string[0] = self.abbr_expander.expand(editing_string)
+                return expanded_string[0] != editing_string
             else:
                 return False
 
         def is_non_vietnamese():
             if self.config['skip-non-vietnamese']:
-                return not bogo.validation.is_valid_string(self.editing_string)
+                return not bogo.validation.is_valid_string(editing_string)
             else:
                 return False
 
         if can_expand():
-            self.editing_string = expanded_string[0]
-            self.update_composition(self.editing_string)
+            self.update_composition(expanded_string[0])
 
             self.history.append({
                 "type": "string-expansion",
-                "raw-string": self.raw_string,
-                "editing-string": self.editing_string
+                "raw-string": raw_string,
+                "editing-string": expanded_string[0]
             })
         elif is_non_vietnamese():
-            self.editing_string = \
+            suggested = \
                 self.auto_corrector.suggest(self.raw_string) + ' '
-            self.update_composition(self.editing_string)
+            self.update_composition(suggested)
 
             # Only save this edit as a string-correction
             # if the editing_string is actually different
             # from the raw_string.
-            if self.editing_string != self.raw_string:
+            if suggested != raw_string:
                 self.history.append({
                     "type": "string-correction",
-                    "raw-string": self.raw_string,
-                    "editing-string": self.editing_string
+                    "raw-string": raw_string,
+                    "editing-string": suggested
                 })
