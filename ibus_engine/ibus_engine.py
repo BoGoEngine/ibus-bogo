@@ -38,7 +38,7 @@ sys.path.append(
 from ui import UiDelegate
 from preedit_backend import PreeditBackend
 from surrounding_text_backend import SurroundingTextBackend
-import base_backend
+from auto_corrector import AutoCorrector
 
 logger = logging.getLogger(__name__)
 
@@ -68,7 +68,7 @@ class Engine(IBus.Engine):
 
         english_spellchecker = enchant.Dict('en_US')
 
-        auto_corrector = base_backend.AutoCorrector(
+        auto_corrector = AutoCorrector(
             config, spellchecker, english_spellchecker)
 
         auto_corrector.connect(

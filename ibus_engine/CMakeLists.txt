@@ -47,6 +47,7 @@ install (FILES
   base_backend.py
   preedit_backend.py
   surrounding_text_backend.py
+  auto_corrector.py
   trayicon.py
   DESTINATION
   ${BOGO_INSTALL_DIR}/ibus_engine
