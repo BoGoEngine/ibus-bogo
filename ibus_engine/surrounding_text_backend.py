@@ -96,9 +96,13 @@ class SurroundingTextBackend(BaseBackend):
 
             # FIXME replace isalpha() with something like is_processable()
             if surrounding_text and surrounding_text[-1].isalpha():
-                self.editing_string = surrounding_text.split(" ")[-1]
-                self.previous_string = self.editing_string
-                self.raw_string = self.editing_string
+                editing_string = surrounding_text.split(" ")[-1]
+                self.history.append({
+                    "type": "update-composition",
+                    "editing-string": editing_string,
+                    "raw-string": editing_string
+                })
+                self.previous_string = editing_string
 
         eaten = super().process_key_event(keyval, modifiers)
         return eaten
