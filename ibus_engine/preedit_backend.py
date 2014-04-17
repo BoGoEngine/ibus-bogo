@@ -22,7 +22,7 @@ import logging
 from gi.repository import IBus
 
 import vncharsets
-from base_backend import BaseBackend
+from base_backend import BaseBackend, BackspaceType
 
 vncharsets.init()
 logger = logging.getLogger(__name__)
@@ -96,12 +96,17 @@ class PreeditBackend(BaseBackend):
             return False
 
         if keyval == IBus.BackSpace:
-            eaten = self.on_backspace_pressed()
+            backspace_type = self.on_backspace_pressed()
 
-            if eaten:
-                self.update_composition(self.editing_string)
-
-            return eaten
+            if backspace_type == BackspaceType.HARD:
+                return False
+            elif backspace_type == BackspaceType.SOFT:
+                self.update_composition(
+                    self.last_action()["editing-string"])
+                return True
+            elif backspace_type == BackspaceType.UNDO:
+                self.reset()
+                return True
 
         if keyval == IBus.space:
             self.on_space_pressed()

@@ -29,6 +29,12 @@ import bogo
 logger = logging.getLogger(__name__)
 
 
+class BackspaceType:
+    HARD = 0
+    SOFT = 1
+    UNDO = 2
+
+
 class BaseBackend():
 
     def __init__(self, config, abbr_expander,
@@ -186,19 +192,22 @@ class BaseBackend():
         return False
 
     def on_backspace_pressed(self):
+        """
+        Return BackspaceType - whether to do a "HARD" or "SOFT" backspace
+                               or nothing on "UNDO".
+        """
         logger.debug("Getting a backspace")
         editing_string = self.last_action()["editing-string"]
         raw_string = self.last_action()["raw-string"]
 
         if editing_string == "":
-            self.reset()
-            return
+            return BackspaceType.HARD
 
         # Backspace is also the hotkey to undo the last action where
         # applicable.
         has_undone = self.undo_last_action()
         if has_undone:
-            return
+            return BackspaceType.UNDO
 
         deleted_char = editing_string[-1]
         editing_string = editing_string[:-1]
@@ -213,6 +222,7 @@ class BaseBackend():
             "raw-string": raw_string,
             "editing-string": editing_string
         })
+        return BackspaceType.SOFT
 
     def on_space_pressed(self):
         # Wrap the string inside a list so that can_expand() can
