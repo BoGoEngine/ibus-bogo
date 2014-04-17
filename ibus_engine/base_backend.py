@@ -246,15 +246,18 @@ class BaseBackend():
             })
         elif is_non_vietnamese():
             suggested = \
-                self.auto_corrector.suggest(self.raw_string) + ' '
-            self.update_composition(suggested)
+                self.auto_corrector.suggest(self.raw_string)
 
             # Only save this edit as a string-correction
             # if the editing_string is actually different
             # from the raw_string.
             if suggested != raw_string:
+                suggested += ' '
+                self.update_composition(suggested)
                 self.history.append({
                     "type": "string-correction",
                     "raw-string": raw_string,
                     "editing-string": suggested
                 })
+            else:
+                self.update_composition(suggested)
