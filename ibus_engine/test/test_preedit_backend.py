@@ -60,7 +60,8 @@ class TestPreeditBackend():
 
         self.backend.commit_composition.assert_called_once_with(
             corrected_string)
-        self.backend.update_composition.assert_called_once_with(key)
+        self.backend.update_composition.assert_called_once_with(
+            string=key, raw_string=key)
 
     def test_backspace_preedit(self):
         """

@@ -64,25 +64,25 @@ class BaseBackend():
         return self.last_nth_action(1)
 
     def reset(self):
-        self.editing_string = ""
-        self.raw_string = ""
         self.history.append({
             "type": "reset",
             "raw-string": "",
             "editing-string": ""
         })
 
-    def update_composition(self, string):
+    def update_composition(self, string, raw_string=None):
         self.history.append({
             "type": "update-composition",
-            "raw-string": self.raw_string,
+            "raw-string": raw_string if raw_string
+                    else self.last_action()["raw-string"],
             "editing-string": string
         })
 
-    def commit_composition(self, string):
+    def commit_composition(self, string, raw_string=None):
         self.history.append({
             "type": "commit-composition",
-            "raw-string": self.raw_string,
+            "raw-string": raw_string if raw_string
+                    else self.last_action()["raw-string"],
             "editing-string": string
         })
 
@@ -125,8 +125,9 @@ class BaseBackend():
 
             logger.debug("New string: %s", new_string)
 
-            self.raw_string = new_raw_string
-            self.update_composition(new_string)
+            self.update_composition(
+                string=new_string,
+                raw_string=new_raw_string)
             return True
         else:
             self.commit_composition(editing_string)
@@ -235,7 +236,8 @@ class BaseBackend():
 
         def can_expand():
             if self.config["enable-text-expansion"]:
-                expanded_string[0] = self.abbr_expander.expand(editing_string)
+                expanded_string[0] = \
+                    self.abbr_expander.expand(editing_string)
                 return expanded_string[0] != editing_string
             else:
                 return False
@@ -256,7 +258,7 @@ class BaseBackend():
             })
         elif is_non_vietnamese():
             suggested = \
-                self.auto_corrector.suggest(self.raw_string)
+                self.auto_corrector.suggest(self.last_action()["raw-string"])
 
             # Only save this edit as a string-correction
             # if the editing_string is actually different

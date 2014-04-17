@@ -47,7 +47,7 @@ class PreeditBackend(BaseBackend):
         self.engine.hide_preedit_text()
         super().reset()
 
-    def update_composition(self, string):
+    def update_composition(self, string, raw_string=None):
         logger.debug("Updating composition...")
         text = IBus.Text.new_from_string(string)
         text.append_attribute(type=IBus.AttrType.UNDERLINE,
@@ -61,16 +61,16 @@ class PreeditBackend(BaseBackend):
                                            cursor_pos=len(string),
                                            visible=True,
                                            mode=IBus.PreeditFocusMode.COMMIT)
-        super().update_composition(string)
+        super().update_composition(string, raw_string)
 
-    def commit_composition(self, string):
+    def commit_composition(self, string, raw_string=None):
         logger.debug("Committing composition...")
         if len(string) != 0:
             self.engine.update_preedit_text(text=IBus.Text.new_from_string(""),
                                             cursor_pos=0,
                                             visible=False)
             self.engine.commit_text(IBus.Text.new_from_string(string))
-            super().commit_composition(string)
+            super().commit_composition(string, raw_string)
 
     def process_key_event(self, keyval, modifiers):
         if keyval != IBus.BackSpace and \

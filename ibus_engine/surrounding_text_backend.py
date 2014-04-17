@@ -52,14 +52,14 @@ class SurroundingTextBackend(BaseBackend):
     def reset(self):
         super().reset()
 
-    def update_composition(self, string):
+    def update_composition(self, string, raw_string=None):
         self.commit_string(string)
-        super().update_composition(string)
+        super().update_composition(string, raw_string)
 
-    def commit_composition(self, string):
+    def commit_composition(self, string, raw_string=None):
         if len(string) != 0:
             self.commit_string(string)
-            super().commit_composition(string)
+            super().commit_composition(string, raw_string)
 
     def commit_string(self, string):
         previous_string = self.last_action()["editing-string"]

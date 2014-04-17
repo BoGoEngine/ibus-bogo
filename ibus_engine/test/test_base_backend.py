@@ -41,7 +41,7 @@ class TestBaseBackend():
     def test_commit_composition(self):
         """
         commit_composition() should create a new history entry based on
-        self.editing_string.
+        the last editing_string.
         """
 
         string = "blah"
