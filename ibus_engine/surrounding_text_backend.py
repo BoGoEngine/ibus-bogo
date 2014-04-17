@@ -63,6 +63,7 @@ class SurroundingTextBackend(BaseBackend):
 
     def commit_string(self, string):
         previous_string = self.last_action()["editing-string"]
+
         # Don't actually commit the whole string but only the part at the end
         # that differs from the previous_string
         same_initial_chars = list(takewhile(lambda tupl: tupl[0] == tupl[1],
@@ -130,12 +131,6 @@ class SurroundingTextBackend(BaseBackend):
 
             last_action = self.last_action()
             if last_action["type"] == "undo":
-                # The next backspace should be a normal backspace
-                self.history.append({
-                    "type": "none",
-                    "editing-string": last_action["editing-string"],
-                    "raw-string": last_action["raw-string"]
-                })
                 self.reset()
                 return True
             else:
