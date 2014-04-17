@@ -12,7 +12,10 @@ class TestBaseBackend():
     def setup(self):
         self.expander = Mock()
         self.corrector = Mock()
-        self.config = {}
+        self.config = {
+            "enable-text-expansion": False,
+            "skip-non-vietnamese": True
+        }
 
         self.backend = BaseBackend(
             config=self.config,
@@ -90,3 +93,81 @@ class TestBaseBackend():
         }
 
         eq_(self.backend.last_action(), expected)
+
+    def test_correction(self):
+        """
+        Should auto-correct.
+        """
+        string = "casl"
+        corrected = "cas"
+
+        self.expander.expand = Mock(return_value=string)
+        self.corrector.suggest = Mock(return_value=corrected)
+
+        self.backend.history.append({
+            "type": "update-composition",
+            "raw-string": string,
+            "editing-string": string
+        })
+
+        self.backend.on_space_pressed()
+
+        last_action = self.backend.last_action()
+        eq_(last_action["type"], "string-correction")
+        eq_(last_action["editing-string"], corrected + ' ')
+
+    def test_backspace_undo_correction(self):
+        """
+        Pressing backspace immediately after a correction should
+        undo it.
+        """
+        # First the original, non-Vietnamese is shown
+        self.backend.history.append({
+            "type": "update-composition",
+            "raw-string": "casl",
+            "editing-string": "casl"
+        })
+
+        # Then it got corrected, says to "cá "
+        self.backend.history.append({
+            "type": "update-composition",
+            "raw-string": "casltheotunheou",
+            "editing-string": "cá "
+        })
+
+        self.backend.history.append({
+            "type": "string-correction",
+            "raw-string": "casltheotunheou",  # gibberish
+            "editing-string": "cá "
+        })
+
+        self.backend.commit_composition = Mock()
+
+        # Then we press backspace
+        self.backend.on_backspace_pressed()
+
+        last_action = self.backend.last_action()
+        eq_(last_action["type"], "undo")
+        eq_(last_action["editing-string"], "casl")
+
+        self.backend.commit_composition.assert_called_once_with("casl")
+
+    def test_non_vietnamese(self):
+        """
+        It should keep non-Vietnamese strings intact.
+        """
+        string = "casl"
+
+        self.corrector.suggest = Mock(return_value=string)
+
+        self.backend.history.append({
+            "type": "update-composition",
+            "raw-string": string,
+            "editing-string": string
+        })
+
+        self.backend.on_space_pressed()
+
+        last_action = self.backend.last_action()
+        eq_(last_action["type"], "update-composition")
+        eq_(last_action["editing-string"], string)
