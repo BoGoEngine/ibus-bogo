@@ -26,7 +26,7 @@ from itertools import takewhile
 from gi.repository import IBus
 
 import vncharsets
-from base_backend import BaseBackend
+from base_backend import BaseBackend, BackspaceType
 
 vncharsets.init()
 logger = logging.getLogger(__name__)
@@ -51,25 +51,26 @@ class SurroundingTextBackend(BaseBackend):
 
     def reset(self):
         super().reset()
-        self.previous_string = ""
 
-    def update_composition(self, string):
+    def update_composition(self, string, raw_string=None):
         self.commit_string(string)
-        super().update_composition(string)
+        super().update_composition(string, raw_string)
 
-    def commit_composition(self):
-        if len(self.editing_string) != 0:
-            self.commit_string(self.editing_string)
-            super().commit_composition()
+    def commit_composition(self, string, raw_string=None):
+        if len(string) != 0:
+            self.commit_string(string)
+            super().commit_composition(string, raw_string)
 
     def commit_string(self, string):
+        previous_string = self.last_action()["editing-string"]
+
         # Don't actually commit the whole string but only the part at the end
-        # that differs from the editing_string
+        # that differs from the previous_string
         same_initial_chars = list(takewhile(lambda tupl: tupl[0] == tupl[1],
-                                            zip(self.previous_string,
+                                            zip(previous_string,
                                                 string)))
 
-        n_backspace = len(self.previous_string) - len(same_initial_chars)
+        n_backspace = len(previous_string) - len(same_initial_chars)
         string_to_commit = string[len(same_initial_chars):]
 
         logger.debug("Deleting %s chars...", n_backspace)
@@ -77,7 +78,6 @@ class SurroundingTextBackend(BaseBackend):
 
         logger.debug("Committing: %s", string_to_commit)
         self.engine.commit_text(IBus.Text.new_from_string(string_to_commit))
-        self.previous_string = string
 
     def process_key_event(self, keyval, modifiers):
         if keyval != IBus.BackSpace and \
@@ -87,7 +87,7 @@ class SurroundingTextBackend(BaseBackend):
         if keyval in [IBus.Return, IBus.BackSpace, IBus.space]:
             return self.on_special_key_pressed(keyval)
 
-        if len(self.editing_string) == 0:
+        if len(self.last_action()["editing-string"]) == 0:
             # If we are not editing any word then try to process the
             # existing word at the cursor.
             surrounding_text, cursor, anchor = \
@@ -96,17 +96,14 @@ class SurroundingTextBackend(BaseBackend):
 
             # FIXME replace isalpha() with something like is_processable()
             if surrounding_text and surrounding_text[-1].isalpha():
-                self.editing_string = surrounding_text.split(" ")[-1]
-                self.previous_string = self.editing_string
-                self.raw_string = self.editing_string
+                editing_string = surrounding_text.split(" ")[-1]
+                self.history.append({
+                    "type": "update-composition",
+                    "editing-string": editing_string,
+                    "raw-string": editing_string
+                })
 
         eaten = super().process_key_event(keyval, modifiers)
-
-        if eaten:
-            self.update_composition(self.editing_string)
-        else:
-            self.reset()
-
         return eaten
 
     def do_enable(self):
@@ -130,16 +127,10 @@ class SurroundingTextBackend(BaseBackend):
             return False
 
         if keyval == IBus.BackSpace:
-            self.on_backspace_pressed()
-            self.previous_string = self.previous_string[:-1]
+            backspace_type = self.on_backspace_pressed()
 
-            if self.last_action()["type"] == "undo":
-                # The next backspace should be a normal backspace
-                self.history.append({
-                    "type": "none",
-                    "editing-string": self.editing_string,
-                    "raw-string": self.raw_string
-                })
+            if backspace_type == BackspaceType.UNDO:
+                self.reset()
                 return True
             else:
                 return False

@@ -29,6 +29,12 @@ import bogo
 logger = logging.getLogger(__name__)
 
 
+class BackspaceType:
+    HARD = 0
+    SOFT = 1
+    UNDO = 2
+
+
 class BaseBackend():
 
     def __init__(self, config, abbr_expander,
@@ -45,7 +51,7 @@ class BaseBackend():
         super().__init__()
 
     def last_nth_action(self, nth):
-        if len(self.history) > nth:
+        if len(self.history) >= nth:
             return self.history[-nth]
         else:
             return {
@@ -58,47 +64,58 @@ class BaseBackend():
         return self.last_nth_action(1)
 
     def reset(self):
-        self.editing_string = ""
-        self.raw_string = ""
-
-    def update_composition(self, string):
         self.history.append({
-            "type": "update-composition",
-            "raw-string": self.raw_string,
-            "editing-string": self.editing_string
+            "type": "reset",
+            "raw-string": "",
+            "editing-string": ""
         })
 
-    def commit_composition(self):
+    def update_composition(self, string, raw_string=None):
+        self.history.append({
+            "type": "update-composition",
+            "raw-string": raw_string if raw_string
+                    else self.last_action()["raw-string"],
+            "editing-string": string
+        })
+
+    def commit_composition(self, string, raw_string=None):
         self.history.append({
             "type": "commit-composition",
-            "raw-string": self.raw_string,
-            "editing-string": self.editing_string
+            "raw-string": raw_string if raw_string
+                    else self.last_action()["raw-string"],
+            "editing-string": string
         })
 
     def delete_prev_chars(self, count):
-        self.history.append({
-            "type": "delete-prev-chars",
-            "raw-string": self.raw_string,
-            "editing-string": self.editing_string
-        })
+        pass
+        # self.history.append({
+        #     "type": "delete-prev-chars",
+        #     "raw-string": self.raw_string,
+        #     "editing-string": self.editing_string
+        # })
 
     def process_key_event(self, keyval, modifiers):
+        last_action = self.last_action()
+        editing_string = last_action["editing-string"]
+        raw_string = last_action["raw-string"]
+
         if self.is_processable_key(keyval, modifiers):
+
             logger.debug("Key pressed: %c", chr(keyval))
-            logger.debug("Raw string: %s", self.raw_string)
-            logger.debug("Old string: %s", self.editing_string)
+            logger.debug("Previous raw string: %s", raw_string)
+            logger.debug("Previous editing string: %s", editing_string)
 
             # Brace shift for TELEX's ][ keys.
-            # When typing with capslock on, ][ won't get shifted to }{ resulting
-            # in weird capitalization in "TưởNG". So we have to shift them
-            # manually.
+            # When typing with capslock on, ][ won't get shifted to }{
+            # resulting in weird capitalization in "TưởNG". So we have to
+            # shift them manually.
             keyval, brace_shift = self.do_brace_shift(keyval, modifiers)
 
             # Invoke BoGo to process the input
-            new_string, self.raw_string = \
-                bogo.process_key(string=self.editing_string,
+            new_string, new_raw_string = \
+                bogo.process_key(string=editing_string,
                                  key=chr(keyval),
-                                 fallback_sequence=self.raw_string,
+                                 fallback_sequence=raw_string,
                                  config=self.config)
 
             # Revert the brace shift
@@ -109,10 +126,13 @@ class BaseBackend():
 
             logger.debug("New string: %s", new_string)
 
-            self.update_composition(new_string)
-            self.editing_string = new_string
+            self.update_composition(
+                string=new_string,
+                raw_string=new_raw_string)
             return True
         else:
+            self.commit_composition(editing_string)
+            self.reset()
             return False
 
     def do_brace_shift(self, keyval, modifiers):
@@ -153,82 +173,104 @@ class BaseBackend():
         if last_action["type"] == "string-correction":
             logger.debug("Undoing spell correction")
 
-            # self.delete_prev_chars(1)
-            self.editing_string = last_action["raw-string"]
-            self.commit_composition()
+            # string-correction is always preceded by an
+            # update-composition
+            target_action = self.last_nth_action(3)
 
-            prev_raw_string = last_action["raw-string"]
-            self.auto_corrector.increase_ticket(prev_raw_string)
+            self.commit_composition(
+                target_action["editing-string"])
+
+            self.auto_corrector.increase_ticket(
+                target_action["editing-string"])
 
             self.history.append({
                 "type": "undo",
-                "raw-string": self.raw_string,
-                "editing-string": self.editing_string
+                "raw-string": target_action["editing-string"],
+                "editing-string": target_action["editing-string"]
             })
 
-            self.reset()
             return True
 
         return False
 
     def on_backspace_pressed(self):
+        """
+        Return BackspaceType - whether to do a "HARD" or "SOFT" backspace
+                               or nothing on "UNDO".
+        """
         logger.debug("Getting a backspace")
-        if self.editing_string == "":
-            self.reset()
-            return False
+        editing_string = self.last_action()["editing-string"]
+        raw_string = self.last_action()["raw-string"]
+
+        if editing_string == "":
+            return BackspaceType.HARD
 
         # Backspace is also the hotkey to undo the last action where
         # applicable.
         has_undone = self.undo_last_action()
         if has_undone:
-            return True
+            return BackspaceType.UNDO
 
-        deleted_char = self.editing_string[-1]
-        self.editing_string = self.editing_string[:-1]
+        deleted_char = editing_string[-1]
+        editing_string = editing_string[:-1]
 
-        index = self.raw_string.rfind(deleted_char)
-        self.raw_string = self.raw_string[:-2] if index < 0 else \
-            self.raw_string[:index] + \
-            self.raw_string[(index + 1):]
+        index = raw_string.rfind(deleted_char)
+        raw_string = raw_string[:-2] if index < 0 else \
+            raw_string[:index] + \
+            raw_string[(index + 1):]
 
-        return True
+        self.history.append({
+            "type": "backspace",
+            "raw-string": raw_string,
+            "editing-string": editing_string
+        })
+        return BackspaceType.SOFT
 
     def on_space_pressed(self):
-        expanded_string = ""
+        # Wrap the string inside a list so that can_expand() can
+        # modify it.
+        expanded_string = [""]
+
+        last_action = self.last_action()
+        editing_string = last_action["editing-string"]
+        raw_string = last_action["raw-string"]
 
         def can_expand():
             if self.config["enable-text-expansion"]:
-                expanded_string = self.abbr_expander.expand(self.editing_string)
-                return expanded_string != self.editing_string
+                expanded_string[0] = \
+                    self.abbr_expander.expand(editing_string)
+                return expanded_string[0] != editing_string
             else:
                 return False
 
         def is_non_vietnamese():
             if self.config['skip-non-vietnamese']:
-                return not bogo.validation.is_valid_string(self.editing_string)
+                return not bogo.validation.is_valid_string(editing_string)
             else:
                 return False
 
         if can_expand():
-            self.editing_string = expanded_string
-            self.update_composition(self.editing_string)
+            self.update_composition(expanded_string[0])
 
             self.history.append({
                 "type": "string-expansion",
-                "raw-string": self.raw_string,
-                "editing-string": self.editing_string
+                "raw-string": raw_string,
+                "editing-string": expanded_string[0]
             })
         elif is_non_vietnamese():
-            self.editing_string = \
-                self.auto_corrector.suggest(self.raw_string) + ' '
-            self.update_composition(self.editing_string)
+            suggested = \
+                self.auto_corrector.suggest(self.last_action()["raw-string"])
 
             # Only save this edit as a string-correction
             # if the editing_string is actually different
             # from the raw_string.
-            if self.editing_string != self.raw_string:
+            if suggested != raw_string:
+                suggested += ' '
+                self.update_composition(suggested)
                 self.history.append({
                     "type": "string-correction",
-                    "raw-string": self.raw_string,
-                    "editing-string": self.editing_string
+                    "raw-string": raw_string,
+                    "editing-string": suggested
                 })
+            else:
+                self.update_composition(suggested)

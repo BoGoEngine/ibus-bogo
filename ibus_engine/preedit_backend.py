@@ -22,7 +22,7 @@ import logging
 from gi.repository import IBus
 
 import vncharsets
-from base_backend import BaseBackend
+from base_backend import BaseBackend, BackspaceType
 
 vncharsets.init()
 logger = logging.getLogger(__name__)
@@ -47,7 +47,7 @@ class PreeditBackend(BaseBackend):
         self.engine.hide_preedit_text()
         super().reset()
 
-    def update_composition(self, string):
+    def update_composition(self, string, raw_string=None):
         logger.debug("Updating composition...")
         text = IBus.Text.new_from_string(string)
         text.append_attribute(type=IBus.AttrType.UNDERLINE,
@@ -61,34 +61,27 @@ class PreeditBackend(BaseBackend):
                                            cursor_pos=len(string),
                                            visible=True,
                                            mode=IBus.PreeditFocusMode.COMMIT)
-        super().update_composition(string)
+        super().update_composition(string, raw_string)
 
-    def commit_composition(self):
+    def commit_composition(self, string, raw_string=None):
         logger.debug("Committing composition...")
-        if len(self.editing_string) != 0:
+        if len(string) != 0:
             self.engine.update_preedit_text(text=IBus.Text.new_from_string(""),
                                             cursor_pos=0,
                                             visible=False)
-            self.engine.commit_text(IBus.Text.new_from_string(self.editing_string))
-            super().commit_composition()
+            self.engine.commit_text(IBus.Text.new_from_string(string))
+            super().commit_composition(string, raw_string)
 
     def process_key_event(self, keyval, modifiers):
         if keyval != IBus.BackSpace and \
                 self.last_action()["type"] == "string-correction":
-            self.commit_composition()
+            self.commit_composition(self.last_action()["editing-string"])
             self.reset()
 
         if keyval in [IBus.BackSpace, IBus.space]:
             return self.on_special_key_pressed(keyval)
 
         eaten = super().process_key_event(keyval, modifiers)
-
-        if eaten:
-            self.update_composition(self.editing_string)
-        else:
-            self.commit_composition()
-            self.reset()
-
         return eaten
 
     def do_enable(self):
@@ -103,18 +96,23 @@ class PreeditBackend(BaseBackend):
             return False
 
         if keyval == IBus.BackSpace:
-            eaten = self.on_backspace_pressed()
+            backspace_type = self.on_backspace_pressed()
 
-            if eaten:
-                self.update_composition(self.editing_string)
-
-            return eaten
+            if backspace_type == BackspaceType.HARD:
+                return False
+            elif backspace_type == BackspaceType.SOFT:
+                self.update_composition(
+                    self.last_action()["editing-string"])
+                return True
+            elif backspace_type == BackspaceType.UNDO:
+                self.reset()
+                return True
 
         if keyval == IBus.space:
             self.on_space_pressed()
             if self.last_action()["type"] == "string-correction":
                 return True
             else:
-                self.commit_composition()
+                self.commit_composition(self.last_action()["editing-string"])
                 self.reset()
                 return False
