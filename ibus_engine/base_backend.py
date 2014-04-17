@@ -216,7 +216,7 @@ class BaseBackend():
 
     def on_space_pressed(self):
         # Wrap the string inside a list so that can_expand() can
-        # modify the it.
+        # modify it.
         expanded_string = [""]
 
         last_action = self.last_action()

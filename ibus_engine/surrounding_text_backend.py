@@ -64,7 +64,7 @@ class SurroundingTextBackend(BaseBackend):
     def commit_string(self, string):
         previous_string = self.last_action()["editing-string"]
         # Don't actually commit the whole string but only the part at the end
-        # that differs from the editing_string
+        # that differs from the previous_string
         same_initial_chars = list(takewhile(lambda tupl: tupl[0] == tupl[1],
                                             zip(previous_string,
                                                 string)))
