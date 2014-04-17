@@ -20,7 +20,7 @@ before_script:
 # command to run tests
 script:
   - NOSE_PATH=$(which nosetests)
-  - coverages run $NOSE_PATH --attr '!skip-travis' ibus_engine gui vncharsets
+  - coverage run $NOSE_PATH --attr '!skip-travis' ibus_engine gui vncharsets
 after_success:
   - coveralls
 
