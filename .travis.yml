@@ -12,14 +12,15 @@ virtualenv:
 before_install:
   - sudo apt-get update
   - sudo apt-get install -qq ibus python3-gi gir1.2-ibus-1.0 gir1.2-wnck-3.0 python3-pyqt4 python3-enchant python3-mock
-  - pip install --use-mirrors coveralls
+  - pip install coveralls
 before_script:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
 
 # command to run tests
 script:
-  - nosetests --attr '!skip-travis' --with-coverage --cover-package=ibus_engine,gui,vncharsets ibus_engine gui vncharsets
+  - NOSE_PATH=$(which nosetests)
+  - coverages run $NOSE_PATH --attr '!skip-travis' ibus_engine gui vncharsets
 after_success:
   - coveralls
 
