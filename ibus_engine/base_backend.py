@@ -88,10 +88,11 @@ class BaseBackend():
         })
 
     def process_key_event(self, keyval, modifiers):
+        last_action = self.last_action()
+        editing_string = last_action["editing-string"]
+        raw_string = last_action["raw-string"]
+
         if self.is_processable_key(keyval, modifiers):
-            last_action = self.last_action()
-            editing_string = last_action["editing-string"]
-            raw_string = last_action["raw-string"]
 
             logger.debug("Key pressed: %c", chr(keyval))
             logger.debug("Previous raw string: %s", raw_string)
