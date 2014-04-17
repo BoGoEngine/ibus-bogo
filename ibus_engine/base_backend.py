@@ -87,11 +87,12 @@ class BaseBackend():
         })
 
     def delete_prev_chars(self, count):
-        self.history.append({
-            "type": "delete-prev-chars",
-            "raw-string": self.raw_string,
-            "editing-string": self.editing_string
-        })
+        pass
+        # self.history.append({
+        #     "type": "delete-prev-chars",
+        #     "raw-string": self.raw_string,
+        #     "editing-string": self.editing_string
+        # })
 
     def process_key_event(self, keyval, modifiers):
         last_action = self.last_action()
