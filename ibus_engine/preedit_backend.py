@@ -63,19 +63,19 @@ class PreeditBackend(BaseBackend):
                                            mode=IBus.PreeditFocusMode.COMMIT)
         super().update_composition(string)
 
-    def commit_composition(self):
+    def commit_composition(self, string):
         logger.debug("Committing composition...")
-        if len(self.editing_string) != 0:
+        if len(string) != 0:
             self.engine.update_preedit_text(text=IBus.Text.new_from_string(""),
                                             cursor_pos=0,
                                             visible=False)
-            self.engine.commit_text(IBus.Text.new_from_string(self.editing_string))
-            super().commit_composition()
+            self.engine.commit_text(IBus.Text.new_from_string(string))
+            super().commit_composition(string)
 
     def process_key_event(self, keyval, modifiers):
         if keyval != IBus.BackSpace and \
                 self.last_action()["type"] == "string-correction":
-            self.commit_composition()
+            self.commit_composition(self.last_action()["editing-string"])
             self.reset()
 
         if keyval in [IBus.BackSpace, IBus.space]:
@@ -108,6 +108,6 @@ class PreeditBackend(BaseBackend):
             if self.last_action()["type"] == "string-correction":
                 return True
             else:
-                self.commit_composition()
+                self.commit_composition(self.last_action()["editing-string"])
                 self.reset()
                 return False

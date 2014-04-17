@@ -73,11 +73,11 @@ class BaseBackend():
             "editing-string": string
         })
 
-    def commit_composition(self):
+    def commit_composition(self, string):
         self.history.append({
             "type": "commit-composition",
             "raw-string": self.raw_string,
-            "editing-string": self.editing_string
+            "editing-string": string
         })
 
     def delete_prev_chars(self, count):
@@ -122,7 +122,7 @@ class BaseBackend():
             self.update_composition(new_string)
             return True
         else:
-            self.commit_composition()
+            self.commit_composition(editing_string)
             self.reset()
             return False
 
@@ -164,17 +164,20 @@ class BaseBackend():
         if last_action["type"] == "string-correction":
             logger.debug("Undoing spell correction")
 
-            # self.delete_prev_chars(1)
-            self.editing_string = last_action["raw-string"]
-            self.commit_composition()
+            # string-correction is always preceded by an
+            # update-composition
+            target_action = self.last_nth_action(3)
 
-            prev_raw_string = last_action["raw-string"]
-            self.auto_corrector.increase_ticket(prev_raw_string)
+            self.commit_composition(
+                target_action["editing-string"])
+
+            self.auto_corrector.increase_ticket(
+                target_action["editing-string"])
 
             self.history.append({
                 "type": "undo",
-                "raw-string": prev_raw_string,
-                "editing-string": prev_raw_string
+                "raw-string": target_action["editing-string"],
+                "editing-string": target_action["editing-string"]
             })
 
             return True

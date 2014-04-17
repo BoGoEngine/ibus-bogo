@@ -42,9 +42,8 @@ class TestBaseBackend():
         """
 
         string = "blah"
-        self.backend.editing_string = string
 
-        self.backend.commit_composition()
+        self.backend.commit_composition(string)
 
         expected = {
             "type": "commit-composition",
