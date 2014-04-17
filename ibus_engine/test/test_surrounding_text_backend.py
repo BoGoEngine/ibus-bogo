@@ -62,6 +62,21 @@ class TestSurroundingTextBackend():
             differ_len)
         eq_(self.engine.commit_text.call_args[0][0].text, diff_string)
 
+    def test_delete_prev_chars(self):
+        """
+        delete_prev_chars() should use delete_surrounding_text()
+        """
+        count = 10
+        self.engine.delete_surrounding_text = Mock()
+
+        # Should do nothing with 0 count
+        self.backend.delete_prev_chars(0)
+        eq_(self.engine.delete_surrounding_text.called, False)
+
+        self.backend.delete_prev_chars(count)
+        self.engine.delete_surrounding_text.assert_called_once_with(
+            offset=-count, nchars=count)
+
     def test_backspace(self):
         """
         on_special_key_pressed() should not swallow a normal backspace.
@@ -89,3 +104,37 @@ class TestSurroundingTextBackend():
         expected = True
         eq_(result, expected)
         self.backend.reset.assert_called_once()
+
+    def test_pick_up_surrounding_text(self):
+        """
+        process_key_event() should work with the surrounding text
+        if possible.
+        """
+        surrounding_text = Mock()
+        surrounding_text.text = "ao"
+        cursor = 2
+        anchor = 2
+        key = "s"
+        result = "áo"
+
+        self.config["default-input-methods"] = {
+            "my-im": {
+                "s": "/"
+            }
+        }
+        self.config["input-method"] = "my-im"
+
+        self.engine.get_surrounding_text = \
+            Mock(return_value=(surrounding_text, cursor, anchor))
+
+        self.backend.process_key_event(ord(key), 0)
+
+        self.engine.get_surrounding_text.assert_called_once()
+
+        last_action = self.backend.last_action()
+        expected = {
+            "type": "update-composition",
+            "editing-string": result,
+            "raw-string": surrounding_text.text + key
+        }
+        eq_(last_action, expected)
