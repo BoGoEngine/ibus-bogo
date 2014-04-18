@@ -89,10 +89,12 @@ class TestAutoCorrector():
         self.corrector.connect(
             "new_spellcheck_offender", on_new_spellcheck_offender)
 
+        self.config["typo-correction-threshold"] = 2
+
         sequence = "carl"
-        self.corrector.increase_ticket(sequence)
-        self.corrector.increase_ticket(sequence)
-        self.corrector.increase_ticket(sequence)
+
+        for i in range(self.config["typo-correction-threshold"]):
+            self.corrector.increase_ticket(sequence)
 
         on_new_spellcheck_offender.assert_called_once_with(
             self.corrector, sequence)
@@ -110,10 +112,11 @@ class TestAutoCorrector():
         self.corrector.connect(
             "new_spellcheck_offender", on_new_spellcheck_offender)
 
+        self.config["typo-correction-threshold"] = 2
+
         sequence = "carl"
-        self.corrector.increase_ticket(sequence)
-        self.corrector.increase_ticket(sequence)
-        self.corrector.increase_ticket(sequence)
+        for i in range(self.config["typo-correction-threshold"]):
+            self.corrector.increase_ticket(sequence)
 
         on_new_spellcheck_offender.assert_called_once_with(
             self.corrector, sequence)

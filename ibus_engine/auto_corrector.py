@@ -69,7 +69,8 @@ class AutoCorrector(GObject.Object):
     def increase_ticket(self, key_sequence):
         self.offence_tickets[key_sequence] += 1
 
-        if self.offence_tickets[key_sequence] == 3:
+        max_offence_count = self.config["typo-correction-threshold"]
+        if self.offence_tickets[key_sequence] == max_offence_count:
             if self.emit(
                     'new_spellcheck_offender',
                     key_sequence):
