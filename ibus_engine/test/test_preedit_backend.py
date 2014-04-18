@@ -1,6 +1,6 @@
 from nose.tools import eq_
 from gi.repository import IBus
-from ibus_engine.preedit_backend import PreeditBackend
+from preedit_backend import PreeditBackend
 
 try:
     from unittest.mock import Mock

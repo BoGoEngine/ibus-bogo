@@ -1,7 +1,7 @@
 from nose.tools import eq_
 from gi.repository import IBus
-from ibus_engine.surrounding_text_backend import SurroundingTextBackend
-from ibus_engine.base_backend import BackspaceType
+from surrounding_text_backend import SurroundingTextBackend
+from base_backend import BackspaceType
 
 try:
     from unittest.mock import Mock

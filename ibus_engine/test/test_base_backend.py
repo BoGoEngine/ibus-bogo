@@ -1,5 +1,5 @@
 from nose.tools import eq_
-from ibus_engine.base_backend import BaseBackend
+from base_backend import BaseBackend
 
 try:
     from unittest.mock import Mock

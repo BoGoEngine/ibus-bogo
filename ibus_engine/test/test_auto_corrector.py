@@ -1,5 +1,5 @@
 from nose.tools import eq_
-from ibus_engine.auto_corrector import AutoCorrector
+from auto_corrector import AutoCorrector
 
 try:
     from unittest.mock import Mock

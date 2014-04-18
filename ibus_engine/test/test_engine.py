@@ -1,6 +1,6 @@
 from nose.tools import eq_
-from ibus_engine.base_backend import BaseBackend
-from ibus_engine.abbr import AbbreviationExpander
+from base_backend import BaseBackend
+from abbr import AbbreviationExpander
 
 
 class TestEngine():

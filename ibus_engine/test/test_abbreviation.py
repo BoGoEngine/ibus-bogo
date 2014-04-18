@@ -1,6 +1,6 @@
 from nose.tools import eq_
 from nose.plugins.attrib import attr
-from ibus_engine.abbr import AbbreviationExpander
+from abbr import AbbreviationExpander
 from gi.repository import GObject
 import threading
 import time
