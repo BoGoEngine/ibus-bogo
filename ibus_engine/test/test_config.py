@@ -25,7 +25,7 @@ class TestBaseConfig():
     def test_file_missing_key(self):
         # BaseConfig should use default_config.json to
         # fill in missing config keys from the user config file
-        
+
         self.config_file.file.write("{}")
         self.config_file.file.flush()
         config = BaseConfig(path=self.config_file.name)

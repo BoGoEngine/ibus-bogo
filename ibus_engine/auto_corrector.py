@@ -84,6 +84,5 @@ class AutoCorrector(GObject.Object):
         for i in seq:
             string, raw = bogo.process_key(string,
                                            i,
-                                           fallback_sequence=raw,
-                                           config=self.config)
+                                           fallback_sequence=raw)
         return string
