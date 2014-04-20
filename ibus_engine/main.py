@@ -28,7 +28,7 @@ import locale
 import logging
 import argparse
 
-ENGINE_PATH = os.path.dirname(__file__)
+ENGINE_PATH = os.path.dirname(__file__) + "/"
 sys.path.append(os.path.abspath(ENGINE_PATH + ".."))
 sys.path.append(os.path.abspath(ENGINE_PATH + "../bogo-python"))
 
