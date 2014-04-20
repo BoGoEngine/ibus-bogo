@@ -2,8 +2,18 @@
 set -o nounset
 set -o errexit
 
+RED="\e[1;31m"
+RESET="\e[0m"
 
-[ ! -f /etc/os-release ] && echo "Không thể xác định bản phân phối của bạn. Bạn hãy kiểm tra /etc/os-release." && exit 1
+[ $EUID -ne 0 ] && 
+	echo -e $RED"Bạn cần chạy bộ cài đặt này với lệnh sudo."$RESET &&
+	exit 1
+
+[ ! -f /etc/os-release ] &&
+	echo -e $RED"Không thể xác định bản phân phối của bạn." \
+	            "Vui lòng kiểm tra /etc/os-release."$RESET &&
+	exit 1
+
 source /etc/os-release
 
 DISTRO=$NAME
@@ -11,8 +21,6 @@ DISTRO_VERSION=${VERSION_ID:-''}  # Archlinux and Debian unstable
                                   # don't have VERSION_ID, fallback to ''
 BASE=/home/$SUDO_USER/.local/share/ibus-bogo
 REPO=https://github.com/lewtds/ibus-ringo
-RED="\e[1;31m"
-RESET="\e[0m"
 declare -A SUPPORTED_DISTRO=(["Arch Linux"]="arch" ["Debian GNU/Linux"]="debian" ["Ubuntu"]="ubuntu")
 
 LICENSE='Xin chào, đây là bộ cài đặt ibus-ringo, một phần mềm tự do nguồn mở.
@@ -33,9 +41,10 @@ along with this program; if not, write to the Free Software Foundation,
 Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 '
 
-[ ! ${SUPPORTED_DISTRO["$DISTRO"]} ] && echo $RED"Xin lỗi. Bản phân phối của bạn không được hỗ trợ."$RESET && exit 1
+[ ! ${SUPPORTED_DISTRO["$DISTRO"]} ] &&
+	echo $RED"Xin lỗi. Bản phân phối của bạn không được hỗ trợ."$RESET &&
+	exit 1
 
-[ $EUID -ne 0 ] && echo -e $RED"Bạn cần chạy bộ cài đặt này với lệnh sudo."$RESET && exit 1
 
 
 show_license()
