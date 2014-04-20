@@ -45,78 +45,48 @@ declare -A SUPPORTED_DISTRO=(["Arch Linux"]="arch" ["Debian GNU/Linux"]="debian"
 	echo $RED"Xin lỗi. Bản phân phối của bạn không được hỗ trợ."$RESET &&
 	exit 1
 
-
-
-show_license()
-{
-	echo "$LICENSE" | zenity --text-info \
-		  --title="Điều khoản sử dụng ibus-ringo" \
-		  --width=550 \
-		  --height=400 \
-		  --ok-label="Tôi đồng ý" \
-		  --cancel-label="Tôi không đồng ý"
-
-	[ $? -ne 0 ] && exit 1
-}
-
-check_flags () {
-	# check $Base directory exist...
-	[ ! -d $BASE ] && show_license
-}
-
-install_zenity_arch () {
-	echo \# Đang cài đặt zenity...
-	pacman -S zenity --noconfirm
-}
 [ "$DISTRO" = "Ubuntu" ] && DISTRO="Debian GNU/Linux"
 
-# Template install_${SUPPORTED_DISTRO["key"]}
+print_info() {
+	echo -e $RED"$1"$RESET
+}
+
 install_debian () {
-	check_flags
 	dpkg --status ibus-bogo > /dev/null 2>&1
 	if [ $? -eq 0 ]
 	then
-		echo \# Gỡ cài đặt ibus-bogo...
+		print_info "# Gỡ cài đặt ibus-bogo..."
 		apt-get remove ibus-bogo --assume-yes
 		[ $? -ne 0 ] && exit 1
-		install_bogo
-	elif [ -d $BASE ]
-	then
-		install_bogo
-	else
-		echo \# Cài đặt phần mềm phụ thuộc...
-		# Check dependencies
-		DEPS='git ibus python3 python3-gi gir1.2-ibus-1.0 gir1.2-wnck-3.0 python3-pyqt4 libnotify4 gir1.2-notify-0.7 python3-enchant'
-		dpkg --status $DEPS > /dev/null 2>&1
-		if [ $? -ne 0 ]
-		then
-			apt-get install $DEPS --assume-yes|| exit 1
-		fi
-		install_bogo
 	fi
+
+	DEPS='git ibus python3 python3-gi gir1.2-ibus-1.0 gir1.2-wnck-3.0 python3-pyqt4 libnotify4 gir1.2-notify-0.7 python3-enchant'
+	dpkg --status $DEPS > /dev/null 2>&1
+	if [ $? -ne 0 ]
+	then
+		print_info "\# Cài đặt phần mềm phụ thuộc..."
+		apt-get install $DEPS --assume-yes|| exit 1
+	fi
+
+	install_bogo
 }
 
 install_arch () {
-	check_flags
 	DEPS="ibus python python-gobject libwnck3 python-pyqt4 libnotify qt4 git python-pyenchant"
 	pacman -Q ibus-bogo > /dev/null 2>&1
 	if [ $? -eq 0 ]
 	then
-		echo \# Gỡ cài đặt ibus-bogo...
+		print_info "# Gỡ cài đặt ibus-bogo..."
 		pacman -R ibus-bogo --noconfirm
-		install_bogo
-	elif [ -d $BASE ]
-	then
-		install_bogo
-	else
-		echo \# Cài đặt phần mềm phụ thuộc...
-		pacman -S $DEPS --noconfirm || exit 1
-		install_bogo
 	fi
+
+	print_info "# Cài đặt phần mềm phụ thuộc..."
+	pacman -S $DEPS --noconfirm || exit 1
+	install_bogo
 }
 
 install_bogo () {
-	echo \# Đang tải ibus-ringo về $BASE...
+	print_info "# Đang tải ibus-ringo về $BASE..."
 	[ ! -d $BASE ] && sudo -u $SUDO_USER git clone $REPO $BASE
 	cd $BASE
 
@@ -125,9 +95,10 @@ install_bogo () {
 	sudo -u $SUDO_USER git submodule init
 	sudo -u $SUDO_USER git submodule update
 
-# make sure /home/$SUDO_USER/.local/share/applications exists...
+	# make sure /home/$SUDO_USER/.local/share/applications exists...
 	sudo -u $SUDO_USER mkdir -p /home/$SUDO_USER/.local/share/applications
-# FIXME: This is duplicated from gui/ibus-setup-bogo.desktop
+
+	# FIXME: This is duplicated from gui/ibus-setup-bogo.desktop
 	ENTRY="[Desktop Entry]\n
 	Encoding=UTF-8\n
 	Name=BoGo Settings (unstable)\n
@@ -136,7 +107,9 @@ install_bogo () {
 	Icon=ibus-bogo\n
 	Type=Application\n
 	Categories=Utility;\n"
-	echo -e $ENTRY | sudo -u $SUDO_USER tee /home/$SUDO_USER/.local/share/applications/ibus-bogo-setup.desktop
+
+	echo -e $ENTRY | sudo -u $SUDO_USER tee /home/$SUDO_USER/.local/share/applications/ibus-bogo-setup.desktop > /dev/null
+
 	cp $BASE/ibus_engine/data/bogo.xml /usr/share/ibus/component && sed -i "s|<exec>/usr/lib/ibus-bogo/ibus-engine-bogo --ibus</exec>|<exec>${BASE}/launcher.sh --ibus</exec>|" /usr/share/ibus/component/bogo.xml
 
 	if [ $? -ne 0 ]
@@ -146,24 +119,15 @@ install_bogo () {
 		exit 1
 	fi
 
-	echo \# Đang khởi động lại ibus...
+	print_info "# Đang khởi động lại ibus..."
 	sudo -u $SUDO_USER ibus-daemon --xim --daemonize --replace
-	sleep 2
-	echo 100
-	sleep 2
 }
 
-type zenity > /dev/null 2>&1 || install_zenity_${SUPPORTED_DISTRO["$DISTRO"]}
+echo "$LICENSE" | more
+install_${SUPPORTED_DISTRO["$DISTRO"]}
 
-(install_${SUPPORTED_DISTRO["$DISTRO"]}) | zenity --progress \
-  --title="Bộ cài đặt ibus-ringo" \
-  --pulsate \
-  --auto-close \
-  --no-cancel
+print_info "# Đã cài đặt thành công\n"
+echo "Cảm ơn bạn đã dùng thử bộ gõ của chúng tôi!"
+echo "Hãy làm theo hướng dẫn sau để hoàn tất cài đặt:"
+echo "http://ibus-bogo.readthedocs.org/en/latest/install.html#cau-hinh-sau-khi-cai-dat"
 
-if [ $? -eq 0 ]
-then
-    zenity --info \
-	    --title="Đã cài đặt thành công" \
-	    --text="Cảm ơn bạn đã dùng thử bộ gõ của chúng tôi! Hãy làm theo hướng dẫn sau để hoàn tất cài đặt: <a href='http://ibus-bogo.readthedocs.org/en/latest/install.html#cau-hinh-sau-khi-cai-dat'>http://ibus-bogo.readthedocs.org/en/latest/install.html#cau-hinh-sau-khi-cai-dat</a>"
-fi
