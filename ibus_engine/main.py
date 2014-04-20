@@ -20,7 +20,6 @@
 #
 
 from gi.repository import IBus
-from gi.repository import GLib
 from gi.repository import GObject
 
 import os
