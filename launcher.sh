@@ -9,7 +9,8 @@ then
 	#
 	# ATTENTION: This command will delete all your local changes.
 	git reset --hard HEAD
-	git pull
+	git pull origin master
+	git submodule update
 
 	python3 ibus_engine/main.py --ibus
 else
