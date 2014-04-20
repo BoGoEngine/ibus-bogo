@@ -29,6 +29,9 @@ import bogo
 ENGINE_DIR = os.path.dirname(__file__)
 
 IBUS_BOGO_DEFAULT_CONFIG = {
+    "output-charset": "utf-8",
+    "enable-text-expansion": False,
+    "auto-capitalize-expansion": False,
     "surrounding-text-blacklist": [
         "chrome",
         "chromium",
@@ -102,7 +105,6 @@ class BaseConfig(object):
         return self._keys.keys()
 
     def read_default_config(self):
-        self._keys = bogo.get_default_config()
         self._keys.update(IBUS_BOGO_DEFAULT_CONFIG)
 
     def reset(self):

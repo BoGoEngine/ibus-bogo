@@ -32,7 +32,7 @@ class TestEngine():
 
         self.eng = BaseBackend(
             config=config,
-            abbr_expander=AbbreviationExpander(),
+            abbr_expander=AbbreviationExpander(config),
             auto_corrector=None)
 
     def send_keys(self, input, engine):

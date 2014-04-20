@@ -25,14 +25,8 @@
 from gi.repository import IBus, Gtk
 import os
 import subprocess
-import sys
 import logging
 import enchant
-
-ENGINE_PATH = os.path.dirname(__file__)
-sys.path.append(
-    os.path.abspath(os.path.join(ENGINE_PATH, "../bogo-python")))
-
 
 #from mouse_detector import MouseDetector
 from ui import UiDelegate
@@ -42,6 +36,7 @@ from auto_corrector import AutoCorrector
 
 logger = logging.getLogger(__name__)
 
+ENGINE_PATH = os.path.dirname(__file__)
 DICT_PATH = ENGINE_PATH + '/data'
 PWL_PATH = os.path.expanduser('~/.config/ibus-bogo/spelling-blacklist.txt')
 

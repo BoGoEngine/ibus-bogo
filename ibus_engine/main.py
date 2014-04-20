@@ -20,7 +20,6 @@
 #
 
 from gi.repository import IBus
-from gi.repository import GLib
 from gi.repository import GObject
 
 import os
@@ -28,6 +27,10 @@ import sys
 import locale
 import logging
 import argparse
+
+ENGINE_PATH = os.path.dirname(__file__)
+sys.path.append(os.path.abspath(ENGINE_PATH + ".."))
+sys.path.append(os.path.abspath(ENGINE_PATH + "../bogo-python"))
 
 from ibus_engine import Engine
 from config import Config
