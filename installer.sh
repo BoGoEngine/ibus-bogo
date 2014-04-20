@@ -1,6 +1,5 @@
 #!/bin/bash
 set -o nounset
-set -o errexit
 
 RED="\e[1;31m"
 RESET="\e[0m"
