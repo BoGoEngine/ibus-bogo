@@ -1,6 +1,7 @@
 #!/bin/bash
+set -o nounset
+set -o errexit
 
-set -u # Debug if unbound variable exists.
 
 [ ! -f /etc/os-release ] && echo "Không thể xác định bản phân phối của bạn. Bạn hãy kiểm tra /etc/os-release." && exit 1
 source /etc/os-release
