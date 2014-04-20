@@ -15,7 +15,7 @@ RESET="\e[0m"
 declare -A SUPPORTED_DISTRO=(["Arch Linux"]="arch" ["Debian GNU/Linux"]="debian" ["Ubuntu"]="ubuntu")
 
 LICENSE='Xin chào, đây là bộ cài đặt ibus-ringo, một phần mềm tự do nguồn mở.
-để sử dụng, bạn cần đồng ý với những điều khoản sau.
+Để sử dụng, bạn cần đồng ý với những điều khoản sau.
 
 
                      GNU GENERAL PUBLIC LICENSE
