@@ -15,9 +15,11 @@ RESET="\e[0m"
 
 source /etc/os-release
 
-DISTRO=$NAME
-DISTRO_VERSION=${VERSION_ID:-''}  # Archlinux and Debian unstable 
-                                  # don't have VERSION_ID, fallback to ''
+# Prefer the $ID_LIKE variable from os-release. e.g. Elementary OS or Mint
+# will be treated as Ubuntu.
+DISTRO=${ID_LIKE:-$ID}
+# Archlinux and Debian unstable don't have VERSION_ID
+DISTRO_VERSION=${VERSION_ID:-''}
 BASE=/home/$SUDO_USER/.local/share/ibus-bogo
 REPO=https://github.com/lewtds/ibus-ringo
 
@@ -39,13 +41,13 @@ along with this program; if not, write to the Free Software Foundation,
 Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 '
 
-declare -A SUPPORTED_DISTRO=(["Arch Linux"]="arch" ["Debian GNU/Linux"]="debian" ["Ubuntu"]="ubuntu")
+# A mapping between $DISTRO_ID and install_ function postfix
+declare -A SUPPORTED_DISTRO=(["arch"]="arch" ["debian"]="debian" ["ubuntu"]="debian")
+
 
 [ ! ${SUPPORTED_DISTRO["$DISTRO"]} ] &&
 	echo $RED"Xin lỗi. Bản phân phối của bạn không được hỗ trợ."$RESET &&
 	exit 1
-
-[ "$DISTRO" = "Ubuntu" ] && DISTRO="Debian GNU/Linux"
 
 print_info() {
 	echo -e $RED"$1"$RESET
@@ -130,4 +132,3 @@ print_info "# Đã cài đặt thành công\n"
 echo "Cảm ơn bạn đã dùng thử bộ gõ của chúng tôi!"
 echo "Hãy làm theo hướng dẫn sau để hoàn tất cài đặt:"
 echo "http://ibus-bogo.readthedocs.org/en/latest/install.html#cau-hinh-sau-khi-cai-dat"
-
