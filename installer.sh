@@ -20,7 +20,6 @@ DISTRO_VERSION=${VERSION_ID:-''}  # Archlinux and Debian unstable
                                   # don't have VERSION_ID, fallback to ''
 BASE=/home/$SUDO_USER/.local/share/ibus-bogo
 REPO=https://github.com/lewtds/ibus-ringo
-declare -A SUPPORTED_DISTRO=(["Arch Linux"]="arch" ["Debian GNU/Linux"]="debian" ["Ubuntu"]="ubuntu")
 
 LICENSE='Xin chào, đây là bộ cài đặt ibus-ringo, một phần mềm tự do nguồn mở.
 Để sử dụng, bạn cần đồng ý với những điều khoản sau.
@@ -39,6 +38,8 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software Foundation,
 Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 '
+
+declare -A SUPPORTED_DISTRO=(["Arch Linux"]="arch" ["Debian GNU/Linux"]="debian" ["Ubuntu"]="ubuntu")
 
 [ ! ${SUPPORTED_DISTRO["$DISTRO"]} ] &&
 	echo $RED"Xin lỗi. Bản phân phối của bạn không được hỗ trợ."$RESET &&
