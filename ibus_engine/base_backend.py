@@ -111,7 +111,7 @@ class BaseBackend():
             # shift them manually.
             keyval, brace_shift = self.do_brace_shift(keyval, modifiers)
 
-            im = bogo.get_telex_definition(
+            rules = bogo.get_telex_definition(
                 w_shorthand=False, brackets_shorthand=False)
 
             # Invoke BoGo to process the input
@@ -119,7 +119,7 @@ class BaseBackend():
                 bogo.process_key(string=editing_string,
                                  key=chr(keyval),
                                  fallback_sequence=raw_string,
-                                 input_method_definition=im)
+                                 rules=rules)
 
             # Revert the brace shift
             if brace_shift and new_string and new_string[-1] in "{}":
