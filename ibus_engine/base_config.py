@@ -34,6 +34,7 @@ IBUS_BOGO_DEFAULT_CONFIG = {
     "output-charset": "utf-8",
     "telex-w-shorthand": True,
     "telex-brackets-shorthand": True,
+    "skip-non-vietnamese": True,
     "enable-text-expansion": False,
     "auto-capitalize-expansion": False,
     "surrounding-text-blacklist": [

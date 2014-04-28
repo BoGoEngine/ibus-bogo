@@ -116,10 +116,12 @@ class BaseBackend():
 
             # Invoke BoGo to process the input
             new_string, new_raw_string = \
-                bogo.process_key(string=editing_string,
-                                 key=chr(keyval),
-                                 fallback_sequence=raw_string,
-                                 rules=rules)
+                bogo.process_key(
+                    string=editing_string,
+                    key=chr(keyval),
+                    fallback_sequence=raw_string,
+                    rules=rules,
+                    skip_non_vietnamese=self.config["skip-non-vietnamese"])
 
             # Revert the brace shift
             if brace_shift and new_string and new_string[-1] in "{}":
