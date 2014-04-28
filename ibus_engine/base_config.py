@@ -75,7 +75,6 @@ class BaseConfig(object):
         finally:
             tmp = self._keys
             self._keys.update(tmp)
-            # self.sanity_check()
 
     def write_config(self):
         f = open(self.path, "w")
@@ -112,9 +111,3 @@ class BaseConfig(object):
         self.read_default_config()
         self.write_config()
 
-    def sanity_check(self):
-        # Should check something here
-        if self._keys["input-method"] not in self._keys["default-input-methods"] and \
-                "custom-input-methods" in self._keys and \
-                self._keys["input-method"] not in self._keys["custom-input-methods"]:
-            raise ValueError
