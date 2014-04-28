@@ -4,9 +4,6 @@ set -o nounset
 RED="\e[1;31m"
 RESET="\e[0m"
 
-[ $EUID -ne 0 ] && 
-	echo -e $RED"Bạn cần chạy bộ cài đặt này với lệnh sudo."$RESET &&
-	exit 1
 
 [ ! -f /etc/os-release ] &&
 	echo -e $RED"Không thể xác định bản phân phối của bạn." \
@@ -20,7 +17,7 @@ source /etc/os-release
 DISTRO=${ID_LIKE:-$ID}
 # Archlinux and Debian unstable don't have VERSION_ID
 DISTRO_VERSION=${VERSION_ID:-''}
-BASE=/home/$SUDO_USER/.local/share/ibus-bogo
+BASE=~/.local/share/ibus-bogo
 REPO=https://github.com/lewtds/ibus-ringo
 
 LICENSE='Xin chào, đây là bộ cài đặt ibus-ringo, một phần mềm tự do nguồn mở.
@@ -41,7 +38,7 @@ along with this program; if not, write to the Free Software Foundation,
 Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 '
 
-# A mapping between $DISTRO_ID and install_ function postfix
+# A mapping between $DISTRO and install_ function postfix
 declare -A SUPPORTED_DISTRO=(["arch"]="arch" ["debian"]="debian" ["ubuntu"]="debian")
 
 
@@ -58,7 +55,7 @@ install_debian () {
 	if [ $? -eq 0 ]
 	then
 		print_info "# Gỡ cài đặt ibus-bogo..."
-		apt-get remove ibus-bogo --assume-yes
+		sudo apt-get remove ibus-bogo --assume-yes
 		[ $? -ne 0 ] && exit 1
 	fi
 
@@ -67,62 +64,64 @@ install_debian () {
 	if [ $? -ne 0 ]
 	then
 		print_info "\# Cài đặt phần mềm phụ thuộc..."
-		apt-get install $DEPS --assume-yes|| exit 1
+		sudo apt-get install $DEPS --assume-yes || exit 1
 	fi
 
 	install_bogo
 }
 
 install_arch () {
-	pacman -Q ibus-bogo > /dev/null 2>&1
 	DEPS="ibus python python-gobject python-pyqt4 libnotify qt4 git python-pyenchant"
+	sudo pacman -Q ibus-bogo > /dev/null 2>&1
 	if [ $? -eq 0 ]
 	then
 		print_info "# Gỡ cài đặt ibus-bogo..."
-		pacman -R ibus-bogo --noconfirm
+		sudo pacman -R ibus-bogo --noconfirm
 	fi
 
 	print_info "# Cài đặt phần mềm phụ thuộc..."
-	pacman -S $DEPS --noconfirm || exit 1
+	sudo pacman -S $DEPS --noconfirm || exit 1
 	install_bogo
 }
 
 install_bogo () {
 	print_info "# Đang tải ibus-ringo về $BASE..."
-	[ ! -d $BASE ] && sudo -u $SUDO_USER git clone $REPO $BASE
+	[ ! -d $BASE ] && git clone $REPO $BASE
 	cd $BASE
 
-	sudo -u $SUDO_USER git reset --hard HEAD
-	sudo -u $SUDO_USER git pull
-	sudo -u $SUDO_USER git submodule init
-	sudo -u $SUDO_USER git submodule update
+	git reset --hard HEAD
+	git pull
+	git submodule init
+	git submodule update
 
 	# make sure /home/$SUDO_USER/.local/share/applications exists...
-	sudo -u $SUDO_USER mkdir -p /home/$SUDO_USER/.local/share/applications
+	mkdir -p ~/.local/share/applications
 
 	# FIXME: This is duplicated from gui/ibus-setup-bogo.desktop
-	ENTRY="[Desktop Entry]\n
-	Encoding=UTF-8\n
-	Name=BoGo Settings (unstable)\n
-	Comment=Settings for the ibus-bogo the Vietnamese input method\n
-	Exec=python3 ${BASE}/gui/controller.py\n
-	Icon=ibus-bogo\n
-	Type=Application\n
-	Categories=Utility;\n"
+	ENTRY="\
+[Desktop Entry]\n
+Encoding=UTF-8\n
+Name=BoGo Settings (unstable)\n
+Comment=Settings for the ibus-bogo the Vietnamese input method\n
+Exec=python3 ${BASE}/gui/controller.py\n
+Icon=ibus-bogo\n
+Type=Application\n
+Categories=Utility;\n"
 
-	echo -e $ENTRY | sudo -u $SUDO_USER tee /home/$SUDO_USER/.local/share/applications/ibus-bogo-setup.desktop > /dev/null
+	echo -e $ENTRY > ~/.local/share/applications/ibus-bogo-setup.desktop
 
-	cp $BASE/ibus_engine/data/bogo.xml /usr/share/ibus/component && sed -i "s|<exec>/usr/lib/ibus-bogo/ibus-engine-bogo --ibus</exec>|<exec>${BASE}/launcher.sh --ibus</exec>|" /usr/share/ibus/component/bogo.xml
+	sudo cp $BASE/ibus_engine/data/bogo.xml /usr/share/ibus/component &&
+	sudo sed -i "s|<exec>/usr/lib/ibus-bogo/ibus-engine-bogo --ibus</exec>|<exec>${BASE}/launcher.sh --ibus</exec>|" /usr/share/ibus/component/bogo.xml
 
 	if [ $? -ne 0 ]
 	then
 		rm -r $BASE
-		rm /home/$SUDO_USER/.local/share/applications/ibus-setup-bogo.desktop
+		rm ~/.local/share/applications/ibus-setup-bogo.desktop
 		exit 1
 	fi
 
 	print_info "# Đang khởi động lại ibus..."
-	sudo -u $SUDO_USER ibus-daemon --xim --daemonize --replace
+	ibus-daemon --xim --daemonize --replace
 }
 
 echo "$LICENSE" | more
