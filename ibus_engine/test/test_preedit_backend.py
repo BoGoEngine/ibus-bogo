@@ -50,7 +50,7 @@ class TestPreeditBackend():
             "raw-string": "bah"
         })
 
-        self.config["default-input-methods"] = {"aoe": {}}
+        self.config["input-method-definition"] = {}
         self.config["input-method"] = "aoe"
 
         self.backend.commit_composition = Mock()

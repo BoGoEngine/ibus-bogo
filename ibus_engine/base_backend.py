@@ -160,7 +160,7 @@ class BaseBackend():
     def is_processable_key(self, keyval, state):
         # We accept a-Z and all the keys used in the current
         # input mode.
-        im_keys = self.config["default-input-methods"][self.config["input-method"]]
+        im_keys = self.config["input-method-definition"]
         return \
             not state & IBus.ModifierType.CONTROL_MASK and \
             not state & IBus.ModifierType.MOD1_MASK and \

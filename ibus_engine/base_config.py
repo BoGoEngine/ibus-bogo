@@ -19,6 +19,7 @@
 # along with ibus-bogo.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+from collections import defaultdict
 import logging
 import json
 import os
@@ -29,7 +30,10 @@ import bogo
 ENGINE_DIR = os.path.dirname(__file__)
 
 IBUS_BOGO_DEFAULT_CONFIG = {
+    "input-method": "telex",
     "output-charset": "utf-8",
+    "telex-w-shorthand": True,
+    "telex-brackets-shorthand": True,
     "enable-text-expansion": False,
     "auto-capitalize-expansion": False,
     "surrounding-text-blacklist": [
@@ -90,7 +94,15 @@ class BaseConfig(object):
         self.write_config()
 
     def __getitem__(self, key):
-        return self._keys[key]
+        if key == "input-method-definition":
+            return defaultdict(dict, {
+                "vni": bogo.get_vni_definition(),
+                "telex": bogo.get_telex_definition(
+                    self._keys["telex-w-shorthand"],
+                    self._keys["telex-brackets-shorthand"])
+            })[self._keys["input-method"]]
+        else:
+            return self._keys[key]
 
     def __contains__(self, key):
         return self._keys.__contains__(key)
