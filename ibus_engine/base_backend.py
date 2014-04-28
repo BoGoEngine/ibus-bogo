@@ -165,7 +165,7 @@ class BaseBackend():
             not state & IBus.ModifierType.MOD1_MASK and \
             (keyval in range(65, 91) or 
              keyval in range(97, 123) or 
-             keyval in im_keys)
+             chr(keyval) in im_keys)
 
     def undo_last_action(self):
         last_action = self.last_action()
