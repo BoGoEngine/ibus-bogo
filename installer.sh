@@ -62,7 +62,7 @@ install_debian () {
 		[ $? -ne 0 ] && exit 1
 	fi
 
-	DEPS='git ibus python3 python3-gi gir1.2-ibus-1.0 gir1.2-wnck-3.0 python3-pyqt4 libnotify4 gir1.2-notify-0.7 python3-enchant'
+	DEPS='git ibus python3 python3-gi gir1.2-ibus-1.0 python3-pyqt4 libnotify4 gir1.2-notify-0.7 python3-enchant'
 	dpkg --status $DEPS > /dev/null 2>&1
 	if [ $? -ne 0 ]
 	then
@@ -74,8 +74,8 @@ install_debian () {
 }
 
 install_arch () {
-	DEPS="ibus python python-gobject libwnck3 python-pyqt4 libnotify qt4 git python-pyenchant"
 	pacman -Q ibus-bogo > /dev/null 2>&1
+	DEPS="ibus python python-gobject python-pyqt4 libnotify qt4 git python-pyenchant"
 	if [ $? -eq 0 ]
 	then
 		print_info "# Gỡ cài đặt ibus-bogo..."
