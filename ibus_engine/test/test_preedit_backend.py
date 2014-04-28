@@ -12,7 +12,9 @@ class TestPreeditBackend():
 
     def setup(self):
         self.engine = Mock()
-        self.config = {}
+        self.config = {
+            "skip-non-vietnamese": True
+        }
         self.abbr_expander = Mock()
         self.auto_corrector = Mock()
 

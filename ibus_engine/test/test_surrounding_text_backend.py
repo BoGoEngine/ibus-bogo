@@ -15,7 +15,9 @@ class TestSurroundingTextBackend():
         self.engine = Mock()
         self.abbr_expander = Mock()
         self.auto_corrector = Mock()
-        self.config = {}
+        self.config = {
+            "skip-non-vietnamese": True
+        }
 
         self.backend = SurroundingTextBackend(
             engine=self.engine,
