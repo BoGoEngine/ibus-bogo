@@ -388,7 +388,7 @@ class Window(Ui_FormClass, UiFormBase):
     def refreshGui(self):
         logging.debug("Refreshing GUI")
 
-        inputMethodList = list(self.settings["default-input-methods"].keys())
+        inputMethodList = ["telex", "vni"]
         if "custom-input-methods" in self.settings:
             inputMethodList += list(self.settings["custom-input-methods"].keys())
 

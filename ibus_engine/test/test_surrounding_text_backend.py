@@ -116,10 +116,8 @@ class TestSurroundingTextBackend():
         key = "s"
         result = "áo"
 
-        self.config["default-input-methods"] = {
-            "my-im": {
-                "s": "/"
-            }
+        self.config["input-method-definition"] = {
+            "s": "/"
         }
         self.config["input-method"] = "my-im"
 

@@ -10,24 +10,22 @@ class TestEngine():
             "output-charset": "utf-8",
             "skip-non-vietnamese": True,
             "auto-capitalize-abbreviations": False,
-            "default-input-methods": {
-                "telex": {
-                    "a": "a^",
-                    "o": "o^",
-                    "e": "e^",
-                    "w": ["u*", "o*", "a+", "<ư"],
-                    "d": "d-",
-                    "f": "\\",
-                    "s": "/",
-                    "r": "?",
-                    "x": "~",
-                    "j": ".",
-                    "]": "<ư",
-                    "[": "<ơ",
-                    "}": "<Ư",
-                    "{": "<Ơ"
-                },
-            }
+            "input-method-definition": {
+                "a": "a^",
+                "o": "o^",
+                "e": "e^",
+                "w": ["u*", "o*", "a+", "<ư"],
+                "d": "d-",
+                "f": "\\",
+                "s": "/",
+                "r": "?",
+                "x": "~",
+                "j": ".",
+                "]": "<ư",
+                "[": "<ơ",
+                "}": "<Ư",
+                "{": "<Ơ"
+            },
         }
 
         self.eng = BaseBackend(
