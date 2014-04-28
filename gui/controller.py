@@ -36,6 +36,8 @@ current_dir = os.path.dirname(__file__)
 sys.path.append(os.path.abspath(os.path.join(current_dir, "..")))
 sys.path.append(
     os.path.abspath(os.path.join(current_dir, "..", "ibus_engine")))
+sys.path.append(
+    os.path.abspath(os.path.join(current_dir, "..", "bogo-python")))
 
 from base_config import BaseConfig
 import vncharsets
