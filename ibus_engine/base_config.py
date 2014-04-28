@@ -70,9 +70,10 @@ class BaseConfig(object):
             self._keys.update(data)
             f.close()
         except:
-            logging.debug("Config file corrupted or not exists.")
+            logging.warning("Config file corrupted or doesn't exist.")
             self.reset()
         finally:
+            # FIXME: What is this code for?
             tmp = self._keys
             self._keys.update(tmp)
 
