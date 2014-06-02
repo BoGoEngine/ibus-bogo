@@ -122,10 +122,6 @@ class SurroundingTextBackend(BaseBackend):
             super().delete_prev_chars(count)
 
     def on_special_key_pressed(self, keyval):
-        if keyval == IBus.Return:
-            self.reset()
-            return False
-
         if keyval == IBus.BackSpace:
             backspace_type = self.on_backspace_pressed()
 
@@ -139,6 +135,6 @@ class SurroundingTextBackend(BaseBackend):
             self.on_space_pressed()
             if self.last_action()["type"] == "string-correction":
                 return True
-            else:
-                self.reset()
-                return False
+
+        self.reset()
+        return False

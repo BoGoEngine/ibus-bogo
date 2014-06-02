@@ -133,9 +133,7 @@ class BaseBackend():
                 raw_string=new_raw_string)
             return True
         else:
-            self.commit_composition(editing_string)
-            self.reset()
-            return False
+            return self.on_special_key_pressed(keyval)
 
     def do_brace_shift(self, keyval, modifiers):
         capital_case = 0

@@ -91,10 +91,6 @@ class PreeditBackend(BaseBackend):
         pass
 
     def on_special_key_pressed(self, keyval):
-        if keyval == IBus.Return:
-            self.reset()
-            return False
-
         if keyval == IBus.BackSpace:
             backspace_type = self.on_backspace_pressed()
 
@@ -112,7 +108,7 @@ class PreeditBackend(BaseBackend):
             self.on_space_pressed()
             if self.last_action()["type"] == "string-correction":
                 return True
-            else:
-                self.commit_composition(self.last_action()["editing-string"])
-                self.reset()
-                return False
+
+        self.commit_composition(self.last_action()["editing-string"])
+        self.reset()
+        return False
