@@ -5,11 +5,6 @@ import bogo
 
 class AutoCorrector(GObject.Object):
 
-    __gsignals__ = {
-        'new_spellcheck_offender': (GObject.SIGNAL_RUN_LAST, bool,
-                                    (str,))
-    }
-
     def __init__(self, config, spellchecker, english_spellchecker):
         self.config = config
         self.spellchecker = spellchecker

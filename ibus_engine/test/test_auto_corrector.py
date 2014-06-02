@@ -85,10 +85,6 @@ class TestAutoCorrector():
         self.spellchecker.check = Mock(return_value=False)
         self.spellchecker.suggest = Mock(return_value=["car"])
 
-        on_new_spellcheck_offender = Mock(return_value=True)
-        self.corrector.connect(
-            "new_spellcheck_offender", on_new_spellcheck_offender)
-
         self.config["typo-correction-threshold"] = 2
 
         sequence = "carl"
@@ -96,28 +92,4 @@ class TestAutoCorrector():
         for i in range(self.config["typo-correction-threshold"]):
             self.corrector.increase_ticket(sequence)
 
-        on_new_spellcheck_offender.assert_called_once_with(
-            self.corrector, sequence)
         self.spellchecker.add.assert_called_once_with(sequence)
-
-    def test_dont_blacklist(self):
-        """
-        It should not blacklist a key sequence if the last
-        signal handler for new_spellcheck_offender returns False.
-        """
-        self.spellchecker.check = Mock(return_value=False)
-        self.spellchecker.suggest = Mock(return_value=["car"])
-
-        on_new_spellcheck_offender = Mock(return_value=False)
-        self.corrector.connect(
-            "new_spellcheck_offender", on_new_spellcheck_offender)
-
-        self.config["typo-correction-threshold"] = 2
-
-        sequence = "carl"
-        for i in range(self.config["typo-correction-threshold"]):
-            self.corrector.increase_ticket(sequence)
-
-        on_new_spellcheck_offender.assert_called_once_with(
-            self.corrector, sequence)
-        eq_(self.spellchecker.add.called, False)
