@@ -61,6 +61,7 @@ class Engine(IBus.Engine):
             pwl=PWL_PATH,
             broker=custom_broker)
 
+        # FIXME: Catch enchant.errors.DictNotFoundError exception here.
         english_spellchecker = enchant.Dict('en_US')
 
         auto_corrector = AutoCorrector(
