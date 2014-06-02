@@ -66,10 +66,6 @@ class Engine(IBus.Engine):
         auto_corrector = AutoCorrector(
             config, spellchecker, english_spellchecker)
 
-        auto_corrector.connect(
-            'new_spellcheck_offender',
-            self.on_new_spellcheck_offender)
-
         self.preedit_backend = PreeditBackend(
             engine=self,
             config=config,
@@ -194,19 +190,3 @@ class Engine(IBus.Engine):
             if self.focused_exe.find(exe_name) != -1:
                 return True
         return False
-
-    def on_new_spellcheck_offender(self, sender, offender):
-        dialog = Gtk.MessageDialog(
-            parent=None,
-            flags=0,
-            message_type=Gtk.MessageType.QUESTION,
-            buttons=Gtk.ButtonsType.YES_NO,
-            message_format=
-            "Stop spellchecking this key sequence: {0}?".format(offender))
-
-        dialog.set_skip_taskbar_hint(False)
-
-        response = dialog.run()
-        dialog.destroy()
-
-        return response == Gtk.ResponseType.YES
