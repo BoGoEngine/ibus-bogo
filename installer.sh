@@ -71,7 +71,7 @@ install_debian () {
 }
 
 install_arch () {
-	DEPS="ibus python python-gobject python-pyqt4 libnotify qt4 git python-pyenchant"
+	DEPS="ibus python python-gobject python-pyqt4 libnotify qt4 git python-pyenchant hunspell-en"
 	sudo pacman -Q ibus-bogo > /dev/null 2>&1
 	if [ $? -eq 0 ]
 	then
