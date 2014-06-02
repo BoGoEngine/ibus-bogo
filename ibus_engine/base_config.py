@@ -48,7 +48,7 @@ IBUS_BOGO_DEFAULT_CONFIG = {
         "skype"
     ],
     "typo-correction-level": 2,
-    "typo-correction-threshold": 2
+    "typo-correction-threshold": 1
 }
 
 
