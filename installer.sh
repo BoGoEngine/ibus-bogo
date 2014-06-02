@@ -111,7 +111,11 @@ Categories=Utility;\n"
 	echo -e $ENTRY > ~/.local/share/applications/ibus-bogo-setup.desktop
 
 	sudo cp $BASE/ibus_engine/data/bogo.xml /usr/share/ibus/component &&
-	sudo sed -i "s|<exec>/usr/lib/ibus-bogo/ibus-engine-bogo --ibus</exec>|<exec>${BASE}/launcher.sh --ibus</exec>|" /usr/share/ibus/component/bogo.xml
+	sudo sed -i \
+	         -e "s|@EXEC_PATH@|${BASE}/launcher.sh|g" \
+	         -e "s|@ICON_PATH@|${BASE}/ibus_engine/data/ibus-bogo-dev.svg|g" \
+	         -e "s|@SETUP_PATH@|python3 ${BASE}/gui/controller.py|g" \
+		 /usr/share/ibus/component/bogo.xml
 
 	if [ $? -ne 0 ]
 	then
