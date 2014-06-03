@@ -78,7 +78,7 @@ class PreeditBackend(BaseBackend):
             self.commit_composition(self.last_action()["editing-string"])
             self.reset()
 
-        if keyval in [IBus.BackSpace, IBus.space]:
+        if keyval in [IBus.space, IBus.comma, IBus.semicolon, IBus.bracketright, IBus.period, IBus.quoteright]:
             return self.on_special_key_pressed(keyval)
 
         eaten = super().process_key_event(keyval, modifiers)
@@ -104,7 +104,7 @@ class PreeditBackend(BaseBackend):
                 self.reset()
                 return True
 
-        if keyval == IBus.space:
+        if keyval in [IBus.space, IBus.comma, IBus.semicolon, IBus.bracketright, IBus.period, IBus.quoteright]:
             self.on_space_pressed()
             if self.last_action()["type"] == "string-correction":
                 return True
