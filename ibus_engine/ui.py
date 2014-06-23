@@ -5,6 +5,18 @@ import os
 import subprocess
 
 
+INPUT_MODE = {
+    True: {
+        "label": IBus.Text.new_from_string("ON"),
+        "symbol": IBus.Text.new_from_string("ấ")
+    },
+    False: {
+        "label": IBus.Text.new_from_string("OFF"),
+        "symbol": IBus.Text.new_from_string("a")
+    }
+}
+
+
 class UiDelegate():
 
     def __init__(self, engine):
@@ -29,6 +41,7 @@ class UiDelegate():
                                         visible=True,
                                         state=0,
                                         prop_list=None)
+
         help_button = IBus.Property.new(key="help",
                                         type=IBus.PropType.NORMAL,
                                         label=help_label,
@@ -38,29 +51,36 @@ class UiDelegate():
                                         visible=True,
                                         state=0,
                                         prop_list=None)
-        self.input_mode_prop = IBus.Property(key='InputMode',
-                                        prop_type=IBus.PropType.NORMAL,
-                                        label=IBus.Text.new_from_string("ON"),
-                                        symbol=IBus.Text.new_from_string("ấ"),
-                                        icon='',
-                                        tooltip=IBus.Text.new_from_string("Switch input mode"),
-                                        sensitive=True,
-                                        visible=True,
-                                        state=IBus.PropState.UNCHECKED,
-                                        sub_props=None)
+
+        mode_label = INPUT_MODE[self.engine.vietnameseMode]["label"]
+        mode_symbol = INPUT_MODE[self.engine.vietnameseMode]["symbol"]
+        mode_tooltip = IBus.Text.new_from_string("Switch input mode")
+
+        self.input_mode_prop = IBus.Property(
+            key='InputMode',
+            prop_type=IBus.PropType.NORMAL,
+            label=mode_label,
+            symbol=mode_symbol,
+            icon='',
+            tooltip=mode_tooltip,
+            sensitive=True,
+            visible=True,
+            state=IBus.PropState.UNCHECKED,
+            sub_props=None)
+
         self.prop_list.append(self.input_mode_prop)
         self.prop_list.append(pref_button)
         self.prop_list.append(help_button)
+        self.engine.register_properties(self.prop_list)
 
     def do_enable(self):
-        self.engine.register_properties(self.prop_list)
-        self.input_mode_prop.set_symbol(IBus.Text.new_from_string("ấ"))
-        self.input_mode_prop.set_label(IBus.Text.new_from_string("ON"))
+        self.input_mode_prop.set_symbol(INPUT_MODE[True]["symbol"])
+        self.input_mode_prop.set_label(INPUT_MODE[True]["label"])
         self.engine.update_property(self.input_mode_prop)
 
     def do_disable(self):
-        self.input_mode_prop.set_symbol(IBus.Text.new_from_string("a"))
-        self.input_mode_prop.set_label(IBus.Text.new_from_string("OFF"))
+        self.input_mode_prop.set_symbol(INPUT_MODE[False]["symbol"])
+        self.input_mode_prop.set_label(INPUT_MODE[True]["label"])
         self.engine.update_property(self.input_mode_prop)
 
     def do_property_activate(self, prop_key, state):
