@@ -1,6 +1,4 @@
-from gi.repository import GObject
 from gi.repository import IBus
-from gi.repository import Gdk
 import os
 import subprocess
 
