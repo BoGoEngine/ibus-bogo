@@ -47,6 +47,9 @@ class Engine(IBus.Engine):
     def __init__(self, config, abbr_expander):
         super().__init__()
 
+        self.caps = 0
+        self.vietnameseMode = True
+
         self.config = config
         self.ui_delegate = UiDelegate(engine=self)
 
@@ -80,15 +83,6 @@ class Engine(IBus.Engine):
 
         # The preedit backend is the default
         self.backend = self.preedit_backend
-
-        # Create a new thread to detect mouse clicks
-        # mouse_detector = MouseDetector.get_instance()
-        # mouse_detector.add_mouse_click_listener(self.reset)
-
-        self.caps = 0
-
-        self.vietnameseMode = True
-
         self.reset()
 
     def reset(self):
