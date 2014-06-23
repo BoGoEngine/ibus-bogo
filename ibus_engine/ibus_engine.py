@@ -44,11 +44,10 @@ PWL_PATH = os.path.expanduser('~/.config/ibus-bogo/spelling-blacklist.txt')
 class Engine(IBus.Engine):
     __gtype_name__ = 'EngineBoGo'
 
-    def __init__(self, config, abbr_expander, icon):
+    def __init__(self, config, abbr_expander):
         super().__init__()
 
         self.config = config
-        self.icon = icon
         self.ui_delegate = UiDelegate(engine=self)
 
         custom_broker = enchant.Broker()
@@ -126,10 +125,8 @@ class Engine(IBus.Engine):
                 modifiers & IBus.ModifierType.CONTROL_MASK:
             self.vietnameseMode = not self.vietnameseMode
             if self.vietnameseMode:
-                self.icon.enable()
                 self.ui_delegate.do_enable()
             else:
-                self.icon.disable()
                 self.ui_delegate.do_disable()
             return True
 
