@@ -84,7 +84,7 @@ class SurroundingTextBackend(BaseBackend):
                 self.last_action()["type"] == "string-correction":
             self.reset()
 
-        if keyval in [IBus.Return, IBus.BackSpace, IBus.space]:
+        if keyval in [IBus.space, IBus.comma, IBus.semicolon, IBus.bracketright, IBus.period, IBus.quoteright]:
             return self.on_special_key_pressed(keyval)
 
         if len(self.last_action()["editing-string"]) == 0:
@@ -131,7 +131,7 @@ class SurroundingTextBackend(BaseBackend):
             else:
                 return False
 
-        if keyval == IBus.space:
+        if keyval in [IBus.space, IBus.comma, IBus.semicolon, IBus.bracketright, IBus.period, IBus.quoteright]:
             self.on_space_pressed()
             if self.last_action()["type"] == "string-correction":
                 return True
