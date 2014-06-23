@@ -78,7 +78,7 @@ class UiDelegate():
 
     def do_disable(self):
         self.input_mode_prop.set_symbol(INPUT_MODE[False]["symbol"])
-        self.input_mode_prop.set_label(INPUT_MODE[True]["label"])
+        self.input_mode_prop.set_label(INPUT_MODE[False]["label"])
         self.engine.update_property(self.input_mode_prop)
 
     def do_property_activate(self, prop_key, state):
