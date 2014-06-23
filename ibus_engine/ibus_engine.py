@@ -156,19 +156,21 @@ class Engine(IBus.Engine):
 
     def do_focus_in(self):
         logger.debug("do_focus_in()")
+        self.find_focused_executable()
+        self.switch_mode()
+        self.backend.do_focus_in()
+
+    def find_focused_executable(self):
         focused_pid = subprocess.check_output(
             "xprop -id $(xprop -root | " +
             "awk '/_NET_ACTIVE_WINDOW\(WINDOW\)/{print $NF}') | " +
             "awk '/_NET_WM_PID\(CARDINAL\)/{print $NF}'",
             shell=True).decode().strip()
+
         self.focused_exe = os.path.realpath(
             "/proc/{0}/exe".format(focused_pid))
+
         logger.debug("%s focused", self.focused_exe)
-
-        self.switch_mode()
-
-        self.backend.do_focus_in()
-        self.ui_delegate.do_enable()
 
     def do_reset(self):
         logger.debug("do_reset()")
