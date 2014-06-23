@@ -159,9 +159,7 @@ class Engine(IBus.Engine):
         self.find_focused_executable()
         self.switch_mode()
         self.backend.do_focus_in()
-
-        if self.vietnameseMode:
-            self.ui_delegate.do_enable()
+        self.ui_delegate.setup_tool_buttons()
 
     def find_focused_executable(self):
         focused_pid = subprocess.check_output(
