@@ -160,6 +160,9 @@ class Engine(IBus.Engine):
         self.switch_mode()
         self.backend.do_focus_in()
 
+        if self.vietnameseMode:
+            self.ui_delegate.do_enable()
+
     def find_focused_executable(self):
         focused_pid = subprocess.check_output(
             "xprop -id $(xprop -root | " +
