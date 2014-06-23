@@ -22,7 +22,7 @@
 # along with ibus-bogo.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-from gi.repository import IBus, Gtk
+from gi.repository import IBus
 import os
 import subprocess
 import logging
