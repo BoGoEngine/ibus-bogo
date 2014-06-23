@@ -88,6 +88,12 @@ class Engine(IBus.Engine):
     def reset(self):
         self.backend.reset()
 
+    def toggle_input_mode(self):
+        if self.vietnameseMode:
+            self.turn_off()
+        else:
+            self.turn_on()
+
     def turn_on(self):
         self.vietnameseMode = True
         self.ui_delegate.do_enable()

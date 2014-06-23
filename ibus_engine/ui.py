@@ -81,10 +81,7 @@ class UiDelegate():
             subprocess.call("xdg-open " + link, shell=True)
 
         elif prop_key == "InputMode":
-            if self.engine.vietnameseMode:
-                self.engine.turn_off()
-            else:
-                self.engine.turn_on()
+            self.engine.toggle_input_mode()
 
         # FIXME: Is this really necessary?
         self.engine.reset()
