@@ -39,8 +39,8 @@ class UiDelegate():
                                         state=0,
                                         prop_list=None)
         self.input_mode_prop = IBus.Property(key='InputMode',
-                                        prop_type=IBus.PropType.MENU,
-                                        label=IBus.Text.new_from_string("BoGo"),
+                                        prop_type=IBus.PropType.NORMAL,
+                                        label=IBus.Text.new_from_string("ON"),
                                         symbol=IBus.Text.new_from_string("ấ"),
                                         icon='',
                                         tooltip=IBus.Text.new_from_string("Switch input mode"),
@@ -55,10 +55,12 @@ class UiDelegate():
     def do_enable(self):
         self.engine.register_properties(self.prop_list)
         self.input_mode_prop.set_symbol(IBus.Text.new_from_string("ấ"))
+        self.input_mode_prop.set_label(IBus.Text.new_from_string("ON"))
         self.engine.update_property(self.input_mode_prop)
 
     def do_disable(self):
         self.input_mode_prop.set_symbol(IBus.Text.new_from_string("a"))
+        self.input_mode_prop.set_label(IBus.Text.new_from_string("OFF"))
         self.engine.update_property(self.input_mode_prop)
 
     def do_property_activate(self, prop_key, state):
@@ -77,6 +79,12 @@ class UiDelegate():
         elif prop_key == "help":
             link = "http://ibus-bogo.readthedocs.org/en/latest/usage.html"
             subprocess.call("xdg-open " + link, shell=True)
+
+        elif prop_key == "InputMode":
+            if self.engine.vietnameseMode:
+                self.engine.turn_off()
+            else:
+                self.engine.turn_on()
 
         # FIXME: Is this really necessary?
         self.engine.reset()

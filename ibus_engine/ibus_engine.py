@@ -94,6 +94,16 @@ class Engine(IBus.Engine):
     def reset(self):
         self.backend.reset()
 
+    def turn_on(self):
+        self.vietnameseMode = True
+        self.ui_delegate.do_enable()
+        self.do_enable()
+
+    def turn_off(self):
+        self.vietnameseMode = False
+        self.ui_delegate.do_disable()
+        self.do_disable()
+
     # The "do_" part denotes a default signal handler
     def do_process_key_event(self, keyval, keycode, modifiers):
         """Implement IBus.Engine's process_key_event default signal handler.
@@ -121,13 +131,14 @@ class Engine(IBus.Engine):
         if not event_is_key_press:
             return False
 
+        # TODO: configurable key
         if keyval == IBus.space and \
                 modifiers & IBus.ModifierType.CONTROL_MASK:
-            self.vietnameseMode = not self.vietnameseMode
             if self.vietnameseMode:
-                self.ui_delegate.do_enable()
+                self.turn_off()
             else:
-                self.ui_delegate.do_disable()
+                self.turn_on()
+
             return True
 
         if self.vietnameseMode:
