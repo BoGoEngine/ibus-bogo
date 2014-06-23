@@ -51,7 +51,7 @@ class PreeditBackend(BaseBackend):
         logger.debug("Updating composition...")
         text = IBus.Text.new_from_string(string)
         text.append_attribute(type=IBus.AttrType.UNDERLINE,
-                              value=IBus.AttrUnderline.SINGLE,
+                              value=IBus.AttrUnderline.NONE,
                               start_index=0,
                               end_index=len(string))
 
