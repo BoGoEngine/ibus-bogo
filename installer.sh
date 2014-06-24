@@ -39,11 +39,11 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301  USA
 '
 
 # A mapping between $DISTRO and install_ function postfix
-declare -A SUPPORTED_DISTRO=(["arch"]="arch" ["debian"]="debian" ["ubuntu"]="debian")
+declare -A SUPPORTED_DISTRO=(["arch"]="arch" ["debian"]="debian" ["ubuntu"]="debian" ["manjaro"]="arch")
 
 
-[ ! ${SUPPORTED_DISTRO["$DISTRO"]} ] &&
-	echo $RED"Xin lỗi. Bản phân phối của bạn không được hỗ trợ."$RESET &&
+[ ${SUPPORTED_DISTRO["$DISTRO"]:-"None"} == "None" ] &&
+	echo -e $RED"Xin lỗi. Bản phân phối của bạn không được hỗ trợ."$RESET &&
 	exit 1
 
 print_info() {
