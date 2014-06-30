@@ -9,6 +9,19 @@
 và được thiết kế để chạy cùng [iBus](http://code.google.com/p/ibus/),
 một phần mềm quản lý các bộ gõ trong GNU/Linux.
 
+## Cập nhật
+
+Từ sau phiên bản 0.4, ibus-bogo sử dụng `preedit` và `surrounding text` tương tác với các ứng dụng do phương thức gửi
+`fake backspace` tỏ ra không ổn định.
+
+Phiên bản này có sự đóng góp lớn của @lewtds với *ibus-ringo*.
+
+Để cài đặt, sau khi clone sourcecode từ github, chạy file `installer.sh`. Các gói cho các distro linux phổ biến
+sẽ được phân phối trong tương lai.
+
+Các tài liệu dưới đây đang trong quá trình sắp xếp lại. Một số tài liệu có thể đưa ra các chỉ dẫn không bắt kịp
+với thực tế. Các tài liệu về API của thư viện `bogo-python` vẫn được đảm bảo.
+
 ## Hướng dẫn nhanh
 
 1. [Cài đặt](doc/sphinx/install.rst) và sử dụng
