@@ -3,7 +3,7 @@
 <component>
 	<name>org.freedesktop.IBus.BoGo</name>
 	<description>BoGo Engine for IBus</description>
-	<exec>/usr/lib/ibus-bogo/ibus-engine-bogo --ibus</exec>
+        <exec>@EXEC_PATH@ --ibus</exec>
 	<version>0.4</version>
 	<author>Đàm Tiến Long &lt;longdt90@gmail.com&gt;
 Ngô Đức Trung &lt;ndtrung4419@gmail.com&gt;
@@ -20,12 +20,12 @@ Ngô Đức Trung &lt;ndtrung4419@gmail.com&gt;
             <author>Đàm Tiến Long &lt;longdt90@gmail.com&gt;
 Ngô Đức Trung &lt;ndtrung4419@gmail.com&gt;
             </author>
-            <icon>/usr/share/icons/hicolor/scalable/apps/ibus-bogo.svg</icon>
-            <layout>us</layout>
+            <icon>@ICON_PATH@</icon>
+            <layout>default</layout>
             <longname>BoGo</longname>
             <description>BoGo Engine for IBus</description>
             <rank>0</rank>
-            <setup>/usr/lib/ibus-bogo/ibus-bogo-settings</setup>
+            <setup>@SETUP_PATH@</setup>
         </engine>
 	</engines>
 </component>

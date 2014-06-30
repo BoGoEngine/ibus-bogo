@@ -42,9 +42,12 @@ install (FILES
   ibus_engine.py
   config.py
   base_config.py
-  keysyms_mapping.py
-  mouse_detector.py
   abbr.py
+  ui.py
+  base_backend.py
+  preedit_backend.py
+  surrounding_text_backend.py
+  auto_corrector.py
   DESTINATION
   ${BOGO_INSTALL_DIR}/ibus_engine
   )
@@ -54,10 +57,4 @@ install (FILES
 #   DESTINATION
 #   ${BOGO_INSTALL_DIR}/ibus_engine/data
 # )
-
-install (DIRECTORY
-  libs
-  DESTINATION
-  ${BOGO_INSTALL_DIR}/ibus_engine
-)
 

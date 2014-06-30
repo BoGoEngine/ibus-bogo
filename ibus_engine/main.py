@@ -20,7 +20,6 @@
 #
 
 from gi.repository import IBus
-from gi.repository import GLib
 from gi.repository import GObject
 
 import os
@@ -29,8 +28,11 @@ import locale
 import logging
 import argparse
 
+ENGINE_PATH = os.path.dirname(__file__) + "/"
+sys.path.append(os.path.abspath(ENGINE_PATH + ".."))
+sys.path.append(os.path.abspath(ENGINE_PATH + "../bogo-python"))
+
 from ibus_engine import Engine
-from mouse_detector import MouseDetector
 from config import Config
 from abbr import AbbreviationExpander
 
@@ -66,7 +68,7 @@ class IMApp:
                                  author=author,
                                  icon=current_path + "/data/ibus-bogo-dev.svg",
                                  # icon = "ibus-bogo",
-                                 layout="us")
+                                 layout="default")
 
         self.component.add_engine(engine)
         self.mainloop = GObject.MainLoop()
@@ -120,12 +122,7 @@ class IMApp:
             return engine
 
     def run(self):
-        mouse_detector = MouseDetector.get_instance()
-        mouse_detector.start()
-        try:
-            self.mainloop.run()
-        finally:
-            mouse_detector.terminate()
+        self.mainloop.run()
 
     def bus_disconnected_cb(self, bus):
         self.mainloop.quit()

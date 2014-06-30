@@ -1,4 +1,7 @@
-# Bộ gõ tiếng Việt cho iBus [![Build Status](https://travis-ci.org/BoGoEngine/ibus-bogo-python.png)](https://travis-ci.org/BoGoEngine/ibus-bogo-python) [![Stories in Ready](https://badge.waffle.io/bogoengine/ibus-bogo-python.png?label=ready)](http://waffle.io/bogoengine/ibus-bogo-python)
+# Bộ gõ tiếng Việt cho iBus
+
+[![Build Status](https://travis-ci.org/lewtds/ibus-ringo.svg?branch=master)](https://travis-ci.org/lewtds/ibus-ringo)
+[![Coverage Status](https://coveralls.io/repos/lewtds/ibus-ringo/badge.png?branch=master)](https://coveralls.io/r/lewtds/ibus-ringo?branch=master)
 
 [*English below...*](#introduction)
 

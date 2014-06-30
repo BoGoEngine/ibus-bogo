@@ -1,4 +1,3 @@
-
-[submodule "ibus_engine/libs/Xlib"]
-	path = ibus_engine/libs/Xlib
-	url = https://github.com/phaikawl/python-xlib-mirror.git
+[submodule "bogo-python"]
+	path = bogo-python
+	url = https://github.com/BoGoEngine/bogo-python

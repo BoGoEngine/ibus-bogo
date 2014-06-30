@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 #
 # This file is part of ibus-bogo project.
 #
@@ -38,6 +36,8 @@ current_dir = os.path.dirname(__file__)
 sys.path.append(os.path.abspath(os.path.join(current_dir, "..")))
 sys.path.append(
     os.path.abspath(os.path.join(current_dir, "..", "ibus_engine")))
+sys.path.append(
+    os.path.abspath(os.path.join(current_dir, "..", "bogo-python")))
 
 from base_config import BaseConfig
 import vncharsets
@@ -235,7 +235,9 @@ class Window(Ui_FormClass, UiFormBase):
 
     @pyqtSlot()
     def on_importButton_clicked(self):
-        caption = "Choose a Unikey text expansion rule file"
+        caption = QCoreApplication.translate(
+            "expander",
+            "Choose a Unikey text expansion rule file")
         fileName = QFileDialog.getOpenFileName(parent=self,
                                                caption=caption)
         if fileName:
@@ -246,7 +248,9 @@ class Window(Ui_FormClass, UiFormBase):
 
     @pyqtSlot()
     def on_exportButton_clicked(self):
-        caption = "Choose a location to save expansion rule file"
+        caption = QCoreApplication.translate(
+            "expander",
+            "Choose a location to save expansion rule file")
         fileName = QFileDialog.getSaveFileName(parent=self,
                                                caption=caption)
 
@@ -308,16 +312,31 @@ class Window(Ui_FormClass, UiFormBase):
                 new_mime.setText(text)
 
                 clipboard.setMimeData(new_mime)
+                subject = QCoreApplication.translate(
+                    "charset",
+                    "Converted")
+                content = QCoreApplication.translate(
+                    "charset",
+                    "From {0} to UTF-8")
                 n = Notify.Notification.new(
-                    "Converted", sourceEncoding + "-> utf-8", "")
+                    subject, content.format(sourceEncoding), "")
             else:
-                n = Notify.Notification.new(
-                    "Cannot convert",
-                    "No HTML/plain text data in clipboard.",
-                    "")
+                subject = QCoreApplication.translate(
+                    "charset",
+                    "Cannot convert")
+                content = QCoreApplication.translate(
+                    "charset",
+                    "No HTML/plain text data in clipboard.")
+                n = Notify.Notification.new(subject, content)
         except UnicodeEncodeError:
+            subject = QCoreApplication.translate(
+                "charset",
+                "Cannot convert")
+            content = QCoreApplication.translate(
+                "charset",
+                "Mixed Unicode in clipboard.")
             n = Notify.Notification.new(
-                "Cannot convert", "Mixed Unicode in clipboard.", "")
+                subject, content, "")
         n.show()
 
     @pyqtSlot()
@@ -325,6 +344,17 @@ class Window(Ui_FormClass, UiFormBase):
         subprocess.call(
             "xdg-open http://ibus-bogo.readthedocs.org/en/latest/usage.html",
             shell=True)
+
+    @pyqtSlot(int)
+    def on_typoSlider_valueChanged(self, value):
+        level = self.typoSlider.value()
+        self.settings["typo-correction-level"] = level
+        self.updateSliderLabel(level)
+
+    def updateSliderLabel(self, level):
+        label = QCoreApplication.translate("slider", "OFF") if level == 0 \
+            else str(level)
+        self.typoLevelLabel.setText(label)
 
     def switchLanguage(self, locale):
         logging.debug("switchLanguage: %s", locale)
@@ -358,7 +388,7 @@ class Window(Ui_FormClass, UiFormBase):
     def refreshGui(self):
         logging.debug("Refreshing GUI")
 
-        inputMethodList = list(self.settings["default-input-methods"].keys())
+        inputMethodList = ["telex", "vni"]
         if "custom-input-methods" in self.settings:
             inputMethodList += list(self.settings["custom-input-methods"].keys())
 
@@ -402,6 +432,10 @@ class Window(Ui_FormClass, UiFormBase):
 
             self.autocapCheckBox.setEnabled(isEnabled)
             self.ruleEditorGroupBox.setEnabled(isEnabled)
+
+        level = self.settings["typo-correction-level"]
+        self.typoSlider.setValue(level)
+        self.updateSliderLabel(level)
 
     def retranslateUi(self, object):
         super(Window, self).retranslateUi(object)

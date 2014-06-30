@@ -1,16 +1,18 @@
 from nose.tools import eq_
 from nose.plugins.attrib import attr
-from ibus_engine.abbr import AbbreviationExpander
+from abbr import AbbreviationExpander
 from gi.repository import GObject
 import threading
 import time
-import os
 
 
 class TestAbbreviationExpander():
 
     def setup(self):
-        self.abbr = AbbreviationExpander()
+        self.config = {
+            "auto-capitalize-expansion": False
+        }
+        self.abbr = AbbreviationExpander(config=self.config)
 
     def tear_down(self):
         # Delete the test file
@@ -61,7 +63,7 @@ class TestAbbreviationExpander():
         eq_(self.abbr.expand("Tm"), "Tm")
         eq_(self.abbr.expand("TM"), "TM")
 
-        self.abbr.config["auto-capitalize-expansion"] = True
+        self.config["auto-capitalize-expansion"] = True
 
         eq_(self.abbr.expand("tm"), "thay mat")
         eq_(self.abbr.expand("Tm"), "Thay mat")

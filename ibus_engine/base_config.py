@@ -19,6 +19,7 @@
 # along with ibus-bogo.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+from collections import defaultdict
 import logging
 import json
 import os
@@ -27,6 +28,29 @@ import bogo
 
 # TODO: This module needs some tests
 ENGINE_DIR = os.path.dirname(__file__)
+
+IBUS_BOGO_DEFAULT_CONFIG = {
+    "input-method": "telex",
+    "output-charset": "utf-8",
+    "telex-w-shorthand": True,
+    "telex-brackets-shorthand": True,
+    "skip-non-vietnamese": True,
+    "enable-text-expansion": False,
+    "auto-capitalize-expansion": False,
+    "surrounding-text-blacklist": [
+        "chrome",
+        "chromium",
+        "compiz",
+        "gnome-terminal",
+        "lxterminal",
+        "konsole",
+        "geany",
+        "skype"
+    ],
+    "typo-correction-level": 2,
+    "typo-correction-threshold": 1
+}
+
 
 # TODO: It's best if we can preserve comments and line order
 class BaseConfig(object):
@@ -40,6 +64,10 @@ class BaseConfig(object):
         self.read_default_config()
         self.read_config(path)
 
+        # Write immediately because the default config
+        # may introduce a new key
+        self.write_config()
+
     def read_config(self, path):
         try:
             f = open(path, "r")
@@ -47,12 +75,12 @@ class BaseConfig(object):
             self._keys.update(data)
             f.close()
         except:
-            logging.debug("Config file corrupted or not exists.")
+            logging.warning("Config file corrupted or doesn't exist.")
             self.reset()
         finally:
+            # FIXME: What is this code for?
             tmp = self._keys
             self._keys.update(tmp)
-            # self.sanity_check()
 
     def write_config(self):
         f = open(self.path, "w")
@@ -67,7 +95,15 @@ class BaseConfig(object):
         self.write_config()
 
     def __getitem__(self, key):
-        return self._keys[key]
+        if key == "input-method-definition":
+            return defaultdict(dict, {
+                "vni": bogo.get_vni_definition(),
+                "telex": bogo.get_telex_definition(
+                    self._keys["telex-w-shorthand"],
+                    self._keys["telex-brackets-shorthand"])
+            })[self._keys["input-method"]]
+        else:
+            return self._keys[key]
 
     def __contains__(self, key):
         return self._keys.__contains__(key)
@@ -82,16 +118,10 @@ class BaseConfig(object):
         return self._keys.keys()
 
     def read_default_config(self):
-        self._keys = bogo.get_default_config()
+        self._keys.update(IBUS_BOGO_DEFAULT_CONFIG)
 
     def reset(self):
         self._keys = {}
         self.read_default_config()
         self.write_config()
 
-    def sanity_check(self):
-        # Should check something here
-        if self._keys["input-method"] not in self._keys["default-input-methods"] and \
-                "custom-input-methods" in self._keys and \
-                self._keys["input-method"] not in self._keys["custom-input-methods"]:
-            raise ValueError
