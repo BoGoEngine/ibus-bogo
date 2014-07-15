@@ -1,0 +1,8 @@
+[run]
+branch = true
+source = .
+omit = _separate.py
+
+[report]
+# Ignore missing source files, i.e. fake template-generated "files"
+ignore_errors = true
