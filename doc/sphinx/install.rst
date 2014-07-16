@@ -73,12 +73,7 @@ Lệnh sau sẽ cài đặt tất cả các gói cần thiết::
 Sau đó bạn tải mã nguồn tại https://github.com/BoGoEngine/ibus-bogo-python/releases
 rồi giải nén. Hoặc dùng::
 
-    git clone https://github.com/BoGoEngine/ibus-bogo-python.git
-
-.. note::
-
-   Nếu bạn dùng git clone thì chạy thêm lệnh ``git submodule init && git submodule update``
-   trong thư mục mã nguồn.
+    git clone https://github.com/BoGoEngine/ibus-bogo.git
 
 Chạy lệnh sau để cài đặt::
 
