@@ -1,0 +1,31 @@
+language: python
+python:
+  - "2.7"
+  - "3.2"
+  - "3.3"
+branches:
+  only:
+    - master
+    - develop
+
+before_install:
+  - pip install coveralls
+
+# command to run tests
+script:
+  - NOSE_PATH=$(which nosetests)
+  - coverage run $NOSE_PATH --attr '!skip-travis'
+
+after_success:
+  - coveralls
+
+notifications:
+  irc:
+    channels:
+      - "chat.freenode.net#bogo"
+    on_success: change
+    on_failure: always
+    skip_join: true
+    template:
+      - "%{repository}/%{branch}#%{commit} (%{author})"
+      - "%{message} %{build_url}"
