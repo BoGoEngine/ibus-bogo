@@ -7,22 +7,6 @@ tiếp từ mã nguồn.
 Từ gói cài đặt cho các bản phân phối Linux thông dụng
 -----------------------------------------------------
 
-Đây là cách đơn giản nhất.
-
-Với các HĐH thuộc dòng Debian/Ubuntu thì bạn có thể cài đặt tự động bằng
-cách chạy lệnh sau::
-
-    wget -O - http://bogoengine.github.com/debian/stable/installer.sh | sudo sh
-
-Hoặc nếu bạn luôn muốn dùng phiên bản đang phát triển, cập nhật liên tục,
-có thể nhiều lỗi thì sử dụng lệnh sau::
-
-    wget -O - http://bogoengine.github.com/debian/unstable/installer.sh | sudo sh
-
-.. note::
-   
-   Nội dung script là thêm repo của nhóm phát triển, sau đó cài đặt gói ``ibus-bogo``.
-
 Người dùng Archlinux có thể cài từ `gói AUR stable`_ hoặc `develop`_ do bạn `Ngô Huy`_ cung cấp.
 
 Fan của Fedora có thể cài gói RPM từ `RPM repo`_ của anh `Trương Anh Tuấn`_.
@@ -33,7 +17,6 @@ Fan của Fedora có thể cài gói RPM từ `RPM repo`_ của anh `Trương An
    ngần ngại thông báo với chúng tôi để trang hướng dẫn này được cập nhật
    liên tục cho các bản phân phối mới nhất. :D
 
-.. _file deb: https://bogoengine.github.com/debian/stable/pool/universe/i/ibus-bogo
 .. _gói AUR stable: https://aur.archlinux.org/packages/ibus-bogo/
 .. _develop: https://aur.archlinux.org/packages/ibus-bogo-git/
 .. _RPM repo: http://tuanta.fedorapeople.org/ibus-bogo/
@@ -77,12 +60,11 @@ rồi giải nén. Hoặc dùng::
 
 Chạy lệnh sau để cài đặt::
 
-    mkdir build && cd build
-    cmake .. && make install
+    sudo make install
 
 Gỡ cài đặt::
 
-    cd build && sudo make uninstall
+   sudo make uninstall
 
 Cấu hình sau khi cài đặt
 ------------------------
