@@ -114,10 +114,10 @@ class Engine(IBus.Engine):
 
     def update_preedit(self):
         _text = text(self.processing_string)
-        _text.append_attribute(type=IBus.AttrType.UNDERLINE,
-                              value=IBus.AttrUnderline.SINGLE,
-                              start_index=0,
-                              end_index=len(self.processing_string))
+        # _text.append_attribute(type=IBus.AttrType.UNDERLINE,
+        #                       value=IBus.AttrUnderline.SINGLE,
+        #                       start_index=0,
+        #                       end_index=len(self.processing_string))
 
         self.update_preedit_text_with_mode(
             _text,
@@ -153,7 +153,6 @@ class Engine(IBus.Engine):
         self.commit()
         self.reset()
         return False
-
 
     def is_processable_key(self, keyval, state):
         return keyval in range(32, 126) and \
