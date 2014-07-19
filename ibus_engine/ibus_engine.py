@@ -56,6 +56,7 @@ class Engine(IBus.Engine):
     def reset(self):
         self.processing_string = ""
         self.key_sequence = ""
+        self.hide_preedit_text()
 
     def commit(self):
         self.commit_text(text(self.processing_string))
@@ -158,3 +159,12 @@ class Engine(IBus.Engine):
         return keyval in range(32, 126) and \
             state & (IBus.ModifierType.CONTROL_MASK |
                      IBus.ModifierType.MOD1_MASK) == 0
+
+    def do_disable(self):
+        self.reset()
+
+    def do_focus_out(self):
+        self.reset()
+
+    def do_reset(self):
+        self.reset()
