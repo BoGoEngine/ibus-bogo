@@ -24,15 +24,9 @@
 
 from gi.repository import IBus
 import os
-import subprocess
 import logging
-import enchant
+import bogo
 
-#from mouse_detector import MouseDetector
-from ui import UiDelegate
-from preedit_backend import PreeditBackend
-from surrounding_text_backend import SurroundingTextBackend
-from auto_corrector import AutoCorrector
 
 logger = logging.getLogger(__name__)
 
@@ -41,68 +35,31 @@ DICT_PATH = ENGINE_PATH + '/data'
 PWL_PATH = os.path.expanduser('~/.config/ibus-bogo/spelling-blacklist.txt')
 
 
+
+punctuations = ".?!"
+
+
+def text(string):
+    return IBus.Text.new_from_string(string)
+
+
 class Engine(IBus.Engine):
     __gtype_name__ = 'EngineBoGo'
 
     def __init__(self, config, abbr_expander):
         super().__init__()
+        self.processing_string = ""
+        self.key_sequence = ""
 
-        self.caps = 0
-        self.vietnameseMode = True
-
-        self.config = config
-        self.ui_delegate = UiDelegate(engine=self)
-
-        custom_broker = enchant.Broker()
-        custom_broker.set_param(
-            'enchant.myspell.dictionary.path',
-            DICT_PATH)
-
-        spellchecker = enchant.DictWithPWL(
-            'vi_VN_telex',
-            pwl=PWL_PATH,
-            broker=custom_broker)
-
-        # FIXME: Catch enchant.errors.DictNotFoundError exception here.
-        english_spellchecker = enchant.Dict('en_US')
-
-        auto_corrector = AutoCorrector(
-            config, spellchecker, english_spellchecker)
-
-        self.preedit_backend = PreeditBackend(
-            engine=self,
-            config=config,
-            abbr_expander=abbr_expander,
-            auto_corrector=auto_corrector)
-
-        self.surrounding_text_backend = SurroundingTextBackend(
-            engine=self,
-            config=config,
-            abbr_expander=abbr_expander,
-            auto_corrector=auto_corrector)
-
-        # The preedit backend is the default
-        self.backend = self.preedit_backend
         self.reset()
 
     def reset(self):
-        self.backend.reset()
+        self.processing_string = ""
+        self.key_sequence = ""
 
-    def toggle_input_mode(self):
-        if self.vietnameseMode:
-            self.turn_off()
-        else:
-            self.turn_on()
-
-    def turn_on(self):
-        self.vietnameseMode = True
-        self.ui_delegate.do_enable()
-        self.do_enable()
-
-    def turn_off(self):
-        self.vietnameseMode = False
-        self.ui_delegate.do_disable()
-        self.do_disable()
+    def commit(self):
+        self.commit_text(text(self.processing_string))
+        self.hide_preedit_text()
 
     # The "do_" part denotes a default signal handler
     def do_process_key_event(self, keyval, keycode, modifiers):
@@ -131,74 +88,73 @@ class Engine(IBus.Engine):
         if not event_is_key_press:
             return False
 
-        # TODO: configurable key
-        if keyval == IBus.space and \
-                modifiers & IBus.ModifierType.CONTROL_MASK:
-            if self.vietnameseMode:
-                self.turn_off()
-            else:
-                self.turn_on()
-
-            return True
-
-        if self.vietnameseMode:
-            return self.backend.process_key_event(keyval, modifiers)
-        else:
+        if modifiers & (IBus.ModifierType.CONTROL_MASK |
+                     IBus.ModifierType.MOD1_MASK) != 0:
+            self.commit()
+            self.reset()
             return False
 
-    def do_enable(self):
-        logger.debug("do_enable()")
-        self.backend.do_enable()
+        if self.is_processable_key(keyval, modifiers):
+            if chr(keyval) in punctuations:
+                self.commit()
+                self.reset()
+                return False
 
-    def do_disable(self):
-        logger.debug("do_disable()")
-        self.reset()
+            self.key_sequence += chr(keyval)
+            self.convert()
+            self.update_preedit()
 
-    def do_focus_in(self):
-        logger.debug("do_focus_in()")
-        self.find_focused_executable()
-        self.switch_mode()
-        self.backend.do_focus_in()
-        self.ui_delegate.setup_tool_buttons()
-
-    def find_focused_executable(self):
-        focused_pid = subprocess.check_output(
-            "xprop -id $(xprop -root | " +
-            "awk '/_NET_ACTIVE_WINDOW\(WINDOW\)/{print $NF}') | " +
-            "awk '/_NET_WM_PID\(CARDINAL\)/{print $NF}'",
-            shell=True).decode().strip()
-
-        self.focused_exe = os.path.realpath(
-            "/proc/{0}/exe".format(focused_pid))
-
-        logger.debug("%s focused", self.focused_exe)
-
-    def do_reset(self):
-        logger.debug("do_reset()")
-        self.reset()
-
-    def do_focus_out(self):
-        logger.debug("do_focus_out()")
-        self.reset()
-
-    def do_property_activate(self, prop_key, state):
-        self.ui_delegate.do_property_activate(prop_key, state)
-
-    def do_set_capabilities(self, caps):
-        logger.debug("do_set_capabilities: %s", caps)
-        self.caps = caps
-        self.switch_mode()
-
-    def switch_mode(self):
-        logger.debug("is_blacklisted: %s", self.is_app_blacklisted())
-        if self.caps & IBus.Capabilite.SURROUNDING_TEXT and \
-                not self.is_app_blacklisted():
-            self.backend = self.surrounding_text_backend
+            return True
         else:
-            self.backend = self.preedit_backend
+            return self.on_special_key_pressed(keyval)
 
-    def is_app_blacklisted(self):
-        for exe_name in self.config["surrounding-text-blacklist"]:
-            if self.focused_exe.find(exe_name) != -1:
-                return True
+    def convert(self):
+        self.processing_string = bogo.process_sequence(self.key_sequence)
+
+    def update_preedit(self):
+        _text = text(self.processing_string)
+        _text.append_attribute(type=IBus.AttrType.UNDERLINE,
+                              value=IBus.AttrUnderline.SINGLE,
+                              start_index=0,
+                              end_index=len(self.processing_string))
+
+        self.update_preedit_text_with_mode(
+            _text,
+            len(self.processing_string),
+            True,
+            IBus.PreeditFocusMode.COMMIT)
+        self.show_preedit_text()
+
+    def on_special_key_pressed(self, keyval):
+        if keyval == IBus.BackSpace:
+            if self.processing_string == "":
+                self.hide_preedit_text()
+                return False
+
+            # deleted_char = self.processing_string[-1]
+            # self.processing_string = self.processing_string[:-1]
+
+            # index = self.key_sequence.rfind(deleted_char)
+            # self.key_sequence = self.key_sequence[:-2] if index < 0 else \
+            #     self.key_sequence[:index] + \
+            #     self.key_sequence[(index + 1):]
+
+            self.key_sequence = self.key_sequence[:-1]
+            self.convert()
+            self.update_preedit()
+            return True
+
+        # if keyval in [IBus.space, IBus.comma, IBus.semicolon, IBus.bracketright, IBus.period, IBus.quoteright]:
+        #     self.on_space_pressed()
+        #     if self.last_action()["type"] == "string-correction":
+        #         return True
+
+        self.commit()
+        self.reset()
         return False
+
+
+    def is_processable_key(self, keyval, state):
+        return keyval in range(32, 126) and \
+            state & (IBus.ModifierType.CONTROL_MASK |
+                     IBus.ModifierType.MOD1_MASK) == 0
