@@ -191,8 +191,7 @@ class Engine(IBus.Engine):
 
     def switch_mode(self):
         logger.debug("is_blacklisted: %s", self.is_app_blacklisted())
-        if self.caps & IBus.Capabilite.SURROUNDING_TEXT and \
-                not self.is_app_blacklisted():
+        if not self.is_app_blacklisted():
             self.backend = self.surrounding_text_backend
         else:
             self.backend = self.preedit_backend
