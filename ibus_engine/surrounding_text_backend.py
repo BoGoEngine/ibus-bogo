@@ -87,7 +87,9 @@ class SurroundingTextBackend(BaseBackend):
         if keyval in [IBus.space, IBus.comma, IBus.semicolon, IBus.bracketright, IBus.period, IBus.quoteright]:
             return self.on_special_key_pressed(keyval)
 
-        if len(self.last_action()["editing-string"]) == 0:
+        # This is unstable and needs more inspection.
+        #if len(self.last_action()["editing-string"]) == 0:
+        if False:
             # If we are not editing any word then try to process the
             # existing word at the cursor.
             surrounding_text, cursor, anchor = \
