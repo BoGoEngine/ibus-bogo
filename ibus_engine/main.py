@@ -29,6 +29,7 @@ import sys
 import locale
 import logging
 import argparse
+import enchant
 
 ENGINE_PATH = os.path.dirname(__file__) + "/"
 sys.path.append(os.path.abspath(ENGINE_PATH + ".."))
@@ -37,9 +38,12 @@ sys.path.append(os.path.abspath(ENGINE_PATH + "../bogo-python"))
 from ibus_engine import Engine
 from config import Config
 from abbr import AbbreviationExpander
+from auto_corrector import AutoCorrector
 
 
 current_path = os.path.dirname(os.path.abspath(__file__))
+DICT_PATH = ENGINE_PATH + '/data'
+PWL_PATH = os.path.expanduser('~/.config/ibus-bogo/spelling-blacklist.txt')
 
 
 class IMApp:
@@ -92,6 +96,21 @@ class IMApp:
             self.bus.register_component(self.component)
             self.bus.set_global_engine_async(
                 "bogo", -1, None, None, None)
+        custom_broker = enchant.Broker()
+        custom_broker.set_param(
+            'enchant.myspell.dictionary.path',
+            DICT_PATH)
+
+        spellchecker = enchant.DictWithPWL(
+            'vi_VN_telex',
+            pwl=PWL_PATH,
+            broker=custom_broker)
+
+        # FIXME: Catch enchant.errors.DictNotFoundError exception here.
+        english_spellchecker = enchant.Dict('en_US')
+
+        self.auto_corrector = AutoCorrector(
+            self.config, spellchecker, english_spellchecker)
 
     def create_engine(self, factory, engine_name):
         if engine_name == "bogo":
@@ -118,7 +137,7 @@ class IMApp:
             sys.stderr = stderr
             f.close()
 
-            Engine.__init__(engine, self.config, self.abbr_expander)
+            Engine.__init__(engine, self.config, self.abbr_expander, self.auto_corrector)
 
             self.engine_count += 1
             return engine
