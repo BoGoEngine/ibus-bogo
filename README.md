@@ -5,6 +5,10 @@
 
 [*English below...*](#introduction)
 
+**CHÚ Ý:** Hiện nay dự án đang ngừng phát triển bởi 
+[lý do kỹ thuật](http://ngochin.com/2014/07/31/uoc-mo-bo-go-kieu-unikey/) 
+và vì maintainer chính là @lewtds không thể dành được đủ thời gian cho dự án.
+
 **ibus-bogo** là một chương trình xử lý gõ tiếng Việt sử dụng engine **BoGo**
 và được thiết kế để chạy cùng [iBus](http://code.google.com/p/ibus/),
 một phần mềm quản lý các bộ gõ trong GNU/Linux.

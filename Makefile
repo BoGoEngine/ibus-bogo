@@ -15,9 +15,9 @@ install:
 	mkdir --parent $(IBUS_ROOT)/component/
 	cp ibus_engine/data/bogo.xml $(IBUS_ROOT)/component/
 	sed -i \
-                 -e "s|@EXEC_PATH@|python3 $(APP_ROOT)/ibus_engine/main.py|g" \
+                 -e "s|@EXEC_PATH@|$(APP_ROOT)/ibus_engine/main.py|g" \
                  -e "s|@ICON_PATH@|${APP_ROOT}/ibus_engine/data/ibus-bogo-dev.svg|g" \
-                 -e "s|@SETUP_PATH@|python3 ${APP_ROOT}/gui/controller.py|g" \
+                 -e "s|@SETUP_PATH@|${APP_ROOT}/gui/controller.py|g" \
                  $(IBUS_ROOT)/component/bogo.xml
 
 

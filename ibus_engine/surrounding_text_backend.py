@@ -22,6 +22,7 @@
 #
 
 import logging
+import time
 from itertools import takewhile
 from gi.repository import IBus
 
@@ -87,7 +88,9 @@ class SurroundingTextBackend(BaseBackend):
         if keyval in [IBus.space, IBus.comma, IBus.semicolon, IBus.bracketright, IBus.period, IBus.quoteright]:
             return self.on_special_key_pressed(keyval)
 
-        if len(self.last_action()["editing-string"]) == 0:
+        # This is unstable and needs more inspection.
+        #if len(self.last_action()["editing-string"]) == 0:
+        if False:
             # If we are not editing any word then try to process the
             # existing word at the cursor.
             surrounding_text, cursor, anchor = \
@@ -117,8 +120,14 @@ class SurroundingTextBackend(BaseBackend):
 
     def delete_prev_chars(self, count):
         if count > 0:
-            logger.debug("Deleting surrounding text...")
-            self.engine.delete_surrounding_text(offset=-count, nchars=count)
+            if self.engine.caps & IBus.Capabilite.SURROUNDING_TEXT:
+                logger.debug("Deleting surrounding text")
+                self.engine.delete_surrounding_text(offset=-count, nchars=count)
+            else:
+                logger.debug("Sending backspaces")
+                for i in range(count):
+                    self.engine.forward_key_event(IBus.BackSpace, 14, 0)
+                time.sleep(0.005)
             super().delete_prev_chars(count)
 
     def on_special_key_pressed(self, keyval):
