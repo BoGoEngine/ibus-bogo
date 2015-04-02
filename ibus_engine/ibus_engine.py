@@ -26,25 +26,21 @@ from gi.repository import IBus
 import os
 import subprocess
 import logging
-import enchant
 
 #from mouse_detector import MouseDetector
 from ui import UiDelegate
 from preedit_backend import PreeditBackend
 from surrounding_text_backend import SurroundingTextBackend
-from auto_corrector import AutoCorrector
 
 logger = logging.getLogger(__name__)
 
 ENGINE_PATH = os.path.dirname(__file__)
-DICT_PATH = ENGINE_PATH + '/data'
-PWL_PATH = os.path.expanduser('~/.config/ibus-bogo/spelling-blacklist.txt')
 
 
 class Engine(IBus.Engine):
     __gtype_name__ = 'EngineBoGo'
 
-    def __init__(self, config, abbr_expander):
+    def __init__(self, config, abbr_expander, auto_corrector):
         super().__init__()
 
         self.caps = 0
@@ -52,22 +48,6 @@ class Engine(IBus.Engine):
 
         self.config = config
         self.ui_delegate = UiDelegate(engine=self)
-
-        custom_broker = enchant.Broker()
-        custom_broker.set_param(
-            'enchant.myspell.dictionary.path',
-            DICT_PATH)
-
-        spellchecker = enchant.DictWithPWL(
-            'vi_VN_telex',
-            pwl=PWL_PATH,
-            broker=custom_broker)
-
-        # FIXME: Catch enchant.errors.DictNotFoundError exception here.
-        english_spellchecker = enchant.Dict('en_US')
-
-        auto_corrector = AutoCorrector(
-            config, spellchecker, english_spellchecker)
 
         self.preedit_backend = PreeditBackend(
             engine=self,
