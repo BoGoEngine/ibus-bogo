@@ -9,7 +9,7 @@ Từ gói cài đặt cho các bản phân phối Linux thông dụng
 
 Người dùng Archlinux có thể cài từ `gói AUR stable`_ hoặc `develop`_ do bạn `Ngô Huy`_ cung cấp.
 
-Fan của Fedora có thể cài gói RPM từ `RPM repo`_ của anh `Trương Anh Tuấn`_.
+Người dùng Fedora có thể cài gói RPM từ `RPM repo`_ của anh `Trương Anh Tuấn`_.
 
 .. note::
 
