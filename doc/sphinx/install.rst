@@ -36,18 +36,20 @@ cài trên máy (theo tên gói cài đặt của Debian/Ubuntu):
 
 * ibus 1.4.x
 * python 3.2+
-* python-gi (pygobject)
+* python3-gi (pygobject)
+* python3-entrant (kiểm tra chính tả)
 * cmake
 * qt4-linguist-tools
 * pyqt4-dev-tools
-* python3-pyqt4
+* python3-pyside
 * gir1.2-ibus-1.0 (GObject Introspection data)
 * gir1.2-wnck-3.0
 
 Lệnh sau sẽ cài đặt tất cả các gói cần thiết::
 
     sudo apt-get install python3 ibus cmake python3-gi pyqt4-dev-tools \
-    gir1.2-ibus-1.0 gir1.2-wnck-3.0 python3-pyqt4 qt4-linguist-tools
+    gir1.2-ibus-1.0 gir1.2-wnck-3.0 python3-pyqt4 qt4-linguist-tools \
+    python3-enchant
 
 .. note::
 
