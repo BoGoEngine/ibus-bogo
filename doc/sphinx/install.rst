@@ -31,7 +31,7 @@ Từ mã nguồn
    Nếu bạn chưa thành thạo Linux và chỉ muốn sử dụng BoGo thì không nên
    cài đặt từ mã nguồn.
 
-ibus-bogo có sử dụng các phần mềm sau, hãy chắc chắn rằng chúng đã được 
+ibus-bogo có sử dụng các phần mềm sau, hãy chắc chắn rằng chúng đã được
 cài trên máy (theo tên gói cài đặt của Debian/Ubuntu):
 
 * ibus 1.4.x
@@ -60,13 +60,17 @@ rồi giải nén. Hoặc dùng::
 
     git clone https://github.com/BoGoEngine/ibus-bogo.git
 
+Nếu bạn tải từ trang releases, bạn cần khởi tạo CMake:
+
+    cmake CMakeLists.txt
+
 Chạy lệnh sau để cài đặt::
 
     sudo make install
 
 Gỡ cài đặt::
 
-   sudo make uninstall
+    sudo make uninstall
 
 Cấu hình sau khi cài đặt
 ------------------------
